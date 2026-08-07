@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Print X Article",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Reformat an X article or thread into a clean print layout and send it to the print dialog.",
   "permissions": ["scripting"],
   "host_permissions": ["*://x.com/*", "*://twitter.com/*"],
