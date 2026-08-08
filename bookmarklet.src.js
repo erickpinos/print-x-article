@@ -1,6 +1,32 @@
 javascript:(function(){
   var IS_EXT=false;
-  var isX=/(^|\.)(x\.com|twitter\.com)$/.test(location.hostname);
+  /* Per-site hints, layered on the generic extraction rather than replacing
+     it: an unknown site still gets the full generic treatment, and an entry
+     here only overrides the steps that one site gets wrong.
+     Everything in this table started as a generic heuristic written for one
+     site and firing on all of them, which is how an og:image header fallback
+     added for XDA put a header on Substack posts that have none. A named
+     entry fails locally and visibly instead.
+     Add a site by adding a row; no other code changes. */
+  var SITES=[
+    {host:/(^|\.)(x\.com|twitter\.com)$/,kind:'x'},
+    {host:/(^|\.)xda-developers\.com$/,kind:'web',
+     /* The header image is a wrapper <div data-img-url>, with no <img> until
+        the lazy loader runs. */
+     heroAttrs:['data-img-url'],
+     /* Both author-bio sentences sit in one <div class="with-excerpt">
+        separated by <br>, and reader mode hands them back as paragraphs. */
+     furniture:['.with-excerpt']}
+    /* substack.com needs no entry: its CDN crop and its byline avatar are both
+       handled by rules that identify themselves from the markup (a
+       /image/fetch/<transforms>/<encoded-url> path, an alt naming the author),
+       so there is nothing site-specific left to pin. */
+  ];
+  var SITE=(function(){
+    for(var i=0;i<SITES.length;i++)if(SITES[i].host.test(location.hostname))return SITES[i];
+    return {kind:'web'};
+  })();
+  var isX=SITE.kind==='x';
   var url=location.href;
   function esc(t){return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
   function para(t){return esc(t).replace(/\n/g,'<br>');}
@@ -309,7 +335,10 @@ javascript:(function(){
           if((ps[j].textContent||'').trim().length>80){bodyStart=ps[j];break;}
         }
       }
-      var nodes=scope.querySelectorAll('img,[data-img-url],[data-src],[style*="background-image"]');
+      var heroAttrs=['data-src'].concat(SITE.heroAttrs||[]);
+      var sel='img,[style*="background-image"]';
+      heroAttrs.forEach(function(a){sel+=',['+a+']';});
+      var nodes=scope.querySelectorAll(sel);
       for(var i=0;i<nodes.length;i++){
         var n=nodes[i],u='';
         if(bodyStart&&!(bodyStart.compareDocumentPosition(n)&Node.DOCUMENT_POSITION_PRECEDING))return;
@@ -323,9 +352,7 @@ javascript:(function(){
           if((dw&&dw<400)||(dh&&dh<250))u='';
         }
         else{
-          /* XDA carries the header on a wrapper div as data-img-url, with no
-             <img> until its lazy loader runs. */
-          u=n.getAttribute('data-img-url')||n.getAttribute('data-src')||'';
+          for(var a=0;a<heroAttrs.length&&!u;a++)u=n.getAttribute(heroAttrs[a])||'';
           if(!u){
             var bg=(n.getAttribute('style')||'').match(/url\((['"]?)(.*?)\1\)/);
             u=bg?bg[2]:'';
@@ -360,6 +387,10 @@ javascript:(function(){
         w=im.naturalWidth||0;
         if(w&&(w<24||w>1200))continue;
         avatar=unwrapCdn(src);
+        /* Also claim it, or the headshot prints a second time as a full-size
+           figure in the body. */
+        seenImg[avatar.split('?')[0].split('#')[0]]=1;
+        seenImg[src.split('?')[0].split('#')[0]]=1;
         break;
       }
     }
@@ -372,9 +403,14 @@ javascript:(function(){
        container, and once extracted it reads like an opening paragraph. Which
        container it came from is the giveaway, and that is context Readability
        throws away, so collect it from the live DOM first. */
+    /* data-nosnippet stays generic: it is Google's standard "not the main
+       content" marker, not one site's class name. */
+    var FURNITURE_SEL=['[class*="author" i]','[class*="byline" i]','[class*="bio" i]',
+                       '[id*="author" i]','[data-nosnippet]']
+                      .concat(SITE.furniture||[]).join(',');
     var furniture=[];
     Array.prototype.forEach.call(
-      document.querySelectorAll('[class*="author" i],[class*="byline" i],[class*="bio" i],[class*="excerpt" i],[id*="author" i],[data-nosnippet]'),
+      document.querySelectorAll(FURNITURE_SEL),
       function(c){
         /* The bio is as often a SIBLING of the author element as a child of
            it, so index one level up as well. */
@@ -570,7 +606,7 @@ javascript:(function(){
   var metaHtml=avatar
     ?'<div class="meta withpic"><img class="avatar" src="'+avatar+'"><div>'+metaInner+'</div></div>'
     :'<div class="meta">'+metaInner+'</div>';
-  var doc='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+sa+' - '+st+'</title><style>@media print{@page{margin:1in;}figure{break-inside:avoid;}}*{background:#fff!important;}body{font-family:Georgia,"Times New Roman",serif;max-width:740px;margin:0 auto;padding:40px 20px;color:#1a1a1a;line-height:1.8;font-size:17px;}h1{font-size:26px;line-height:1.3;margin-bottom:6px;}h2{font-size:19px;margin-top:32px;margin-bottom:4px;break-after:avoid;}figcaption{font-family:Arial,sans-serif;font-size:12.5px;line-height:1.5;color:#777;text-align:center;margin-top:8px;}p,li{orphans:3;widows:3;}p{margin:12px 0;}ul{margin:12px 0 12px 20px;padding:0;}li{margin:6px 0;}figure{margin:28px 0;break-inside:avoid;}figure img{max-width:100%;max-height:15cm;height:auto;display:block;margin:0 auto;border-radius:4px;}figure.hero{margin:-10px 0 32px 0;}figure.hero img{border-radius:6px;width:100%;}.ca{margin-bottom:0;color:#555;font-size:14px;font-family:Arial,sans-serif;}.meta{font-size:13px;color:#555;margin-bottom:28px;padding-bottom:14px;border-bottom:1px solid #ddd;}.meta a{color:#555;}.meta.withpic{display:flex;align-items:center;gap:12px;}.meta img.avatar{width:46px;height:46px;border-radius:50%;flex:none;margin:0;}.mh{font-weight:normal;color:#777;}h2.rh{font-family:Arial,sans-serif;font-size:13px;text-transform:uppercase;letter-spacing:0.8px;color:#888;margin-top:40px;padding-top:14px;border-top:1px solid #ddd;}.reply{margin:0 0 6px 0;padding:14px 0 2px 0;break-inside:avoid;}.rhead{display:flex;align-items:center;gap:7px;font-family:Arial,sans-serif;font-size:12.5px;color:#777;margin-bottom:-4px;}.rhead img{width:24px;height:24px;border-radius:50%;flex:none;}.rn{font-weight:bold;color:#1a1a1a;}.rx{color:#888;font-family:Arial,sans-serif;font-size:12.5px;}.reply p{margin:8px 0;font-size:16px;}.reply figure{margin:14px 0;}.reply figure img{max-height:9cm;}dl{margin:16px 0;}dt{font-weight:bold;margin-top:14px;}dd{margin:4px 0 0 0;}hr{border:none;border-top:1px solid #ddd;margin:24px 0;}.card{border:1px solid #ddd;border-radius:6px;padding:12px 16px;margin:16px 0;break-inside:avoid;}.ct{font-weight:bold;font-size:16px;margin:0 0 3px 0;}.ct a{color:#1a1a1a;text-decoration:none;}.cm{font-size:13px;color:#555;font-family:Arial,sans-serif;margin:0 0 5px 0;}.cm a{color:#555;text-decoration:none;}.cd{font-size:14px;color:#333;margin:0;}blockquote{border-left:3px solid #ccc;margin:16px 0;padding:4px 0 4px 16px;color:#444;font-style:italic;}pre.code{background:#f6f8fa;border:1px solid #ddd;border-radius:6px;padding:12px 14px;margin:8px 0 16px 0;font-family:Menlo,Monaco,Consolas,"Courier New",monospace;font-size:12.5px;line-height:1.45;color:#1a1a1a;white-space:pre-wrap;word-break:break-word;}.codelang{font-family:Arial,sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#888;margin:16px 0 0 0;}</style></head><body>'+heroHtml+'<h1>'+st+'</h1>'+metaHtml+html+'</body></html>';
+  var doc='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+sa+' - '+st+'</title><style>@media print{@page{margin:1in;}figure{break-inside:avoid;}}*{background:#fff!important;}body{font-family:Georgia,"Times New Roman",serif;max-width:740px;margin:0 auto;padding:40px 20px;color:#1a1a1a;line-height:1.8;font-size:17px;}h1{font-size:26px;line-height:1.3;margin-bottom:6px;}h2{font-size:19px;margin-top:32px;margin-bottom:4px;break-after:avoid;}figcaption{font-family:Arial,sans-serif;font-size:12.5px;line-height:1.5;color:#777;text-align:center;margin-top:8px;}p,li{orphans:3;widows:3;}p{margin:12px 0;}ul{margin:12px 0 12px 20px;padding:0;}li{margin:6px 0;}figure{margin:28px 0;break-inside:avoid;}figure img{max-width:100%;max-height:11cm;height:auto;display:block;margin:0 auto;border-radius:4px;}figure.hero{margin:-10px 0 32px 0;}figure.hero img{border-radius:6px;max-height:8cm;width:auto;max-width:100%;}.ca{margin-bottom:0;color:#555;font-size:14px;font-family:Arial,sans-serif;}.meta{font-size:13px;color:#555;margin-bottom:28px;padding-bottom:14px;border-bottom:1px solid #ddd;}.meta a{color:#555;}.meta.withpic{display:flex;align-items:center;gap:12px;}.meta img.avatar{width:46px;height:46px;border-radius:50%;flex:none;margin:0;}.mh{font-weight:normal;color:#777;}h2.rh{font-family:Arial,sans-serif;font-size:13px;text-transform:uppercase;letter-spacing:0.8px;color:#888;margin-top:40px;padding-top:14px;border-top:1px solid #ddd;}.reply{margin:0 0 6px 0;padding:14px 0 2px 0;break-inside:avoid;}.rhead{display:flex;align-items:center;gap:7px;font-family:Arial,sans-serif;font-size:12.5px;color:#777;margin-bottom:-4px;}.rhead img{width:24px;height:24px;border-radius:50%;flex:none;}.rn{font-weight:bold;color:#1a1a1a;}.rx{color:#888;font-family:Arial,sans-serif;font-size:12.5px;}.reply p{margin:8px 0;font-size:16px;}.reply figure{margin:14px 0;}.reply figure img{max-height:9cm;}dl{margin:16px 0;}dt{font-weight:bold;margin-top:14px;}dd{margin:4px 0 0 0;}hr{border:none;border-top:1px solid #ddd;margin:24px 0;}.card{border:1px solid #ddd;border-radius:6px;padding:12px 16px;margin:16px 0;break-inside:avoid;}.ct{font-weight:bold;font-size:16px;margin:0 0 3px 0;}.ct a{color:#1a1a1a;text-decoration:none;}.cm{font-size:13px;color:#555;font-family:Arial,sans-serif;margin:0 0 5px 0;}.cm a{color:#555;text-decoration:none;}.cd{font-size:14px;color:#333;margin:0;}blockquote{border-left:3px solid #ccc;margin:16px 0;padding:4px 0 4px 16px;color:#444;font-style:italic;}pre.code{background:#f6f8fa;border:1px solid #ddd;border-radius:6px;padding:12px 14px;margin:8px 0 16px 0;font-family:Menlo,Monaco,Consolas,"Courier New",monospace;font-size:12.5px;line-height:1.45;color:#1a1a1a;white-space:pre-wrap;word-break:break-word;}.codelang{font-family:Arial,sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#888;margin:16px 0 0 0;}</style></head><body>'+heroHtml+'<h1>'+st+'</h1>'+metaHtml+html+'</body></html>';
   var origTitle=document.title;
   var fname=((title?author+' - '+title:author)||document.title)
     .replace(/[\\\/]/g,'-')
@@ -589,9 +625,25 @@ javascript:(function(){
   function cleanup(){if(done)return;done=true;document.title=origTitle;if(f&&f.parentNode)f.parentNode.removeChild(f);}
   f.contentWindow.onafterprint=cleanup;
   var fired=false;
+  /* An image that 404s or is blocked still leaves its figure in the flow, and
+     with break-inside:avoid that figure can push a page break and read as a
+     long gap. Once the waiting below is done, complete-but-zero-width is a
+     reliable "this never arrived". */
+  function prune(){
+    var imgs=fd.images,i,im,fig;
+    for(i=imgs.length-1;i>=0;i--){
+      im=imgs[i];
+      if(!im.complete||im.naturalWidth)continue;
+      fig=im.parentNode;
+      while(fig&&fig.tagName!=='FIGURE'&&fig!==fd.body)fig=fig.parentNode;
+      if(fig&&fig.tagName==='FIGURE'&&fig.parentNode)fig.parentNode.removeChild(fig);
+      else if(im.parentNode)im.parentNode.removeChild(im);
+    }
+  }
   function go(){
     if(fired)return;
     fired=true;
+    try{prune();}catch(e){}
     try{document.title=fname;f.contentWindow.focus();f.contentWindow.print();}catch(e){cleanup();}
   }
   /* Print once the images have decoded, not on a fixed delay. The old 700ms

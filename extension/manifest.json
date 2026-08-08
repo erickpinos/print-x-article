@@ -1,9 +1,10 @@
 {
   "manifest_version": 3,
   "name": "Print X Article",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Reformat an X article, tweet, thread, or any web article into a clean print layout and send it to the print dialog.",
   "permissions": ["scripting", "activeTab"],
+  "host_permissions": ["<all_urls>"],
   "action": {
     "default_title": "Print X Article",
     "default_icon": {

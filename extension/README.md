@@ -8,6 +8,36 @@ which `build.sh` flips to `true` for the extension build. Two things today: the
 author's profile picture next to the byline, and reader-mode extraction for
 non-X sites.
 
+## Per-site hints
+
+Routing is by page type, with a small table of per-site hints at the top of
+`../bookmarklet.src.js`:
+
+```js
+var SITES=[
+  {host:/(^|\.)(x\.com|twitter\.com)$/, kind:'x'},
+  {host:/(^|\.)xda-developers\.com$/,    kind:'web',
+   heroAttrs:['data-img-url'],           // header lives on a wrapper div
+   furniture:['.with-excerpt']},         // author bio, two sentences, one div
+];
+```
+
+These are **layered on the generic extraction, never in place of it**: an
+unknown site still gets the full generic treatment, and an entry only overrides
+the steps that one site gets wrong. Adding a site means adding a row.
+
+The reason it exists: every quirk in that table started as a generic heuristic
+written for one site and firing on all of them. An `og:image` header fallback
+added for XDA is what put a header image on Substack posts that have none. A
+named entry fails locally and visibly instead.
+
+A rule stays generic when it identifies itself from the markup rather than from
+the domain. `substack.com` therefore has no entry: its CDN crop is recognisable
+from the URL shape (`/image/fetch/<transforms>/<url-encoded original>`) and its
+avatar from an `alt` naming the author. `data-nosnippet` stays generic for the
+same reason: it is Google's standard "not the main content" marker, not one
+site's class name.
+
 ## What it prints
 
 The script routes on what the page is:
@@ -119,15 +149,30 @@ The page is reformatted into the print layout and the print dialog opens. The
 document title is temporarily swapped to `Author - Title` so "Save as PDF"
 suggests a sane filename, then restored when the dialog closes.
 
-Permission is `activeTab`, granted per click, rather than access to every site
-you visit. Chrome refuses injection on `chrome://` pages, the Web Store, and
-PDF viewer tabs; those flash a red `err` badge.
+Chrome refuses injection on `chrome://` pages, the Web Store, and other
+privileged tabs no matter what an extension asks for. Those flash a grey `n/a`
+badge and log which origin refused, rather than reporting a failure. A `file://`
+page needs **Allow access to file URLs** on `chrome://extensions`, a
+per-extension toggle no manifest can request; that case names itself in the
+console.
+
+### Why host_permissions, not just activeTab
+
+`activeTab` was the original choice, since it grants access only to the tab you
+are on at the moment you invoke the extension rather than to every site you
+visit. It turned out not to be reliable enough: an invocation Chrome does not
+count as a user gesture on that exact tab fails with *"Cannot access contents
+of the page. Extension manifest must request permission to access the
+respective host."* `host_permissions: ["<all_urls>"]` covers every page, at the
+cost of a broader install prompt. `activeTab` is kept alongside it so the
+extension still works on the current tab if host access is ever revoked from
+`chrome://extensions`.
 
 ## Files
 
 | File | Role |
 |---|---|
-| `manifest.json` | MV3 manifest: `scripting` + `activeTab`, toolbar action, keyboard command |
+| `manifest.json` | MV3 manifest: `scripting` + `activeTab` + `host_permissions`, toolbar action, keyboard command |
 | `background.js` | Service worker; injects `print-article.js` into the active tab on click/shortcut |
 | `print-article.js` | **Generated** — do not edit; edit `../bookmarklet.src.js` and run `../build.sh` |
 | `vendor/Readability.js` | Vendored Mozilla Readability (Apache-2.0), injected before the print script |
