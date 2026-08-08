@@ -132,6 +132,17 @@ was invisible on X, where every image is already cached from the page you are
 looking at, but a header image pulled from `og:image` is a URL the browser has
 never fetched, and it printed as an empty box.
 
+## Tests
+
+```sh
+test/run.sh          # structure only
+test/run.sh --pdf    # + layout, rendered to PDF and read back with pdftotext
+```
+
+Five fixtures covering both X paths and three websites. See `../test/README.md`.
+Run it before touching `../bookmarklet.src.js`: the layout assertion catches the
+class of bug that structural checks cannot see.
+
 ## Install (unpacked)
 
 1. Open `chrome://extensions`

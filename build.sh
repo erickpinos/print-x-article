@@ -15,6 +15,18 @@
 # (currently the author avatar next to the byline).
 set -e
 cd "$(dirname "$0")"
+
+# The bookmarklet is built by joining every line with a space, so ONE `//`
+# comment would comment out the entire rest of the program, silently. Use /* */
+# in bookmarklet.src.js. (URLs like https:// are not line comments; the check
+# only looks for a comment at the start of a line or after whitespace.)
+if grep -nE '(^|[[:space:]])//' bookmarklet.src.js | grep -v ':[[:space:]]*\*' > /dev/null; then
+  echo "build.sh: bookmarklet.src.js contains a // line comment, which the" >&2
+  echo "          line-joining build would turn into 'comment out everything" >&2
+  echo "          after it'. Use /* */ instead:" >&2
+  grep -nE '(^|[[:space:]])//' bookmarklet.src.js | head -5 >&2
+  exit 1
+fi
 sed 's/^[[:space:]]*//' bookmarklet.src.js | tr '\n' ' ' | sed "s/'/%27/g" | sed 's/ *$//' > x-print-bookmarklet
 echo "Built x-print-bookmarklet ($(wc -c < x-print-bookmarklet | tr -d ' ') bytes)"
 
@@ -24,3 +36,11 @@ echo "Built x-print-bookmarklet ($(wc -c < x-print-bookmarklet | tr -d ' ') byte
 } > extension/print-article.js
 grep -q 'var IS_EXT=true;' extension/print-article.js || { echo "build.sh: IS_EXT flip failed" >&2; exit 1; }
 echo "Built extension/print-article.js ($(wc -c < extension/print-article.js | tr -d ' ') bytes)"
+
+# The bookmarklet artefact is never exercised by the fixture suite (that runs
+# the extension build), so at least prove the emitted payload still parses.
+node -e '
+  const s = require("fs").readFileSync("x-print-bookmarklet", "utf8");
+  if (!/^javascript:/.test(s)) throw new Error("missing javascript: scheme");
+  new Function(s.replace(/^javascript:/, "").replace(/%27/g, "\u0027"));
+' || { echo "build.sh: the generated bookmarklet does not parse" >&2; exit 1; }

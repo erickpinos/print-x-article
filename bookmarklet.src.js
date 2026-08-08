@@ -29,6 +29,15 @@ javascript:(function(){
   var isX=SITE.kind==='x';
   var url=location.href;
   function esc(t){return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  /* For anything going inside an attribute. esc() alone is not enough: a quote
+     in the value closes the attribute early and the rest of the page's string
+     becomes markup. new URL() percent-encodes quotes for http(s), which is why
+     this looked safe, but it leaves them intact for javascript: and mailto:. */
+  function escA(t){return esc(t).replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+  /* Scheme allowlists. A printed document has no business carrying a
+     javascript: link, and this is the other half of the fix above. */
+  function safeHref(u){return /^(https?|mailto):/i.test(String(u||''))?String(u):'';}
+  function safeSrc(u){return /^(https?|blob):/i.test(String(u||''))?String(u):'';}
   function para(t){return esc(t).replace(/\n/g,'<br>');}
   function meta(sel){var m=document.querySelector(sel);return m?(m.getAttribute('content')||'').trim():'';}
   /* Text of a node, with X's emoji <img alt="X"> mapped back to the character
@@ -69,7 +78,8 @@ javascript:(function(){
         if(t==='A'){
           var href='';
           try{href=new URL(c.getAttribute('href')||'',location.href).toString();}catch(e){href='';}
-          if(href){out+='<a href="'+esc(href)+'">';walk(c);out+='</a>';}
+          href=safeHref(href);
+          if(href){out+='<a href="'+escA(href)+'">';walk(c);out+='</a>';}
           else walk(c);
           continue;
         }
@@ -137,12 +147,12 @@ javascript:(function(){
     if(!handle){
       var av=cell.querySelector('[data-testid^="UserAvatar-Container-"]');
       if(av){
-        var h=av.getAttribute('data-testid').replace('UserAvatar-Container-','');
+        var h=(av.getAttribute('data-testid')||'').replace('UserAvatar-Container-','');
         if(h&&h!=='unknown')handle='@'+h;
       }
     }
     /* The display name and the handle sit in separate elements; innerText on
-       the whole block glues them into "Kalshi@Kalshi". */
+       the whole block glues them together ("Acme Markets@acmemarkets"). */
     if(handle&&name===handle.slice(1))name=handle.slice(1);
     var tm=cell.querySelector('a[href*="/status/"] time')||cell.querySelector('time');
     var link=tm&&tm.parentElement&&tm.parentElement.getAttribute?(tm.parentElement.getAttribute('href')||''):'';
@@ -164,7 +174,7 @@ javascript:(function(){
       var k=u.split('?')[0];
       if(seen[k])return;
       seen[k]=1;
-      h+='<figure><img src="'+u+'"></figure>\n';
+      h+='<figure><img src="'+escA(safeSrc(u))+'"></figure>\n';
     });
     /* A quoted tweet renders as a card, the same shape the article path uses
        for an embedded tweet. */
@@ -173,7 +183,7 @@ javascript:(function(){
       var qu=userOf(q),qt=(q.querySelector('[data-testid="tweetText"]')?inlineText(q.querySelector('[data-testid="tweetText"]')):'');
       if(qt||qu.handle){
         h+='<div class="card">';
-        h+='<p class="cm">'+(qu.link?'<a href="'+qu.link+'">':'')+esc(qu.name)+(qu.handle?' '+esc(qu.handle):'')+(qu.link?'</a>':'')+'</p>';
+        h+='<p class="cm">'+(safeHref(qu.link)?'<a href="'+escA(qu.link)+'">':'')+esc(qu.name)+(qu.handle?' '+esc(qu.handle):'')+(safeHref(qu.link)?'</a>':'')+'</p>';
         if(qt)h+='<p class="cd">'+para(qt)+'</p>';
         h+='</div>\n';
       }
@@ -234,7 +244,7 @@ javascript:(function(){
         if(!b)return;
         var av=avatarOf(r.cell);
         body+='<div class="reply"><div class="rhead">'
-          +(av?'<img src="'+av+'">':'')
+          +(safeSrc(av)?'<img src="'+escA(av)+'">':'')
           +'<span class="rn">'+esc(r.u.name)+'</span>'
           +(r.u.handle?'<span class="rx">'+esc(r.u.handle)+'</span>':'')
           +(r.u.date?'<span class="rx">&middot; '+r.u.date+'</span>':'')
@@ -438,7 +448,7 @@ javascript:(function(){
         seenImg[k]=1;
         if(inList){html+='</ul>\n';inList=false;}
         var fig=el.closest('figure'),cap=fig?fig.querySelector('figcaption'):null;
-        html+='<figure><img src="'+u+'">'+(cap&&cap.textContent.trim()?'<figcaption>'+rich(cap)+'</figcaption>':'')+'</figure>\n';
+        html+='<figure><img src="'+escA(safeSrc(u))+'">'+(cap&&cap.textContent.trim()?'<figcaption>'+rich(cap)+'</figcaption>':'')+'</figure>\n';
         return;
       }
       var tag=el.tagName.toLowerCase();
@@ -478,7 +488,7 @@ javascript:(function(){
     if(inList)html+='</ul>\n';
     /* The story's own h1/h2 usually repeats the title, which would print twice
        under the <h1> below. */
-    html=html.replace(new RegExp('^<h2>'+title.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'</h2>\\n'),'');
+    html=html.replace(new RegExp('^<h2>'+esc(title).replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'</h2>\\n'),'');
     return {title:title,author:author,handle:'',date:date,avatar:avatar,hero:hero,html:html};
   }
 
@@ -487,7 +497,7 @@ javascript:(function(){
   var nameEl=document.querySelector('[data-testid="User-Name"]');
   var author=nameEl?nameEl.innerText.split('\n')[0]:'Unknown';
   var timeEl=document.querySelector('time');
-  var date=timeEl?timeEl.getAttribute('datetime').slice(0,10):'';
+  var date=(timeEl&&timeEl.getAttribute('datetime')||'').slice(0,10);
   var avatar='';
   if(IS_EXT){
     var pcol=document.querySelector('[data-testid="primaryColumn"]')||document;
@@ -529,7 +539,7 @@ javascript:(function(){
             var le=card.querySelector('a[href*="/status/"]');
             var cU='';
             if(le){
-              var m=le.getAttribute('href').match(/^(\/[^\/]+\/status\/\d+)/);
+              var m=(le.getAttribute('href')||'').match(/^(\/[^\/]+\/status\/\d+)/);
               if(m)cU='https://x.com'+m[1];
             }
             var cov=card.querySelector('[data-testid="article-cover-image"]');
@@ -543,8 +553,8 @@ javascript:(function(){
               cD=tt?tt.innerText.trim():'';
             }
             html+='<div class="card">';
-            if(cT)html+='<p class="ct">'+(cU?'<a href="'+cU+'">'+esc(cT)+'</a>':esc(cT))+'</p>';
-            if(cA)html+='<p class="cm">'+(!cT&&cU?'<a href="'+cU+'">'+esc(cA)+'</a>':esc(cA))+'</p>';
+            if(cT)html+='<p class="ct">'+(safeHref(cU)?'<a href="'+escA(cU)+'">'+esc(cT)+'</a>':esc(cT))+'</p>';
+            if(cA)html+='<p class="cm">'+(!cT&&safeHref(cU)?'<a href="'+escA(cU)+'">'+esc(cA)+'</a>':esc(cA))+'</p>';
             if(cD)html+='<p class="cd">'+esc(cD).replace(/\n/g,'<br>')+'</p>';
             html+='</div>\n';
           }
@@ -564,7 +574,7 @@ javascript:(function(){
         var tag=fc?fc.tagName:'';
         var t=b.innerText.trim();
         if(window._articleImgs[i]){
-          html+='<figure><img src="'+window._articleImgs[i]+'"></figure>\n';
+          html+='<figure><img src="'+escA(safeSrc(window._articleImgs[i]))+'"></figure>\n';
         }else if(tag==='H2'){
           html+='<h2>'+esc(t)+'</h2>\n';
         }else if(tag==='LI'){
@@ -600,13 +610,19 @@ javascript:(function(){
   }
   var st=esc(title);
   var sa=esc(author);
-  var heroHtml=window._headerImg?'<figure class="hero"><img src="'+window._headerImg+'"></figure>\n':'';
+  var heroHtml=safeSrc(window._headerImg)?'<figure class="hero"><img src="'+escA(window._headerImg)+'"></figure>\n':'';
   var byline='<strong>'+sa+'</strong>'+(handle?' <span class="mh">'+esc(handle)+'</span>':'')+(date?' &middot; '+date:'');
-  var metaInner=byline+'<br><a href="'+url+'">'+url+'</a>';
+  var metaInner=byline+'<br><a href="'+escA(safeHref(url))+'">'+esc(url)+'</a>';
   var metaHtml=avatar
-    ?'<div class="meta withpic"><img class="avatar" src="'+avatar+'"><div>'+metaInner+'</div></div>'
+    ?'<div class="meta withpic"><img class="avatar" src="'+escA(safeSrc(avatar))+'"><div>'+metaInner+'</div></div>'
     :'<div class="meta">'+metaInner+'</div>';
   var doc='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+sa+' - '+st+'</title><style>@media print{@page{margin:1in;}figure{break-inside:avoid;}}*{background:#fff!important;}body{font-family:Georgia,"Times New Roman",serif;max-width:740px;margin:0 auto;padding:40px 20px;color:#1a1a1a;line-height:1.8;font-size:17px;}h1{font-size:26px;line-height:1.3;margin-bottom:6px;}h2{font-size:19px;margin-top:32px;margin-bottom:4px;break-after:avoid;}figcaption{font-family:Arial,sans-serif;font-size:12.5px;line-height:1.5;color:#777;text-align:center;margin-top:8px;}p,li{orphans:3;widows:3;}p{margin:12px 0;}ul{margin:12px 0 12px 20px;padding:0;}li{margin:6px 0;}figure{margin:28px 0;break-inside:avoid;}figure img{max-width:100%;max-height:11cm;height:auto;display:block;margin:0 auto;border-radius:4px;}figure.hero{margin:-10px 0 32px 0;}figure.hero img{border-radius:6px;max-height:8cm;width:auto;max-width:100%;}.ca{margin-bottom:0;color:#555;font-size:14px;font-family:Arial,sans-serif;}.meta{font-size:13px;color:#555;margin-bottom:28px;padding-bottom:14px;border-bottom:1px solid #ddd;}.meta a{color:#555;}.meta.withpic{display:flex;align-items:center;gap:12px;}.meta img.avatar{width:46px;height:46px;border-radius:50%;flex:none;margin:0;}.mh{font-weight:normal;color:#777;}h2.rh{font-family:Arial,sans-serif;font-size:13px;text-transform:uppercase;letter-spacing:0.8px;color:#888;margin-top:40px;padding-top:14px;border-top:1px solid #ddd;}.reply{margin:0 0 6px 0;padding:14px 0 2px 0;break-inside:avoid;}.rhead{display:flex;align-items:center;gap:7px;font-family:Arial,sans-serif;font-size:12.5px;color:#777;margin-bottom:-4px;}.rhead img{width:24px;height:24px;border-radius:50%;flex:none;}.rn{font-weight:bold;color:#1a1a1a;}.rx{color:#888;font-family:Arial,sans-serif;font-size:12.5px;}.reply p{margin:8px 0;font-size:16px;}.reply figure{margin:14px 0;}.reply figure img{max-height:9cm;}dl{margin:16px 0;}dt{font-weight:bold;margin-top:14px;}dd{margin:4px 0 0 0;}hr{border:none;border-top:1px solid #ddd;margin:24px 0;}.card{border:1px solid #ddd;border-radius:6px;padding:12px 16px;margin:16px 0;break-inside:avoid;}.ct{font-weight:bold;font-size:16px;margin:0 0 3px 0;}.ct a{color:#1a1a1a;text-decoration:none;}.cm{font-size:13px;color:#555;font-family:Arial,sans-serif;margin:0 0 5px 0;}.cm a{color:#555;text-decoration:none;}.cd{font-size:14px;color:#333;margin:0;}blockquote{border-left:3px solid #ccc;margin:16px 0;padding:4px 0 4px 16px;color:#444;font-style:italic;}pre.code{background:#f6f8fa;border:1px solid #ddd;border-radius:6px;padding:12px 14px;margin:8px 0 16px 0;font-family:Menlo,Monaco,Consolas,"Courier New",monospace;font-size:12.5px;line-height:1.45;color:#1a1a1a;white-space:pre-wrap;word-break:break-word;}.codelang{font-family:Arial,sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#888;margin:16px 0 0 0;}</style></head><body>'+heroHtml+'<h1>'+st+'</h1>'+metaHtml+html+'</body></html>';
+  /* Double-click, or the shortcut twice: two jobs race the document.title swap
+     that names the PDF, and whichever cleans up first restores the title while
+     the other dialog is still opening. */
+  var nowMs=+new Date();
+  if(window._pxaJob&&nowMs-window._pxaJob<15000)return;
+  window._pxaJob=nowMs;
   var origTitle=document.title;
   var fname=((title?author+' - '+title:author)||document.title)
     .replace(/[\\\/]/g,'-')
@@ -616,13 +632,16 @@ javascript:(function(){
     .replace(/[#\^]/g,'')
     .replace(/\s+/g,' ')
     .replace(/^[.\s]+|[.\s]+$/g,'');
+  /* An XML/RSS/SVG document, or a page caught mid-load, has no <body>. */
+  var mount=document.body||document.documentElement;
+  if(!mount)return;
   var f=document.createElement('iframe');
   f.setAttribute('style','position:fixed;right:0;bottom:0;width:0;height:0;border:0;opacity:0;');
-  document.body.appendChild(f);
+  mount.appendChild(f);
   var fd=f.contentWindow.document;
   fd.open();fd.write(doc);fd.close();
   var done=false;
-  function cleanup(){if(done)return;done=true;document.title=origTitle;if(f&&f.parentNode)f.parentNode.removeChild(f);}
+  function cleanup(){if(done)return;done=true;window._pxaJob=0;document.title=origTitle;if(f&&f.parentNode)f.parentNode.removeChild(f);}
   f.contentWindow.onafterprint=cleanup;
   var fired=false;
   /* An image that 404s or is blocked still leaves its figure in the flow, and

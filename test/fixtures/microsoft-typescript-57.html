@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="en-US" theme="light">
+
+<head>
+	<meta charset="UTF-8">
+	
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+			<meta name="awa-pageType" content="post" />
+  <meta name="awa-product" content="TypeScript" />
+  <meta name="awa-asst" content="https://devblogs.microsoft.com/typescript/?p=4539" />
+			
+			<meta name="awa-xtopic" content="TypeScript">	
+		
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<title>Announcing TypeScript 5.7 - TypeScript</title>
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="color-scheme" content="dark light">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-title" content="TypeScript - The official blog of the TypeScript team.">
+	
+	
+		
+	
+	
+	
+	<meta name='robots' content='index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' />
+
+	
+	<meta name="description" content="Today we excited to announce the availability of TypeScript 5.7! If you&#039;re not familiar with TypeScript, it&#039;s a language that builds on JavaScript by" />
+	
+	<meta property="og:locale" content="en_US" />
+	<meta property="og:type" content="article" />
+	<meta property="og:title" content="Announcing TypeScript 5.7 - TypeScript" />
+	<meta property="og:description" content="Today we excited to announce the availability of TypeScript 5.7! If you&#039;re not familiar with TypeScript, it&#039;s a language that builds on JavaScript by" />
+	<meta property="og:url" content="https://devblogs.microsoft.com/typescript/announcing-typescript-5-7/" />
+	<meta property="og:site_name" content="TypeScript" />
+	<meta property="article:published_time" content="2024-11-22T18:15:19+00:00" />
+	<meta property="og:image" content="https://devblogs.microsoft.com/typescript/wp-content/uploads/sites/11/2018/08/typescriptfeature.png" />
+	<meta property="og:image:width" content="562" />
+	<meta property="og:image:height" content="350" />
+	<meta property="og:image:type" content="image/png" />
+	<meta name="author" content="Daniel Rosenwasser" />
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:creator" content="@https://twitter.com/drosenwasser" />
+	
+	
+
+<meta name="generator" content="performance-lab 4.2.0; plugins: ">
+
+<meta name="msapplication-TileImage" content="https://devblogs.microsoft.com/typescript/wp-content/uploads/sites/11/2018/10/Microsoft-Favicon.png" />
+	
+	
+	
+	
+	
+	<div id="sr-announcer" class="visually-hidden" role="status" aria-live="polite"></div>
+
+</head>
+
+<body class="wp-singular post-template-default single single-post postid-4539 single-format-standard wp-theme-devblogs-evo">
+	
+	
+
+	<div id="cookie-banner"></div>
+	
+	
+		
+	<uhf-header locale="en-us" partnerId="DEV_Blogs" headerId="Dev_header-main" theme="light">
+  <a slot="skip-link" class="uhf-skip-link" href="#mainContent" data-m='{"compnm": "UHF", "view": "UHF", "pa": "UniversalHeader", "hn": "SkipToMain", "cN": "Skip to content_nonnav", "ecn": "Skip to content_nonnav", "ehn": "SkipToMain"}'>Skip to main content</a>
+  
+<uhf-brand slot="brand">
+  <a href="https://www.microsoft.com" class="uhf-microsoft-logo" slot="microsoft-logo" aria-label="Microsoft">
+  <img src="https://uhf.microsoft.com/images/microsoft/RE1Mu3b.png" alt="Microsoft" />
+  </a>
+  <a href="https://devblogs.microsoft.com" class="uhf-site-logo" slot="brand-logo" aria-label="Dev Blogs">
+ <span>Dev Blogs</span>  </a>
+</uhf-brand>
+
+<uhf-contextual-nav 
+  slot="contextual-nav" 
+  overflowText="More" 
+  brand="Dev Blogs" 
+  homeUrl="https://devblogs.microsoft.com" 
+  homeText="Home"
+  data-nav-label="Contextual menu"
+  theme=cat-theme-blue
+  >
+
+  <a class="uhf-nav-item uhf-nav-link" href="https://devblogs.microsoft.com/ai" id="AI">AI</a>
+
+<uhf-dropdown 
+  text=".NET" 
+  id="dot-net"
+   
+>
+  
+
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/dotnet/" id="all-dot-net-posts">All .NET posts</a>
+
+<uhf-flyout text="Frameworks" id="Frameworks">
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/dotnet/category/maui/" id="dot-net-maui">.NET MAUI</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/dotnet/category/dotnet-aspire/" id="asp-net-core">ASP.NET Core</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/dotnet/category/blazor/" id="Blazor">Blazor</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/dotnet/category/entity-framework/" id="entity-framework">Entity Framework</a>
+</uhf-flyout>
+<uhf-flyout text="Languages" id="Languages">
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/cppblog/" id="cpp">C&#x2B;&#x2B;</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/dotnet/category/csharp/" id="C#">C#</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/dotnet/category/fsharp/" id="F#">F#</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/typescript/">TypeScript</a>
+</uhf-flyout>
+<uhf-flyout text="Tools" id="Tools">
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/dotnet/category/nuget/" id="NuGet">NuGet</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/dotnet/category/maintenance-and-updates/" id="Servicing">Servicing</a>
+</uhf-flyout>  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/dotnet-ch/" id="dot-net-blog-in-chinese">.NET Blog in Chinese</a>
+
+</uhf-dropdown>
+
+<uhf-dropdown 
+  text="Developer" 
+  id="Developer"
+   
+>
+  
+
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://developer.microsoft.com/blog" id="microsoft-for-developers">Microsoft for Developers</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/agent-framework/" id="agent-framework">Agent Framework</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/develop-from-the-cloud/">Develop from the cloud</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/xcode/" id="Xcode">Xcode</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/ise/" id="ise-developer">ISE Developer</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/typescript/" id="TypeScript">TypeScript</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/powershell/" id="PowerShell">PowerShell</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/python/" id="Python">Python</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/java/" id="java">Java</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/java-ch/" id="java-blog-in-chinese">Java Blog in Chinese</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/go/" id="go">Go</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://blogs.windows.com/msedgedev/" id="microsoft-edge-dev">Microsoft Edge Dev</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/microsoft365dev/" id="microsoft-365-developer">Microsoft 365 Developer</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/identity/" id="microsoft-entra-identity-developer">Microsoft Entra Identity Developer</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/entrapowershell/" id="microsoft-entra-powershell">Microsoft Entra PowerShell</a>
+
+</uhf-dropdown>
+
+<uhf-dropdown 
+  text="Platform and Tools" 
+  id="platform-development"
+   
+>
+  
+
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/visualstudio/" id="visual-studio">Visual Studio</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/vscode-blog" id="visual-studio-code">Visual Studio Code</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/aspire/" id="aspire">Aspire</a>
+
+<uhf-flyout text="Azure" id="azure">
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/all-things-azure/" id="all-things-azure-1">All things Azure</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/azure-sdk/" id="azure-sdk">Azure SDK</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/azure-vm-runtime/" id="azure-vm-runtime">Azure VM Runtime Team</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://azure.microsoft.com/blog/" id="microsoft-azure">Microsoft Azure</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/cosmosdb/" id="azure-cosmos-db">Azure Cosmos DB</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/documentdb/" id="azure-document-db">Azure DocumentDB</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://cloudblogs.microsoft.com/sqlserver/?product=azure-data-studio">Azure Data Studio</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/azure-sql/" id="azure-sql">Azure SQL</a>
+</uhf-flyout>  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/devops/" id="devops">DevOps</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/directx/" id="directx">DirectX</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/foundry/" id="azure-aI-foundry">Microsoft Foundry</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/powerplatform/" id="power-platform">Power Platform</a>
+
+</uhf-dropdown>
+
+<uhf-dropdown 
+  text="Data" 
+  id="data-development"
+   
+>
+  
+
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/odata/" id="OData">OData</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/udm/" id="udm">Unified Data Model (IDEAs)</a>
+
+</uhf-dropdown>
+
+<uhf-dropdown 
+  text="Windows" 
+  id="windows"
+   
+>
+  
+
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/commandline/" id="windows-command-line">Windows Command Line</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/ifdef-windows/" id="pax-windows">#ifdef Windows</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/insidemsix/" id="inside-msix">Inside MSIX</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/windows-music-dev/" id="midi-music">MIDI and music</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/react-native/" id="react-native-for-windows">React Native</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://devblogs.microsoft.com/oldnewthing/" id="old-new-thing">The Old New Thing</a>
+  <a class="uhf-nav-item uhf-dropdown-link" href="https://blogs.windows.com/windowsdeveloper/" id="windows-developer">Windows Developer</a>
+
+</uhf-dropdown></uhf-contextual-nav>  <uhf-actions slot="actions">
+  
+
+  <uhf-search 
+  slot="search" 
+  placeholder="Search"
+  search-label="Search"
+  cancel-label="Cancel"
+  searchUrl="/search"
+  autoSuggestUrl="https://www.microsoft.com/msstoreapiprod/api/autosuggest"
+  queryParameterName="query"
+  >
+  </uhf-search>
+  </uhf-actions>
+</uhf-header>
+
+  
+	
+	<main class="devblogs-main" id="main" role="main">
+  <div class="wrapper">
+  <div class="container-evo pt-24">
+
+  <div class="breadcrumbs-wrapper" data-bi-area="breadcrumb" data-bi-id="breadcrumb">
+  <nav aria-label="breadcrumb"><ul class="breadcrumb d-flex flex-wrap p-0 m-0" style="list-style-type: none;"><li><a href="https://devblogs.microsoft.com/">Dev Blogs</a><span class="breadcrumb-icon px-6"></span></li><li><a href="https://devblogs.microsoft.com/typescript/">TypeScript</a><span class="breadcrumb-icon px-6"></span></li><li><span class="ebc-current-readmore fw-600" aria-current="page">Announcing TypeScript 5.7</span></li></ul></nav>  </div>
+  
+  
+  
+  
+  </div>
+  
+<div class="container-evo mt-56"> 
+  <div class="container-three-column-post">
+  <div></div>
+  <div class="pe-xl-198">
+  <header class="ms-md-111 mb-40">
+  <div class="d-inline-flex mb-8 gap-24">
+  <div class="d-flex align-items-center">
+  <span>November 22nd, 2024</span>
+  </div>
+  <div id="reactionsMini" class="d-flex align-items-center bg-white border-r-24" style="padding:2px 12px;">
+  <span class="d-flex align-items-center reacts-icons mr-6" style=""><img style="max-width: 20px; margin-right: 2px;" alt="heart" src="https://devblogs.microsoft.com/typescript/wp-content/themes/devblogs-evo/images/emojis/heart.svg"></span><span class="reacts-count">11 reactions</span>  </div>
+  </div>
+  <h1>Announcing TypeScript 5.7</h1>  </header>
+  <div class="d-flex justify-content-between flex-column flex-lg-row align-items-center gap-24 mb-40"
+  style="align-items: start;">
+  <div class="d-flex gap-10 align-items-center">
+  <div class="avatar-parent">
+  <img class="avatar-40" src="https://devblogs.microsoft.com/typescript/wp-content/uploads/sites/11/2021/08/Daniel-Rosenwasser-635x817-1-96x96.png"
+  alt="" style="width: 40px; height: 40px;">
+  </div>
+  <div class="d-flex flex-column">
+  <div class="fs-16 fw-600">
+  <a class="read-more" href="https://devblogs.microsoft.com/typescript/author/danielrosenwasser" aria-label="View Daniel Rosenwasser Author page" data-bi-area="body_author_top"
+  data-bi-id="post_page_body_author_top_name"
+  data-bi-name="Daniel Rosenwasser">Daniel Rosenwasser</a>
+  </div>
+
+  <div class="fs-12 lh-20 fw-400">Principal Product Manager</div>  </div>
+  </div>
+  </div>
+  </div>
+  <div></div>
+</div>
+<div class="container-three-column-post mb-40" id="single-wrapper">
+  <aside class="post-sidebar sticky scroll-bar pe-12">
+  <div id="get-height">
+  <div class="border-bottom pb-32 mb-32 evo-dropdown-menu" data-mobile-dropdown="true" id="toc-sidebar"
+  data-bi-id="post_page_sidebar_right_table_of_contents" data-bi-area="sidebar_right_table_of_contents">
+  <button
+  class="evo-dropdown-button mobile-toc btn-no-styles align-items-center justify-content-between mobile-only"
+  style="width: 100%;" aria-expanded="false" aria-controls="#tocBody" data-bi-id="post_page_sidebar_right_table_of_contents_dropdown">
+  <h2 class="fs-20 lh-28 toc-title"></h2>
+  <span class="evo-dropdown-icon d-flex"></span>
+  </button>
+  <h2 class="fs-20 lh-28 toc-title desktop-only"></h2>
+  <nav id="tocBody" class="evo-dropdown-content mobile-toc-content" data-bi-id="post_page_sidebar_right_table_of_contents">
+  <ul id="toc"></ul>
+  <a href="javascript:" class="fw-600 lh-28" id="showMoreBtn"
+  data-bi-id="post_page_sidebar_right_table_of_contents_show_more" data-bi-name="Show more">Show more</a>
+  </nav>
+  </div>
+  <div class="read-next-mobile"></div>
+  </div>
+  </aside>
+  <article data-clarity-region="article" class="middle-column pe-xl-198" id="post-4539">
+  <div class="entry-content sharepostcontent  "
+  data-bi-area="body_article" data-bi-id="post_page_body_article">
+  <p>Today we excited to announce the availability of TypeScript 5.7!</p>
+<p>If you&#8217;re not familiar with TypeScript, it&#8217;s a language that builds on JavaScript by adding syntax for type declarations and annotations. This syntax can be used by the TypeScript compiler to type-check our code, and it can also be erased to emit clean, idiomatic JavaScript code. Type-checking is helpful because it can catch bugs in our code ahead of time, but adding types to our code also makes it more readable and allows tools like code editors to give us powerful features like auto-completion, refactorings, find-all-references, and more. TypeScript is a superset of JavaScript, so any valid JavaScript code is also valid TypeScript code, and in fact, if you write JavaScript in an editor like Visual Studio or VS Code, TypeScript is powering your JavaScript editor experience too! You can learn more about TypeScript on our website at <a href="https://www.typescriptlang.org/">typescriptlang.org</a>.</p>
+<p>To get started using TypeScript through npm with the following command:</p>
+<pre class="prettyprint language-sh" style="padding: 10px;border-radius: 10px;"><code>npm install -D typescript
+</code></pre>
+<p>Let&#8217;s take a look at what&#8217;s new in TypeScript 5.7!</p>
+<h2 id="checks-for-never-initialized-variables">Checks for Never-Initialized Variables</h2>
+<p>For a long time, TypeScript has been able to catch issues when a variable has not yet been initialized in all prior branches.</p>
+<pre class="prettyprint language-typescript" style="padding: 10px;border-radius: 10px;"><code>let result: number
+if (someCondition()) {
+  result = doSomeWork();
+}
+else {
+  let temporaryWork = doSomeWork();
+  temporaryWork *= 2;
+  // forgot to assign to 'result'
+}
+
+console.log(result); // error: Variable 'result' is used before being assigned.
+</code></pre>
+<p>Unfortunately, there are some places where this analysis doesn&#8217;t work.
+For example, if the variable is accessed in a separate function, the type system doesn&#8217;t know when the function will be called, and instead takes an &quot;optimistic&quot; view that the variable will be initialized.</p>
+<pre class="prettyprint language-typescript" style="padding: 10px;border-radius: 10px;"><code>function foo() {
+  let result: number
+  if (someCondition()) {
+  result = doSomeWork();
+  }
+  else {
+  let temporaryWork = doSomeWork();
+  temporaryWork *= 2;
+  // forgot to assign to 'result'
+  }
+
+  printResult();
+
+  function printResult() {
+  console.log(result); // no error here.
+  }
+}
+</code></pre>
+<p>While TypeScript 5.7 is still lenient on variables that have <em>possibly</em> been initialized, the type system is able to report errors when variables have <em>never</em> been initialized at all.</p>
+<pre class="prettyprint language-typescript" style="padding: 10px;border-radius: 10px;"><code>function foo() {
+  let result: number
+  
+  // do work, but forget to assign to 'result'
+
+  function printResult() {
+  console.log(result); // error: Variable 'result' is used before being assigned.
+  }
+}
+</code></pre>
+<p><a href="https://github.com/microsoft/TypeScript/pull/55887">This change</a> was contributed thanks to the work of GitHub user <a href="https://github.com/Zzzen">Zzzen</a>!</p>
+<h2 id="path-rewriting-for-relative-paths">Path Rewriting for Relative Paths</h2>
+<p>There are several tools and runtimes that allow you to run TypeScript code &quot;in-place&quot;, meaning they do not require a build step which generates output JavaScript files.
+For example, ts-node, tsx, Deno, and Bun all support running <code>.ts</code> files directly.
+More recently, Node.js has been investigating such support with <code>--experimental-strip-types</code> (soon to be unflagged!) and  <code>--experimental-transform-types</code>.
+This is extremely convenient because it allows us to iterate faster without worrying about re-running a build task.</p>
+<p>There is some complexity to be aware of when using these modes though.
+To be maximally compatible with all these tools, a TypeScript file that&#8217;s imported &quot;in-place&quot; <strong>must</strong> be imported with the appropriate TypeScript extension at runtime.
+For example, to import a file called <code>foo.ts</code>, we have to write the following in Node&#8217;s new experimental support:</p>
+<pre class="prettyprint language-typescript" style="padding: 10px;border-radius: 10px;"><code>// main.ts
+
+import * as foo from &quot;./foo.ts&quot;; // &lt;- we need foo.ts here, not foo.js
+</code></pre>
+<p>Typically, TypeScript would issue an error if we did this, because it expects us to import <em>the output file</em>.
+Because some tools do allow <code>.ts</code> imports, TypeScript has supported this import style with an option called <code>--allowImportingTsExtensions</code> for a while now.
+This works fine, but what happens if we need to actually generate <code>.js</code> files out of these <code>.ts</code> files?
+This is a requirement for library authors who will need to be able to distribute just <code>.js</code> files, but up until now TypeScript has avoided rewriting any paths.</p>
+<p>To support this scenario, we&#8217;ve added a new compiler option called <code>--rewriteRelativeImportExtensions</code>.
+When an import path is <em>relative</em> (starts with <code>./</code> or <code>../</code>), ends in a TypeScript extension (<code>.ts</code>, <code>.tsx</code>, <code>.mts</code>, <code>.cts</code>), and is a non-declaration file, the compiler will rewrite the path to the corresponding JavaScript extension (<code>.js</code>, <code>.jsx</code>, <code>.mjs</code>, <code>.cjs</code>).</p>
+<pre class="prettyprint language-typescript" style="padding: 10px;border-radius: 10px;"><code>// Under --rewriteRelativeImportExtensions...
+
+// these will be rewritten.
+import * as foo from &quot;./foo.ts&quot;;
+import * as bar from &quot;../someFolder/bar.mts&quot;;
+
+// these will NOT be rewritten in any way.
+import * as a from &quot;./foo&quot;;
+import * as b from &quot;some-package/file.ts&quot;;
+import * as c from &quot;@some-scope/some-package/file.ts&quot;;
+import * as d from &quot;#/file.ts&quot;;
+import * as e from &quot;./file.js&quot;;
+</code></pre>
+<p>This allows us to write TypeScript code that can be run in-place and then compiled into JavaScript when we&#8217;re ready.</p>
+<p>Now, we noted that TypeScript generally avoided rewriting paths.
+There are several reasons for this, but the most obvious one is dynamic imports.
+If a developer writes the following, it&#8217;s not trivial to handle the path that <code>import</code> receives.
+In fact, it&#8217;s impossible to override the behavior of <code>import</code> within any dependencies.</p>
+<pre class="prettyprint language-typescript" style="padding: 10px;border-radius: 10px;"><code>function getPath() {
+  if (Math.random() &lt; 0.5) {
+  return &quot;./foo.ts&quot;;
+  }
+  else {
+  return &quot;./foo.js&quot;;
+  }
+}
+
+let myImport = await import(getPath());
+</code></pre>
+<p>Another issue is that (as we saw above) only <em>relative</em> paths are rewritten, and they are written &quot;naively&quot;.
+This means that any path that relies on TypeScript&#8217;s <code>baseUrl</code> and <code>paths</code> will not get rewritten:</p>
+<pre class="prettyprint language-json" style="padding: 10px;border-radius: 10px;"><code>// tsconfig.json
+
+{
+  &quot;compilerOptions&quot;: {
+  &quot;module&quot;: &quot;nodenext&quot;,
+  // ...
+  &quot;paths&quot;: {
+  &quot;@/*&quot;: [&quot;./src/*&quot;]
+  }
+  }
+}
+</code></pre>
+<pre class="prettyprint language-typescript" style="padding: 10px;border-radius: 10px;"><code>// Won't be transformed, won't work.
+import * as utilities from &quot;@/utilities.ts&quot;;
+</code></pre>
+<p>Nor will any path that might resolve through the <a href="https://nodejs.org/api/packages.html#exports"><code>exports</code></a> and <a href="https://nodejs.org/api/packages.html#imports"><code>imports</code></a> fields of a <code>package.json</code>.</p>
+<pre class="prettyprint language-json" style="padding: 10px;border-radius: 10px;"><code>// package.json
+{
+  &quot;name&quot;: &quot;my-package&quot;,
+  &quot;imports&quot;: {
+  &quot;#root/*&quot;: &quot;./dist/*&quot;
+  }
+}
+</code></pre>
+<pre class="prettyprint language-typescript" style="padding: 10px;border-radius: 10px;"><code>// Won't be transformed, won't work.
+import * as utilities from &quot;#root/utilities.ts&quot;;
+</code></pre>
+<p>As a result, if you&#8217;ve been using a workspace-style layout with multiple packages referencing each other, you might need to use <a href="https://nodejs.org/api/packages.html#conditional-exports">conditional exports</a> with <a href="https://nodejs.org/api/packages.html#resolving-user-conditions">scoped custom conditions</a> to make this work:</p>
+<pre class="prettyprint language-json" style="padding: 10px;border-radius: 10px;"><code>// my-package/package.json
+
+{
+  &quot;name&quot;: &quot;my-package&quot;,
+  &quot;exports&quot;: {
+  &quot;.&quot;: {
+  &quot;@my-package/development&quot;: &quot;./src/index.ts&quot;,
+  &quot;import&quot;: &quot;./lib/index.js&quot;
+  },
+  &quot;./*&quot;: {
+  &quot;@my-package/development&quot;: &quot;./src/*.ts&quot;,
+  &quot;import&quot;: &quot;./lib/*.js&quot;
+  }
+  }
+}
+</code></pre>
+<p>Any time you want to import the <code>.ts</code> files, you can run it with <code>node --conditions=@my-package/development</code>.</p>
+<p>Note the &quot;namespace&quot; or &quot;scope&quot; we used for the condition <code>@my-package/development</code>.
+This is a bit of a makeshift solution to avoid conflicts from dependencies that might also use the <code>development</code> condition.
+If everyone ships a <code>development</code> in their package, then resolution may try to resolve to a <code>.ts</code> file which will not necessarily work.
+This idea is similar to what&#8217;s described in Colin McDonnell&#8217;s essay <em><a href="https://colinhacks.com/essays/live-types-typescript-monorepo#:~:text=custom%20conditions">Live types in a TypeScript monorepo</a></em>, along with <a href="https://github.com/isaacs/tshy#loading-from-source">tshy&#8217;s guidance for loading from source</a>.</p>
+<p>For more specifics on how this feature works, <a href="https://github.com/microsoft/TypeScript/pull/59767">read up on the change here</a>.</p>
+<h2 id="support-for---target-es2024-and---lib-es2024">Support for <code>--target es2024</code> and <code>--lib es2024</code></h2>
+<p>TypeScript 5.7 now supports <code>--target es2024</code>, which allows users to target ECMAScript 2024 runtimes.
+This target primarily enables specifying the new <code>--lib es2024</code> which contains many features for <code>SharedArrayBuffer</code> and <code>ArrayBuffer</code>, <code>Object.groupBy</code>, <code>Map.groupBy</code>, <code>Promise.withResolvers</code>, and more.
+It also moves <code>Atomics.waitAsync</code> from <code>--lib es2022</code> to <code>--lib es2024</code>.</p>
+<p>Note that as part of the changes to <code>SharedArrayBuffer</code> and <code>ArrayBuffer</code>, the two now diverge a bit.
+To bridge the gap and preserve the underlying buffer type, all <code>TypedArrays</code> (like <code>Uint8Array</code> and others) <a href="https://github.com/microsoft/TypeScript/pull/59417">are now also generic</a>.</p>
+<pre class="prettyprint language-typescript" style="padding: 10px;border-radius: 10px;"><code>interface Uint8Array&lt;TArrayBuffer extends ArrayBufferLike = ArrayBufferLike&gt; {
+  // ...
+}
+</code></pre>
+<p>Each <code>TypedArray</code> now contains a type parameter named <code>TArrayBuffer</code>, though that type parameter has a default type argument so that we can continue to refer to <code>Int32Array</code> without explicitly writing out <code>Int32Array&lt;ArrayBufferLike&gt;</code>.</p>
+<p>If you encounter any issues as part of this update, you may need to update <code>@types/node</code>.</p>
+<p><a href="https://github.com/microsoft/TypeScript/pull/58573">This work</a> was primarily provided thanks to <a href="https://github.com/petamoriken">Kenta Moriuchi</a>!</p>
+<h2 id="searching-ancestor-configuration-files-for-project-ownership">Searching Ancestor Configuration Files for Project Ownership</h2>
+<p>When a TypeScript file is loaded in an editor using TSServer (like Visual Studio or VS Code), the editor will try to find the relevant <code>tsconfig.json</code> file that &quot;owns&quot; the file.
+To do this, it walks up the directory tree from the file being edited, looking for any file named <code>tsconfig.json</code>.</p>
+<p>Previously, this search would stop at the first <code>tsconfig.json</code> file found;
+however, imagine a project structure like the following:</p>
+<pre class="language-text" style="padding: 10px;border-radius: 10px;"><code>project/
+├── src/
+│   ├── foo.ts
+│   ├── foo-test.ts
+│   ├── tsconfig.json
+│   └── tsconfig.test.json
+└── tsconfig.json
+</code></pre>
+<p>Here, the idea is that <code>src/tsconfig.json</code> is the &quot;main&quot; configuration file for the project, and <code>src/tsconfig.test.json</code> is a configuration file for running tests.</p>
+<pre class="prettyprint language-json" style="padding: 10px;border-radius: 10px;"><code>// src/tsconfig.json
+{
+  &quot;compilerOptions&quot;: {
+  &quot;outDir&quot;: &quot;../dist&quot;
+  },
+  &quot;exclude&quot;: [&quot;**/*.test.ts&quot;]
+}
+</code></pre>
+<pre class="prettyprint language-json" style="padding: 10px;border-radius: 10px;"><code>// src/tsconfig.test.json
+{
+  &quot;compilerOptions&quot;: {
+  &quot;outDir&quot;: &quot;../dist/test&quot;
+  },
+  &quot;include&quot;: [&quot;**/*.test.ts&quot;],
+  &quot;references&quot;: [
+  { &quot;path&quot;: &quot;./tsconfig.json&quot; }
+  ]
+}
+</code></pre>
+<pre class="prettyprint language-json" style="padding: 10px;border-radius: 10px;"><code>// tsconfig.json
+{
+  // This is a &quot;workspace-style&quot; or &quot;solution-style&quot; tsconfig.
+  // Instead of specifying any files, it just references all the actual projects.
+  &quot;files&quot;: [],
+  &quot;references&quot;: [
+  { &quot;path&quot;: &quot;./src/tsconfig.json&quot; },
+  { &quot;path&quot;: &quot;./src/tsconfig.test.json&quot; },
+  ]
+}
+</code></pre>
+<p>The problem here is that when editing <code>foo-test.ts</code>, the editor would find <code>project/src/tsconfig.json</code> as the &quot;owning&quot; configuration file &#8211; but that&#8217;s not the one we want!
+If the walk stops at this point, that might not be desirable.
+The only way to avoid this previously was to rename <code>src/tsconfig.json</code> to something like <code>src/tsconfig.src.json</code>, and then all files would hit the top-level <code>tsconfig.json</code> which references every possible project.</p>
+<pre class="language-text" style="padding: 10px;border-radius: 10px;"><code>project/
+├── src/
+│   ├── foo.ts
+│   ├── foo-test.ts
+│   ├── tsconfig.src.json
+│   └── tsconfig.test.json
+└── tsconfig.json
+</code></pre>
+<p>Instead of forcing developers to do this, TypeScript 5.7 now continues walking up the directory tree to find other appropriate <code>tsconfig.json</code> files for editor scenarios.
+This can provide more flexibility in how projects are organized and how configuration files are structured.</p>
+<p>You can get more specifics on the implementation on GitHub <a href="https://github.com/microsoft/TypeScript/pull/57196">here</a> and <a href="https://github.com/microsoft/TypeScript/pull/59688">here</a>.</p>
+<h2 id="faster-project-ownership-checks-in-editors-for-composite-projects">Faster Project Ownership Checks in Editors for Composite Projects</h2>
+<p>Imagine a large codebase with the following structure:</p>
+<pre class="language-text" style="padding: 10px;border-radius: 10px;"><code>packages
+├── graphics/
+│   ├── tsconfig.json
+│   └── src/
+│  └── ...
+├── sound/
+│   ├── tsconfig.json
+│   └── src/
+│  └── ...
+├── networking/
+│   ├── tsconfig.json
+│   └── src/
+│  └── ...
+├── input/
+│   ├── tsconfig.json
+│   └── src/
+│  └── ...
+└── app/
+  ├── tsconfig.json
+  ├── some-script.js
+  └── src/
+  └── ...
+</code></pre>
+<p>Each directory in <code>packages</code> is a separate TypeScript project, and the <code>app</code> directory is the main project that depends on all the other projects.</p>
+<pre class="prettyprint language-json" style="padding: 10px;border-radius: 10px;"><code>// app/tsconfig.json
+{
+  &quot;compilerOptions&quot;: {
+  // ...
+  },
+  &quot;include&quot;: [&quot;src&quot;],
+  &quot;references&quot;: [
+  { &quot;path&quot;: &quot;../graphics/tsconfig.json&quot; },
+  { &quot;path&quot;: &quot;../sound/tsconfig.json&quot; },
+  { &quot;path&quot;: &quot;../networking/tsconfig.json&quot; },
+  { &quot;path&quot;: &quot;../input/tsconfig.json&quot; }
+  ]
+}
+</code></pre>
+<p>Now notice we have the file <code>some-script.js</code> in the <code>app</code> directory.
+When we open <code>some-script.js</code> in the editor, the TypeScript language service (which also handles the editor experience for JavaScript files!) has to figure out which project the file belongs to so it can apply the right settings.</p>
+<p>In this case, the nearest <code>tsconfig.json</code> does <em>not</em> include <code>some-script.js</code>, but TypeScript will proceed to ask &quot;could one of the projects <em>referenced</em> by <code>app/tsconfig.json</code> include <code>some-script.js</code>?&quot;.
+To do so, TypeScript would previously load up each project, one-by-one, and stop as soon as it found a project which contained <code>some-script.js</code>.
+Even if <code>some-script.js</code> isn&#8217;t included in the root set of files, TypeScript would still parse all the files within a project because some of the root set of files can still <em>transitively</em> reference <code>some-script.js</code>.</p>
+<p>What we found over time was that this behavior caused extreme and unpredictable behavior in larger codebases.
+Developers would open up stray script files and find themselves waiting for their entire codebase to be opened up.</p>
+<p>Thankfully, every project that can be referenced by another (non-workspace) project must enable a flag called <code>composite</code>, which enforces a rule that all input source files must be known up-front.
+So when probing a <code>composite</code> project, TypeScript 5.7 will only check if a file belongs to the <em>root set of files</em> of that project.
+This should avoid this common worst-case behavior.</p>
+<p>For more information, <a href="https://github.com/microsoft/TypeScript/pull/59688">see the change here</a>.</p>
+<h3 id="validated-json-imports-in---module-nodenext">Validated JSON Imports in <code>--module nodenext</code></h3>
+<p>When importing from a <code>.json</code> file under <code>--module nodenext</code>, TypeScript will now enforce certain rules to prevent runtime errors.</p>
+<p>For one, an import attribute containing <code>type: &quot;json&quot;</code> needs to be present for any JSON file import.</p>
+<pre class="prettyprint language-typescript" style="padding: 10px;border-radius: 10px;"><code>import myConfig from &quot;./myConfig.json&quot;;
+//  ~~~~~~~~~~~~~~~~~
+// ❌ error: Importing a JSON file into an ECMAScript module requires a 'type: &quot;json&quot;' import attribute when 'module' is set to 'NodeNext'.
+
+import myConfig from &quot;./myConfig.json&quot; with { type: &quot;json&quot; };
+//  ^^^^^^^^^^^^^^^^
+// ✅ This is fine because we provided `type: &quot;json&quot;`
+</code></pre>
+<p>On top of this validation, TypeScript will not generate &quot;named&quot; exports, and the contents of a JSON import will only be accessible via a default.</p>
+<pre class="prettyprint language-typescript" style="padding: 10px;border-radius: 10px;"><code>// ✅ This is okay:
+import myConfigA from &quot;./myConfig.json&quot; with { type: &quot;json&quot; };
+let version = myConfigA.version;
+
+///////////
+
+import * as myConfigB from &quot;./myConfig.json&quot; with { type: &quot;json&quot; };
+
+// ❌ This is not:
+let version = myConfig.version;
+
+// ✅ This is okay:
+let version = myConfig.default.version;
+</code></pre>
+<p><a href="https://github.com/microsoft/TypeScript/pull/60019">See here</a> for more information on this change.</p>
+<h2 id="support-for-v8-compile-caching-in-nodejs">Support for V8 Compile Caching in Node.js</h2>
+<p>Node.js 22 supports <a href="https://github.com/nodejs/node/pull/54501">a new API called <code>module.enableCompileCache()</code></a>.
+This API allows the runtime to reuse some of the parsing and compilation work done after the first run of a tool.</p>
+<p>TypeScript 5.7 now leverages the API so that it can start doing useful work sooner.
+In some of our own testing, we&#8217;ve witnessed about a 2.5x speed-up in running <code>tsc --version</code>.</p>
+<pre class="language-text" style="padding: 10px;border-radius: 10px;"><code>Benchmark 1: node ./built/local/_tsc.js --version (*without* caching)
+  Time (mean ± σ):  122.2 ms ±   1.5 ms  [User: 101.7 ms, System: 13.0 ms]
+  Range (min … max):   119.3 ms … 132.3 ms  200 runs
+ 
+Benchmark 2: node ./built/local/tsc.js --version  (*with* caching)
+  Time (mean ± σ):  48.4 ms ±   1.0 ms  [User: 34.0 ms, System: 11.1 ms]
+  Range (min … max):  45.7 ms …  52.8 ms  200 runs
+ 
+Summary
+  node ./built/local/tsc.js --version ran
+  2.52 ± 0.06 times faster than node ./built/local/_tsc.js --version
+</code></pre>
+<p>For more information, <a href="https://github.com/microsoft/TypeScript/pull/59720">see the pull request here</a>.</p>
+<h2 id="notable-behavioral-changes">Notable Behavioral Changes</h2>
+<p>This section highlights a set of noteworthy changes that should be acknowledged and understood as part of any upgrade.
+Sometimes it will highlight deprecations, removals, and new restrictions.
+It can also contain bug fixes that are functionally improvements, but which can also affect an existing build by introducing new errors.</p>
+<h3 id="libdts"><code>lib.d.ts</code></h3>
+<p>Types generated for the DOM may have an impact on type-checking your codebase.
+For more information, <a href="https://github.com/microsoft/TypeScript/pull/60061">see linked issues related to DOM and <code>lib.d.ts</code> updates for this version of TypeScript</a>.</p>
+<h3 id="typedarrays-are-now-generic-over-arraybufferlike"><code>TypedArray</code>s Are Now Generic Over <code>ArrayBufferLike</code></h3>
+<p>In ECMAScript 2024, <code>SharedArrayBuffer</code> and <code>ArrayBuffer</code> have types that slightly diverge.
+To bridge the gap and preserve the underlying buffer type, all <code>TypedArrays</code> (like <code>Uint8Array</code> and others) <a href="https://github.com/microsoft/TypeScript/pull/59417">are now also generic</a>.</p>
+<pre class="prettyprint language-typescript" style="padding: 10px;border-radius: 10px;"><code>interface Uint8Array&lt;TArrayBuffer extends ArrayBufferLike = ArrayBufferLike&gt; {
+  // ...
+}
+</code></pre>
+<p>Each <code>TypedArray</code> now contains a type parameter named <code>TArrayBuffer</code>, though that type parameter has a default type argument so that users can continue to refer to <code>Int32Array</code> without explicitly writing out <code>Int32Array&lt;ArrayBufferLike&gt;</code>.</p>
+<p>If you encounter any issues as part of this update, such as</p>
+<pre class="language-text" style="padding: 10px;border-radius: 10px;"><code>error TS2322: Type 'Buffer' is not assignable to type 'Uint8Array&lt;ArrayBufferLike&gt;'.
+error TS2345: Argument of type 'Buffer' is not assignable to parameter of type 'Uint8Array&lt;ArrayBufferLike&gt;'.
+error TS2345: Argument of type 'ArrayBufferLike' is not assignable to parameter of type 'ArrayBuffer'.
+error TS2345: Argument of type 'Buffer' is not assignable to parameter of type 'string | ArrayBufferView | Stream | Iterable&lt;string | ArrayBufferView&gt; | AsyncIterable&lt;string | ArrayBufferView&gt;'.
+</code></pre>
+<p>then you may need to update <code>@types/node</code>.</p>
+<p>You can read the <a href="https://github.com/microsoft/TypeScript/pull/59417">specifics about this change on GitHub</a>.</p>
+<h3 id="creating-index-signatures-from-non-literal-method-names-in-classes">Creating Index Signatures from Non-Literal Method Names in Classes</h3>
+<p>TypeScript now has a more consistent behavior for methods in classes when they are declared with non-literal computed property names.
+For example, in the following:</p>
+<pre class="prettyprint language-typescript" style="padding: 10px;border-radius: 10px;"><code>declare const symbolMethodName: symbol;
+
+export class A {
+  [symbolMethodName]() { return 1 };
+}
+</code></pre>
+<p>Previously TypeScript just viewed the class in a way like the following:</p>
+<pre class="prettyprint language-typescript" style="padding: 10px;border-radius: 10px;"><code>export class A {
+}
+</code></pre>
+<p>In other words, from the type system&#8217;s perspective, <code>[symbolMethodName]</code> contributed nothing to the type of <code>A</code></p>
+<p>TypeScript 5.7 now views the method <code>[symbolMethodName]() {}</code> more meaningfully, and generates an index signature.
+As a result, the code above is interpreted as something like the following code:</p>
+<pre class="prettyprint language-typescript" style="padding: 10px;border-radius: 10px;"><code>export class A {
+  [x: symbol]: () =&gt; number;
+}
+</code></pre>
+<p>This provides behavior that is consistent with properties and methods in object literals.</p>
+<p><a href="https://github.com/microsoft/TypeScript/pull/59860">Read up more on this change here</a>.</p>
+<h3 id="more-implicit-any-errors-on-functions-returning-null-and-undefined">More Implicit <code>any</code> Errors on Functions Returning <code>null</code> and <code>undefined</code></h3>
+<p>When a function expression is contextually typed by a signature returning a generic type, TypeScript now appropriately provides an implicit <code>any</code> error under <code>noImplicitAny</code>, but outside of <code>strictNullChecks</code>.</p>
+<pre class="prettyprint language-typescript" style="padding: 10px;border-radius: 10px;"><code>declare var p: Promise&lt;number&gt;;
+const p2 = p.catch(() =&gt; null);
+//  ~~~~~~~~~~
+// error TS7011: Function expression, which lacks return-type annotation, implicitly has an 'any' return type.
+</code></pre>
+<p><a href="https://github.com/microsoft/TypeScript/pull/59661">See this change for more details</a>.</p>
+<h2 id="whats-next">What&#8217;s Next?</h2>
+<p>We&#8217;ll have details of our plans for the next TypeScript release soon, but if you&#8217;re looking for the latest fixes and features, we make it easy to use <a href="https://www.typescriptlang.org/docs/handbook/nightly-builds.html">nightly builds of TypeScript on npm</a>, and we also publish <a href="https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-typescript-next">an extension to use those nightly releases in Visual Studio Code</a>.</p>
+<p>Otherwise, we hope that TypeScript 5.7 makes coding a joy for you. Happy Hacking!</p>
+<p>&#8211; Daniel Rosenwasser and the TypeScript Team</p>
+  </div>
+
+  
+  </article>
+  
+<div class="left-sidebar">
+  <nav class="evo-social-sidebar sticky d-flex position-relative" data-bi-area="sidebar_left_social" aria-label="Share">
+  <div class="social-panel bg-white d-inline-flex p-8 border-r-8 border-2">
+  <div style="width: 60px; height: 64px;">
+  <div id="likesMenu" class="position-relative d-flex flex-column evo-dropdown-menu horizontal-dropdown">
+  <div id="reaction-feedback" class="visually-hidden" role="alert" aria-atomic="true"></div>
+  <span  class="post-like" id="postLike-4539"><span class="icon-like-dislike1 d-flex flex-column"><a class='d-flex flex-column align-items-center p-8 btn-outline-secondary border-0 rounded' data-toggle='tooltip' aria-label='Sign in to react, vote count 11' title='Sign in to react' href='https://devblogs.microsoft.com/typescript/wp-login.php?redirect_to=https%3A%2F%2Fdevblogs.microsoft.com%2Ftypescript%2Fannouncing-typescript-5-7%2F' data-bi-id='post_page_sidebar_left_social_Sign in to react' data-bi-name='Sign in to react'><span class='votes-count fw-600'> 11</span></a><div id="like-announcement" class="visually-hidden" role="status" aria-live="polite"></div></span></span>  <nav id="emoji-reactions" class="evo-dropdown-content" style="display: none;">
+  <ul class="sharing-btns rounded bg-white d-flex flex-row m-0 p-8" role="menu" aria-label="Reactions">
+  <li role="none">
+  <button data-bi-id="post_page_sidebar_left_social_like" data-bi-name="" data-post-id="4539" data-react="like" role="menuitem" class="d-flex flex-row align-items-center evo-dropdown-item btn-outline-secondary border-0 rounded p-8 gap-8 " title="" aria-label="like" onclick="post_like_vote_add(4539,'1ebb3b5813',0,11,'like');">
+  
+  </button>
+  </li>
+  <li role="none">
+  <button data-bi-id="post_page_sidebar_left_social_heart" data-bi-name="" data-post-id="4539" data-react="heart" role="menuitem" class="d-flex flex-row align-items-center evo-dropdown-item btn-outline-secondary border-0 rounded p-8 gap-8 " title="" aria-label="heart" onclick="post_like_vote_add(4539,'1ebb3b5813',0,11,'heart');">
+  
+  </button>
+  </li>
+  <li role="none">
+  <button data-bi-id="post_page_sidebar_left_social_celebrate" data-bi-name="" data-post-id="4539" data-react="celebrate" role="menuitem" class="d-flex flex-row align-items-center evo-dropdown-item btn-outline-secondary border-0 rounded p-8 gap-8 " title="" aria-label="celebrate" onclick="post_like_vote_add(4539,'1ebb3b5813',0,11,'celebrate');">
+  
+  </button>
+  </li>
+  <li role="none">
+  <button data-bi-id="post_page_sidebar_left_social_mind-blown" data-bi-name="" data-post-id="4539" data-react="mind-blown" role="menuitem" class="d-flex flex-row align-items-center evo-dropdown-item btn-outline-secondary border-0 rounded p-8 gap-8 " title="" aria-label="mind blown" onclick="post_like_vote_add(4539,'1ebb3b5813',0,11,'mind-blown');">
+  
+  </button>
+  </li>
+  <li role="none">
+  <button data-bi-id="post_page_sidebar_left_social_intriguing" data-bi-name="" data-post-id="4539" data-react="intriguing" role="menuitem" class="d-flex flex-row align-items-center evo-dropdown-item btn-outline-secondary border-0 rounded p-8 gap-8 " title="" aria-label="intriguing" onclick="post_like_vote_add(4539,'1ebb3b5813',0,11,'intriguing');">
+  
+  </button>
+  </li>
+  <li role="none">
+  <button data-bi-id="post_page_sidebar_left_social_compelling" data-bi-name="" data-post-id="4539" data-react="compelling" role="menuitem" class="d-flex flex-row align-items-center evo-dropdown-item btn-outline-secondary border-0 rounded p-8 gap-8 " title="" aria-label="compelling" onclick="post_like_vote_add(4539,'1ebb3b5813',0,11,'compelling');">
+  
+  </button>
+  </li>
+  </ul>
+  </nav>
+  </div>
+  </div>
+  <div class="d-flex flex-column" style="width: 60px; height: 64px;">
+  <a class="d-flex flex-column align-items-center p-8 btn-outline-secondary border-0 rounded" data-toggle="tooltip" title="Go to comments section" aria-label="Jump to comments, 2 total comments" href="#comments" data-bi-id="post_page_sidebar_left_social_comment" data-bi-name="comment">
+  
+  <span class="votes-count fw-600"> 2</span>
+  </a>
+  </div>
+  <div class="d-flex flex-column" style="width: 60px; height: 64px;">
+  <div class="position-relative d-flex flex-column evo-dropdown-menu">
+  <button data-bi-id="post_page_sidebar_left_social_share" data-bi-name="click to open" data-toggle="tooltip" title="Share this post" class="evo-dropdown-button d-flex flex-column align-items-center p-8 btn-outline-secondary border-0 rounded" type="button" aria-expanded="false" aria-controls="#social-sharing-buttons" aria-label="Share on social media, 4 total shares">
+  
+  <div data-post-id="4539" class="evo-count-shares votes-count fw-600 d-flex p-6 align-items-center border-r-40 clr-neutral clr-brand-bg" style="position:relative;">
+  4  </div>
+  </button>
+  <nav id="social-sharing-buttons" class="evo-dropdown-content" style="display: none;">
+  <ul class="sharing-btns rounded bg-white d-flex flex-column m-0 p-8" role="menu">
+  <li role="presentation">
+  <a data-bi-id="post_page_sidebar_left_social_share" data-bi-name="Share on Facebook" role="menuitem" data-post-id="4539" class="share-post d-flex flex-row align-items-center evo-dropdown-item facebook btn-outline-secondary border-0 rounded p-8 gap-8" href="https://www.facebook.com/sharer/sharer.php?u=https://devblogs.microsoft.com/typescript/announcing-typescript-5-7/" title="Share on Facebook" aria-label="Share on Facebook" target="_blank" rel="noopener noreferrer nofollow" tabindex="-1">
+  <img style="max-width: unset;" src="https://devblogs.microsoft.com/typescript/wp-content/themes/devblogs-evo/images/social-icons/facebook.svg" alt="Facebook">
+  <span class="text-nowrap fs-16">Share on Facebook</span>
+  </a>
+  </li>
+  <li role="presentation">
+  <a data-bi-id="post_page_sidebar_left_social_share" data-bi-name="Share on X" role="menuitem" data-post-id="4539" class="share-post d-flex flex-row align-items-center evo-dropdown-item twitter btn-outline-secondary border-0 rounded p-8 gap-8" href="https://twitter.com/intent/tweet?url=https://devblogs.microsoft.com/typescript/announcing-typescript-5-7/&text=Announcing TypeScript 5.7" title="Share on X" aria-label="Share on X" target="_blank" rel="noopener noreferrer nofollow" tabindex="-1">
+  
+  <span class="text-nowrap fs-16">Share on X</span>
+  </a>
+  </li>
+  <li role="presentation">
+  <a data-bi-id="post_page_sidebar_left_social_share" data-bi-name="Share on LinkedIn" role="menuitem" data-post-id="4539" class="share-post d-flex flex-row align-items-center evo-dropdown-item linkedin btn-outline-secondary border-0 rounded p-8 gap-8" href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https://devblogs.microsoft.com/typescript/announcing-typescript-5-7/" title="Share on LinkedIn" aria-label="Share on LinkedIn" target="_blank" rel="noopener noreferrer nofollow" tabindex="-1">
+  <img style="max-width: unset;" src="https://devblogs.microsoft.com/typescript/wp-content/themes/devblogs-evo/images/social-icons/linkedin.svg" alt="LinkedIn">
+  <span class="text-nowrap fs-16">Share on Linkedin</span>
+  </a>
+  </li>
+  
+  </ul>
+  </nav>
+  </div>
+  </div>
+  </div>
+  </nav>
+</div></div>
+<div class="container-three-column-post mb-40">
+  <div></div>
+  <div>
+  <div class="border-bottom pb-40 mb-64"><div class="mb-24"><h3 class="fs-16 fw-600 mb-16">Category</h3><ul class="ul-no-style d-flex justify-content-start flex-wrap gap-12 post-topics"><li><a data-bi-area="body_category" data-bi-id="post_page_body_category" data-bi-name="TypeScript Category" class="d-flex align-items-center btn-outline-secondary px-8" href="https://devblogs.microsoft.com/typescript/category/typescript/"
+  aria-label="TypeScript Category">TypeScript</a></li></ul></div><div class="post-detail-share social-panel" data-bi-area="body_share post">
+  <h3 class="fs-16 fw-600 mb-16 x-hidden-focus">Share</h3>
+  <ul class="ul-no-style d-flex social-share-list gap-24 pl-0">
+  <li class="social-share-item">
+  <a href="https://www.facebook.com/sharer/sharer.php?u=https://devblogs.microsoft.com/typescript/announcing-typescript-5-7/" data-bi-id="post_page_body_share post" data-post-id=4539 data-bi-name="Share on Facebook" aria-label="Share on Facebook" rel="noopener noreferrer nofollow" target="_blank" class="d-flex share-post">
+  <span aria-hidden="true" class="msx-svg"></a>
+  </li>
+  <li class="social-share-item">
+  <a href="https://twitter.com/intent/tweet?url=https://devblogs.microsoft.com/typescript/announcing-typescript-5-7/&text=Announcing TypeScript 5.7" data-bi-id="post_page_body_share post" data-post-id=4539 data-bi-name="Share on X" aria-label="Share on X" target="_blank" rel="noreferrer noopener" class="d-flex share-post">
+  <span aria-hidden="true" class="msx-svg"></span></a>
+  </li>
+  <li class="list-inline-item social-share-item">
+  <a href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https://devblogs.microsoft.com/typescript/announcing-typescript-5-7/" data-bi-id="post_page_body_share post" data-post-id=4539 data-bi-name="Share on LinkedIn" aria-label="Share on LinkedIn" target="_blank" rel="noreferrer noopener" class="d-flex share-post"><span aria-hidden="true" class="msx-svg"></span></a>
+  </li>
+  </ul>
+  </div></div>  <div>
+  <h2 class="fs-20 mb-24">Author</h2>
+  <div class="d-flex gap-24 flex-column flex-lg-row"><div style="flex: 0 0 100%"><div class="d-flex gap-12 align-items-start"><div class="avatar-parent" style="flex:0 0 auto;"><img class="avatar-40" src="https://devblogs.microsoft.com/typescript/wp-content/uploads/sites/11/2021/08/Daniel-Rosenwasser-635x817-1-96x96.png" alt="Daniel Rosenwasser" style="width: 64px; height: 64px;"></div><div style="flex: 1 0;"><div class="fs-16 fw-600"><a data-bi-area="body_author_bottom" data-bi-id="post_page_body_author_bottom_name" data-bi-name="Daniel Rosenwasser"  class="read-more" href="https://devblogs.microsoft.com/typescript/author/danielrosenwasser">Daniel Rosenwasser</a></div><div class="fs-12 lh-20 fw-400">Principal Product Manager</div></div></div><p class="pt-20 fs-14">Daniel Rosenwasser is the product manager of the TypeScript team. He has a passion for programming languages, compilers, and great developer tooling.</p></div></div>  </div>
+  </div>
+  <div></div>
+</div>  <div class="container-three-column-even">
+  <div></div>
+  <div class="mb-80" style="max-width: 1324px;">
+  
+  <div id="comments" class="mb-40" data-bi-area="body_comments" data-bi-id="post_page_body_comments">
+  
+
+  <div id="comments" class="comments-area" data-bi-id="post_page_body_comments">
+  <h2 class="comments-title">
+  <span class="cm_count">2</span> comments		</h2>
+		
+			<p class="nocomments">Discussion is closed.  <a href="https://devblogs.microsoft.com/typescript/wp-login.php?redirect_to=https%3A%2F%2Fdevblogs.microsoft.com%2Ftypescript%2Fannouncing-typescript-5-7%2F%23comments" title="Login to edit/delete existing comments.">Login to edit/delete existing comments.</a>
+  </p>
+	<div class="comment-reply-respond" id="comment-reply-respond">
+	<form method="post" action="https://devblogs.microsoft.com/typescript/wp-comments-post.php" id="commentform" class="wp-core-ui">
+		<div id="editor-container-0">
+			<div id="wp-comment_reply_content-wrap" class="wp-core-ui wp-editor-wrap html-active"><div id="wp-comment_reply_content-editor-container" class="wp-editor-container"><div id="qt_comment_reply_content_toolbar" class="quicktags-toolbar hide-if-no-js"></div><textarea class="wp-editor-area" style="height: 200px" cols="40" name="comment_reply_content" id="comment_reply_content"></textarea></div>
+</div>
+
+			<div class="vote">
+  <span class="form-submit">
+  <input name="submit" type="submit" id="submit" class="btn btn-primary" value="Reply">
+  <input type="button" value="Cancel" id="cancel-reply-comment-form" name="Cancel" class="btn btn-secondary">
+  <input type="hidden" name="comment_post_ID" value="4539" id="comment_post_ID">
+  <input type="hidden" name="comment_parent" id="comment_parent" value="0">
+  </span>
+  <span class="code-of-conduct"><a href="https://aka.ms/msftqacodeconduct">Code of Conduct</a></span>
+			</div>
+			<input type="hidden" id="_wp_unfiltered_html_comment_disabled" name="_wp_unfiltered_html_comment" value="ad7af05511">
+		</div>
+	</form>
+</div>
+  <div class="cm-top-section">
+  <div class="column center">
+  <span class="solid border-bottom"></span>
+  </div>
+  <div class="column right">
+  <div class="dev_order_list">
+  <span id="sort-filter-label" class="">Sort by :</span>
+  <div class="sel" id="sort-dropdown">
+  <div role="combobox" aria-labelledby="sort-filter-label" aria-controls="sort-filter-options" aria-expanded="false" aria-haspopup="listbox" class="label" tabindex="0">Newest</div>
+  <div role="listbox" aria-labelledby="sort-filter-label" id="sort-filter-options" class="options sort-comment" data-bi-area="body_comments" >
+  <a role="option" aria-selected="true" aria-posinset="1" aria-setsize="3" selected href="javascript:void(0)" value="latest" data-bi-id="post_page_body_comments" aria-label="Newest" data-bi-name="comments_sort_Newest" class="selected">Newest</a>
+  <a role="option" aria-selected="false" aria-posinset="2" aria-setsize="3" href="javascript:void(0)" value="voted" data-bi-id="post_page_body_comments" aria-label="Popular" data-bi-name="comments_sort_Popular" >Popular</a>
+  <a role="option" aria-selected="false" aria-posinset="3" aria-setsize="3" href="javascript:void(0)" value="old" data-bi-id="post_page_body_comments" aria-label="Oldest" data-bi-name="comments_sort_Oldest">Oldest</a>
+  </div>
+  </div>
+  </div>
+  </div>
+			</div>
+  <ul class="commentlist">
+  
+  <li class="comment byuser comment-author-unadlib even thread-even depth-1 comment-show" id="li-comment-462">
+  <article id="comment-462" class="comment ">
+  <div class="comment-author vcard">
+  <img alt='' data-src='https://devblogs.microsoft.com/typescript/wp-content/uploads/sites/11/nsl_avatars/ecb372b7ad0838a2bc7bf12bcccb99e0-48x48.jpg' src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAQMAAABtzGvEAAAAA1BMVEXW1taWrGEgAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAADUlEQVQYlWNgGAXUBAABUAABeLzIBgAAAABJRU5ErkJggg=="  data-srcset='https://devblogs.microsoft.com/typescript/wp-content/uploads/sites/11/nsl_avatars/ecb372b7ad0838a2bc7bf12bcccb99e0.jpg 2x' class="avatar avatar-40 photo avatar-default lazyload" height='40' width='40' decoding='async'/>			</div>
+  <header>
+			
+  
+  <span class="author-name fs-16 fw-600">
+  unadlib Galois  </span>
+  
+  <span class="comment-date fs-14">
+  
+  
+  <time pubdate datetime="2024-11-23T03:11:52-08:00">
+  November 23, 2024  </time> 
+  </span>
+  
+  <span class="voting"><span id="loggedoutvotes462"><span class="icon-like-dislike"><button class='btn-no-styles comment-reply-login x-hidden-focus' title='Login to vote' data-toggle='tooltip'
+  onclick='window.location="https://devblogs.microsoft.com/typescript/wp-login.php?redirect_to=https%3A%2F%2Fdevblogs.microsoft.com%2Ftypescript%2Fannouncing-typescript-5-7%2F%3Fcommentid%3D462%2F%23comments"' data-bi-id='post_page_body_comments' data-bi-name='Login to vote' aria-label='Login to vote, 4 total votes'><span class='vote_counts'> 4</span></button></span></span>  </span>
+  
+  <div class="comment-meta commentmetadata">
+  
+  
+  <span class="copy-link">
+  <button class="copy-link-anchor btn" title="Copy link" data-toggle="tooltip" data-clipboard-text="https://devblogs.microsoft.com/typescript/announcing-typescript-5-7/?commentid=462#comment-462" targetUri="https://devblogs.microsoft.com/typescript/announcing-typescript-5-7/?commentid=462#comment-462">
+  <span class="sr-only">Copy link to comment by unadlib Galois</span>
+  
+  </button>
+  <div class="copy-link-live visually-hidden" role="status" aria-live="polite" aria-atomic="true"></div>
+  </span>
+
+  <span class="collapse-comment" id="collapse-comment-462" data-toggle="collapse">
+  
+  <button class="btn" title="Collapse this comment" data-toggle="tooltip" aria-expanded="true" aria-controls="comment-text-462">
+  <span class="sr-only">Collapse comment by unadlib Galois</span>	
+  <span class="svg-icon">  
+  
+  </span>
+  </button>
+  
+  </span>
+
+  </div>
+  </header>
+  <div class="comment-content default-cm-content" id="comment-text-462">
+  <p>Good job!</p>
+  </div>
+
+  
+  
+  
+  
+  </article>
+  </li>
+	
+  <li class="comment byuser comment-author-pato-ezequiel odd alt thread-odd thread-alt depth-1 comment-show" id="li-comment-461">
+  <article id="comment-461" class="comment ">
+  <div class="comment-author vcard">
+  <img alt='' data-src='https://devblogs.microsoft.com/typescript/wp-content/uploads/sites/11/letter-avatar/78b72bc5f68923a5ca8ac8534573a6c5.svg' src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAAyAQMAAACQ++z9AAAAA1BMVEXW1taWrGEgAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAD0lEQVQokWNgGAWjYGgCAAK8AAGBAoNpAAAAAElFTkSuQmCC"  data-srcset='https://devblogs.microsoft.com/typescript/wp-content/uploads/sites/11/letter-avatar/8ce7cb6da168b0c323b99aff08bd669d.svg 2x' class="avatar avatar-40 photo lazyload" height='40' width='40' decoding='async'/>			</div>
+  <header>
+			
+  
+  <span class="author-name fs-16 fw-600">
+  Patricio Ezequiel Hondagneu Roig  </span>
+  
+  <span class="comment-date fs-14">
+  
+  
+  <time pubdate datetime="2024-11-22T15:41:14-08:00">
+  November 22, 2024  </time> 
+  </span>
+  
+  <span class="voting"><span id="loggedoutvotes461"><span class="icon-like-dislike"><button class='btn-no-styles comment-reply-login x-hidden-focus' title='Login to vote' data-toggle='tooltip'
+  onclick='window.location="https://devblogs.microsoft.com/typescript/wp-login.php?redirect_to=https%3A%2F%2Fdevblogs.microsoft.com%2Ftypescript%2Fannouncing-typescript-5-7%2F%3Fcommentid%3D461%2F%23comments"' data-bi-id='post_page_body_comments' data-bi-name='Login to vote' aria-label='Login to vote, 8 total votes'><span class='vote_counts'> 8</span></button></span></span>  </span>
+  
+  <div class="comment-meta commentmetadata">
+  
+  
+  <span class="copy-link">
+  <button class="copy-link-anchor btn" title="Copy link" data-toggle="tooltip" data-clipboard-text="https://devblogs.microsoft.com/typescript/announcing-typescript-5-7/?commentid=461#comment-461" targetUri="https://devblogs.microsoft.com/typescript/announcing-typescript-5-7/?commentid=461#comment-461">
+  <span class="sr-only">Copy link to comment by Patricio Ezequiel Hondagneu Roig</span>
+  
+  </button>
+  <div class="copy-link-live visually-hidden" role="status" aria-live="polite" aria-atomic="true"></div>
+  </span>
+
+  <span class="collapse-comment" id="collapse-comment-461" data-toggle="collapse">
+  
+  <button class="btn" title="Collapse this comment" data-toggle="tooltip" aria-expanded="true" aria-controls="comment-text-461">
+  <span class="sr-only">Collapse comment by Patricio Ezequiel Hondagneu Roig</span>	
+  <span class="svg-icon">  
+  
+  </span>
+  </button>
+  
+  </span>
+
+  </div>
+  </header>
+  <div class="comment-content default-cm-content" id="comment-text-461">
+  <p>The TypeScript ecosystem keeps getting better and better.</p>
+<p>Thanks for all the fantastic work you people do!</p>
+  </div>
+
+  
+  
+  
+  
+  </article>
+  </li>
+  </ul>
+			</div>
+  </div>
+  <div class="read-next-desktop">
+  <div class="read-next">
+  
+  
+  <h2 class="fs-20 mb-24">Read next</h2>
+  <div>
+  <article>
+  <div class="box bg-white p-12 rounded shadow mb-24 position-relative border-1" style="max-width: 334px;">
+  <div class="fs-14 mb-16 fw-light">January 29, 2025</div>
+  <h3 class="fs-16 mb-16"><a class="single-click" data-bi-area="sidebar_right_read_next" data-bi-id="post_page_sidebar_right_read_next_singleclick" data-bi-name="Announcing TypeScript 5.8 Beta" href="https://devblogs.microsoft.com/typescript/announcing-typescript-5-8-beta/">Announcing TypeScript 5.8 Beta</a></h3>
+  <div class="d-flex gap-6 align-items-center"><div class="d-flex gap-6 align-items-center">
+  <div class="avatar-parent">
+  <img src="https://devblogs.microsoft.com/typescript/wp-content/uploads/sites/11/2021/08/Daniel-Rosenwasser-635x817-1-96x96.png" style="width: 20px; height: 20px;"
+  class="avatar-20 rounded-pill a" alt="">
+  </div>
+  <span class="fs-14">Daniel Rosenwasser</span>
+  </div></div>
+</div>
+</article><article>
+  <div class="box bg-white p-12 rounded shadow mb-24 position-relative border-1" style="max-width: 334px;">
+  <div class="fs-14 mb-16 fw-light">February 13, 2025</div>
+  <h3 class="fs-16 mb-16"><a class="single-click" data-bi-area="sidebar_right_read_next" data-bi-id="post_page_sidebar_right_read_next_singleclick" data-bi-name="Announcing TypeScript 5.8 RC" href="https://devblogs.microsoft.com/typescript/announcing-typescript-5-8-rc/">Announcing TypeScript 5.8 RC</a></h3>
+  <div class="d-flex gap-6 align-items-center"><div class="d-flex gap-6 align-items-center">
+  <div class="avatar-parent">
+  <img src="https://devblogs.microsoft.com/typescript/wp-content/uploads/sites/11/2021/08/Daniel-Rosenwasser-635x817-1-96x96.png" style="width: 20px; height: 20px;"
+  class="avatar-20 rounded-pill a" alt="">
+  </div>
+  <span class="fs-14">Daniel Rosenwasser</span>
+  </div></div>
+</div>
+</article>  </div>
+  </div>
+  </div>
+  
+  
+<div class="stay-informed d-flex align-items-stretch flex-column flex-lg-row border-2 border-r-8 p-16">
+  <div class="newsletter-form w-100" id="subscribe_form" data-bi-area="body_newsletter" data-bi-id="post_page_body_newsletter">
+  <h2 id="stayInformed" class="fs-20 fw-600 mb-8">Stay informed</h2>
+  <div class="fs-14 pb-16">Get notified when new posts are published.</div>
+  <form method="post" action="https://devblogs.microsoft.com/typescript?na=s" onsubmit="return newsletter_check(this)">
+  <input type="hidden" name="nlang" value="">
+  <div class="d-flex flex-column gap-12 mb-12">
+  <label for="ne">Email <span>*</span></label>
+  <div class="d-flex align-items-center justify-content-start flex-md-grow-1 bg-white" style="align-self: stretch; height: 32px; border-radius: 4px; overflow: hidden; border: 1px solid var(--clr-border); width: 90%;"> <input class="x-hidden-focus bg-white" style="flex: 1 1 0; align-self: stretch; border: none; padding: 4px 10px; font-family: Segoe UI; color: var(--clr-body);" type="email" name="ne" placeholder="Enter your email" required="" aria-required="true" autocomplete="email">
+  </div><div class="tnp-field tnp-field-profile"><label for="np1">Country/Region <span>*</span></label>
+  <select class="tnp-profile tnp-profile-1 mt-8" id="tnp-profile_1" name="np1" aria-label="Select Country/Region" required aria-required="true"><option value="" selected disabled>Select...</option><option>United States</option><option>Afghanistan</option><option>Åland Islands</option><option>Albania</option><option>Algeria</option><option>American Samoa</option><option>Andorra</option><option>Angola</option><option>Anguilla</option><option>Antarctica</option><option>Antigua and Barbuda</option><option>Argentina</option><option>Armenia</option><option>Aruba</option><option>Australia</option><option>Austria</option><option>Azerbaijan</option><option>Bahamas</option><option>Bahrain</option><option>Bangladesh</option><option>Barbados</option><option>Belarus</option><option>Belgium</option><option>Belize</option><option>Benin</option><option>Bermuda</option><option>Bhutan</option><option>Bolivia</option><option>Bonaire</option><option>Bosnia and Herzegovina</option><option>Botswana</option><option>Bouvet Island</option><option>Brazil</option><option>British Indian Ocean Territory</option><option>British Virgin Islands</option><option>Brunei</option><option>Bulgaria</option><option>Burkina Faso</option><option>Burundi</option><option>Cabo Verde</option><option>Cambodia</option><option>Cameroon</option><option>Canada</option><option>Cayman Islands</option><option>Central African Republic</option><option>Chad</option><option>Chile</option><option>China</option><option>Christmas Island</option><option>Cocos (Keeling) Islands</option><option>Colombia</option><option>Comoros</option><option>Congo</option><option>Congo (DRC)</option><option>Cook Islands</option><option>Costa Rica</option><option>Côte dIvoire</option><option>Croatia</option><option>Curaçao</option><option>Cyprus</option><option>Czechia</option><option>Denmark</option><option>Djibouti</option><option>Dominica</option><option>Dominican Republic</option><option>Ecuador</option><option>Egypt</option><option>El Salvador</option><option>Equatorial Guinea</option><option>Eritrea</option><option>Estonia</option><option>Eswatini</option><option>Ethiopia</option><option>Falkland Islands</option><option>Faroe Islands</option><option>Fiji</option><option>Finland</option><option>France</option><option>French Guiana</option><option>French Polynesia</option><option>French Southern Territories</option><option>Gabon</option><option>Gambia</option><option>Georgia</option><option>Germany</option><option>Ghana</option><option>Gibraltar</option><option>Greece</option><option>Greenland</option><option>Grenada</option><option>Guadeloupe</option><option>Guam</option><option>Guatemala</option><option>Guernsey</option><option>Guinea</option><option>Guinea-Bissau</option><option>Guyana</option><option>Haiti</option><option>Heard Island and McDonald Islands</option><option>Honduras</option><option>Hong Kong SAR</option><option>Hungary</option><option>Iceland</option><option>India</option><option>Indonesia</option><option>Iraq</option><option>Ireland</option><option>Isle of Man</option><option>Israel</option><option>Italy</option><option>Jamaica</option><option>Jan Mayen</option><option>Japan</option><option>Jersey</option><option>Jordan</option><option>Kazakhstan</option><option>Kenya</option><option>Kiribati</option><option>Korea</option><option>Kosovo</option><option>Kuwait</option><option>Kyrgyzstan</option><option>Laos</option><option>Latvia</option><option>Lebanon</option><option>Lesotho</option><option>Liberia</option><option>Libya</option><option>Liechtenstein</option><option>Lithuania</option><option>Luxembourg</option><option>Macau SAR</option><option>Madagascar</option><option>Malawi</option><option>Malaysia</option><option>Maldives</option><option>Mali</option><option>Malta</option><option>Marshall Islands</option><option>Martinique</option><option>Mauritania</option><option>Mauritius</option><option>Mayotte</option><option>Mexico</option><option>Micronesia</option><option>Moldova</option><option>Monaco</option><option>Mongolia</option><option>Montenegro</option><option>Montserrat</option><option>Morocco</option><option>Mozambique</option><option>Myanmar</option><option>Namibia</option><option>Nauru</option><option>Nepal</option><option>Netherlands</option><option>New Caledonia</option><option>New Zealand</option><option>Nicaragua</option><option>Niger</option><option>Nigeria</option><option>Niue</option><option>Norfolk Island</option><option>North Macedonia</option><option>Northern Mariana Islands</option><option>Norway</option><option>Oman</option><option>Pakistan</option><option>Palau</option><option>Palestinian Authority</option><option>Panama</option><option>Papua New Guinea</option><option>Paraguay</option><option>Peru</option><option>Philippines</option><option>Pitcairn Islands</option><option>Poland</option><option>Portugal</option><option>Puerto Rico</option><option>Qatar</option><option>Réunion</option><option>Romania</option><option>Rwanda</option><option>Saba</option><option>Saint Barthélemy</option><option>Saint Kitts and Nevis</option><option>Saint Lucia</option><option>Saint Martin</option><option>Saint Pierre and Miquelon</option><option>Saint Vincent and the Grenadines</option><option>Samoa</option><option>San Marino</option><option>São Tomé and Príncipe</option><option>Saudi Arabia</option><option>Senegal</option><option>Serbia</option><option>Seychelles</option><option>Sierra Leone</option><option>Singapore</option><option>Sint Eustatius</option><option>Sint Maarten</option><option>Slovakia</option><option>Slovenia</option><option>Solomon Islands</option><option>Somalia</option><option>South Africa</option><option>South Georgia and South Sandwich Islands</option><option>South Sudan</option><option>Spain</option><option>Sri Lanka</option><option>St Helena</option><option>Ascension</option><option>Tristan da Cunha</option><option>Suriname</option><option>Svalbard</option><option>Sweden</option><option>Switzerland</option><option>Taiwan</option><option>Tajikistan</option><option>Tanzania</option><option>Thailand</option><option>Timor-Leste</option><option>Togo</option><option>Tokelau</option><option>Tonga</option><option>Trinidad and Tobago</option><option>Tunisia</option><option>Turkey</option><option>Turkmenistan</option><option>Turks and Caicos Islands</option><option>Tuvalu</option><option>U.S. Outlying Islands</option><option>U.S. Virgin Islands</option><option>Uganda</option><option>Ukraine</option><option>United Arab Emirates</option><option>United Kingdom</option><option>Uruguay</option><option>Uzbekistan</option><option>Vanuatu</option><option>Vatican City</option><option>Venezuela</option><option>Vietnam</option><option>Wallis and Futuna</option><option>Yemen</option><option>Zambia</option><option>Zimbabwe</option></select>
+  </div><div id="privacyField" class="tnp-field tnp-privacy-field">
+  <label>I would like to receive the TypeScript Newsletter. <a style="color: var(--clr-body-link); text-decoration: underline;" target="_blank" href="https://go.microsoft.com/fwlink/?LinkId=521839">Privacy Statement.</a></label>
+  </div>
+  <div id="consentContainer"></div>
+  <div class="d-flex">
+  <button class="tnp-submit btn-primary" type="submit" value="Subscribe">Subscribe</button>
+  </div>
+  </div>
+  </form>
+  </div>  <div class="follow-blog w-100">
+  <div class="fs-20 fw-600 mb-16">Follow this blog</div>
+  <ul class="ul-no-style d-inline-flex justify-content-start align-items-center flex-wrap gap-24" data-bi-area="body_blog_follow">
+  <li><a style="width: 24px; height: 24px; position: relative;" title="twitter" data-bi-id="post_page_body_blog_follow" data-bi-name="TypeScript-twitter" aria-label="Follow Us on Twitter" target="_blank" rel="noopener noreferrer" href="https://twitter.com/typescript"></a></li><li><a style="width: 24px; height: 24px; position: relative;" title="GitHub" data-bi-id="post_page_body_blog_follow" data-bi-name="TypeScript-github" aria-label="Follow Us on GitHub" target="_blank" rel="noopener noreferrer" href="https://github.com/microsoft/TypeScript"></a></li><li><a style="width: 24px; height: 24px; position: relative;" title="Stackoverflow" data-bi-id="post_page_body_blog_follow" data-bi-name="TypeScript-stackoverflow" aria-label="Follow Us on Stackoverflow" target="_blank" rel="noopener noreferrer" href="https://stackoverflow.com/questions/tagged/typescript"><img src="https://devblogs.microsoft.com/typescript/wp-content/themes/devblogs-evo/images/social-icons/stackoverflow.svg" alt="Stackoverflow" /></a></li><li><a style="width: 24px; height: 24px; position: relative;" title="RSS Feed" data-bi-id="post_page_body_blog_follow" data-bi-name="TypeScript-rss-feed" aria-label="Subscribe to Our RSS Feed" target="_blank" rel="noopener noreferrer" href="https://devblogs.microsoft.com/typescript/feed/"></a></li>  </ul>
+  </div>
+</div>
+  </div>
+  </div>
+</div>
+
+<div class="modal fade bd-example-modal-sm" id="dev-cm-error-msg" tabindex="-1" role="dialog"
+  aria-labelledby="mySmallModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-sm modal-dialog-centered" style="margin: 0 auto;">
+  <div class="modal-content">
+  <div class="modal-body" style="text-align:center;">
+  </div>
+  </div>
+  </div>
+</div>
+
+<div class="modal fade dev-cm-icon-modal" tabindex="-1" role="dialog" aria-labelledby="commentModalLabel"
+  aria-hidden="true" id="mi-modal">
+  <div class="modal-dialog modal-dialog-centered" style="margin: 0 auto; max-width:370px;">
+  <div class="modal-content">
+  <div class="modal-header" style="border-bottom: none;">
+  <div class="modal-title" id="myModalLabel" style="font-size: 16px;">Are you sure you wish to delete this
+  comment?</div>
+  
+  </div>
+  <div class="modal-footer" style="border-top: none;">
+  <button type="button" class="btn btn-primary" id="modal-btn-si">OK</button>
+  <button type="button" class="btn btn-secondary" id="modal-btn-no">Cancel</button>
+  </div>
+  </div>
+  </div>
+</div>
+
+  
+
+</div>
+</main>
+
+<div style="display:none;">
+  <div class="login-section c-me d-flex align-items-center">
+  <a class="login-but d-flex align-items-center" data-bi-area="dev blogs header" data-bi-name="Sign in" href="https://devblogs.microsoft.com/typescript/wp-login.php?redirect_to=https%3A%2F%2Fdevblogs.microsoft.com%2Ftypescript%2Fannouncing-typescript-5-7%2F">Sign in</a>
+  </div>
+  </div><div id="theme-picker" data-bi-area="dev blogs header" data-bi-id="theme-picker" data-bi-name="Switch to dark theme" class="c-me theme-picker d-flex align-items-center">
+  <button id="theme-picker-button" style="height: 25px; margin-right: 24px;" class="d-flex btn border-r-12"
+  aria-pressed="false" aria-label="Dark theme switch">
+  <span class="theme-text fs-12 d-flex align-items-center"
+  style="overflow-x: visible;padding: 0px 8px; gap: 8px;"></svg>Theme</span>
+  </button>
+</div>
+  
+  
+
+		
+  
+  <div id="wp-link-backdrop" style="display: none"></div>
+		<div id="wp-link-wrap" class="wp-core-ui" style="display: none" role="dialog" aria-modal="true" aria-labelledby="link-modal-title">
+		<form id="wp-link" tabindex="-1">
+		<input type="hidden" id="_ajax_linking_nonce" name="_ajax_linking_nonce" value="1c0d2f031b" />		<h2 id="link-modal-title">Insert/edit link</h2>
+		<button type="button" id="wp-link-close"><span class="screen-reader-text">
+			Close		</span></button>
+		<div id="link-selector">
+			<div id="link-options">
+  <p class="howto" id="wplink-enter-url">Enter the destination URL</p>
+  <div>
+  <label><span>URL</span>
+  <input id="wp-link-url" type="text" aria-describedby="wplink-enter-url" /></label>
+  </div>
+  <div class="wp-link-text-field">
+  <label><span>Link Text</span>
+  <input id="wp-link-text" type="text" /></label>
+  </div>
+  <div class="link-target">
+  <label><span></span>
+  <input type="checkbox" id="wp-link-target" /> Open link in a new tab</label>
+  </div>
+			</div>
+			<p class="howto" id="wplink-link-existing-content">Or link to existing content</p>
+			<div id="search-panel">
+  <div class="link-search-wrapper">
+  <label>
+  <span class="search-label">Search</span>
+  <input type="search" id="wp-link-search" class="link-search-field" autocomplete="off" aria-describedby="wplink-link-existing-content" />
+  <span class="spinner"></span>
+  </label>
+  </div>
+  <div id="search-results" class="query-results" tabindex="0">
+  <ul></ul>
+  <div class="river-waiting">
+  <span class="spinner"></span>
+  </div>
+  </div>
+  <div id="most-recent-results" class="query-results" tabindex="0">
+  <div class="query-notice" id="query-notice-message">
+  <em class="query-notice-default">No search term specified. Showing recent items.</em>
+  <em class="query-notice-hint screen-reader-text">
+  Search or use up and down arrow keys to select an item.  </em>
+  </div>
+  <ul></ul>
+  <div class="river-waiting">
+  <span class="spinner"></span>
+  </div>
+  </div>
+			</div>
+		</div>
+		<div class="submitbox">
+			<div id="wp-link-cancel">
+  <button type="button" class="button">Cancel</button>
+			</div>
+			<div id="wp-link-update">
+  <input type="submit" value="Add Link" class="button button-primary" id="wp-link-submit" name="wp-link-submit">
+			</div>
+		</div>
+		</form>
+		</div>
+  
+  
+		
+	<div class="modal fade" id="codeModal" tabindex="-1" role="dialog" aria-labelledby="codeModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+		<div class="modal-header">
+			<h5 class="modal-title" id="codeModalLabel">Code Block</h5>
+			<button type="button" class="close" onclick="myCodeCancelFunction()" data-dismiss="modal" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+		<form id="myForm" action="#">
+			<div class="modal-body">
+  <div class="form-group">
+  <label for="code-text">Paste your code snippet</label>
+  <textarea class="form-control" id="code-text" style="height: 150px;"></textarea>
+  </div>
+			</div>
+			<div class="modal-footer">
+  <button type="button" onclick="myCodeFunction()" class="btn btn-primary">Ok</button>
+  <button type="button" name="Cancel" onclick="myCodeCancelFunction()" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+			</div>
+		</form>
+		</div>
+	</div>
+	</div>
+
+  
+
+<uhf-footer locale="en-us" partnerId="DEV_Blogs" footerId="DEV_BlogsFooter" theme="light">
+  
+  
+<uhf-footer-nav slot="uhf-footer-nav">
+  <div class="uhf-footer-nav-row">
+  <uhf-footer-nav-group class="uhf-footer-nav-group" heading="What&#x27;s new">
+  <a class="uhf-footer-link" href="https://www.microsoft.com/surface/devices/surface-pro">Surface Pro</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/surface/devices/surface-laptop">Surface Laptop</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/en-us/surface/devices/surface-laptop-ultra?icid=DSM_Footer_WhatsNew_SurfaceLaptopUltra">Surface Laptop Ultra</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/en-us/surface/devices/surface-rtx-spark-dev-box?icid=DSM_Footer_WhatsNew_SurfaceRTXSparkDevBox">Surface RTX Spark Dev Box</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/en-us/microsoft-copilot/organizations?icid=DSM_Footer_CopilotOrganizations">Copilot for organizations</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/en-us/microsoft-copilot/for-individuals?form=MY02PT&amp;OCID=GE_web_Copilot_Free_868g3t5nj">Copilot for personal use</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/en-us/microsoft-products-and-apps">Explore Microsoft products</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/en-us/windows/apps-for-windows?icid=DSM_Footer_WhatsNew_Windows11apps">Windows 11 apps</a>
+  </uhf-footer-nav-group>
+  <uhf-footer-nav-group class="uhf-footer-nav-group" heading="Microsoft Store">
+  <a class="uhf-footer-link" href="https://account.microsoft.com/">Account profile</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/en-us/download">Download Center</a>
+  <a class="uhf-footer-link" href="https://go.microsoft.com/fwlink/?linkid=2139749">Microsoft Store support</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/en-us/store/b/returns">Returns</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/en-us/store/b/order-tracking">Order tracking</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/en-us/store/b/certified-refurbished-products">Certified Refurbished</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/en-us/store/b/why-microsoft-store?icid=footer_why-msft-store_7102020">Microsoft Store Promise</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/en-us/store/b/payment-financing-options?icid=footer_financing_vcc">Flexible Payments</a>
+  </uhf-footer-nav-group>
+  <uhf-footer-nav-group class="uhf-footer-nav-group" heading="Education">
+  <a class="uhf-footer-link" href="https://www.microsoft.com/en-us/education">Microsoft in education</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/en-us/education/devices/overview">Devices for education</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/en-us/education/products/teams">Microsoft Teams for Education</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/en-us/education/products/microsoft-365">Microsoft 365 Education</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/education/how-to-buy">How to buy for your school</a>
+  <a class="uhf-footer-link" href="https://education.microsoft.com/">Educator training and development</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/en-us/store/b/education">Deals for students and parents</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/en-us/education/ai-in-education">AI for education</a>
+  </uhf-footer-nav-group>
+  </div>
+  <div class="uhf-footer-nav-row">
+  <uhf-footer-nav-group class="uhf-footer-nav-group" heading="Business">
+  <a class="uhf-footer-link" href="https://www.microsoft.com/en-us/ai?icid=DSM_Footer_AI">Microsoft AI</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/en-us/security">Microsoft Security</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/en-us/dynamics-365">Dynamics 365</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/en-us/microsoft-365/business">Microsoft 365</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/en-us/power-platform">Microsoft Power Platform</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/en-us/microsoft-teams/group-chat-software">Microsoft Teams</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/en-us/microsoft-365-copilot?icid=DSM_Footer_Microsoft365Copilot">Microsoft 365 Copilot</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/en-us/store/b/business?icid=CNavBusinessStore" id="Small Business">Small Business</a>
+  </uhf-footer-nav-group>
+  <uhf-footer-nav-group class="uhf-footer-nav-group" heading="Developer &amp; IT">
+  <a class="uhf-footer-link" href="https://azure.microsoft.com/en-us/">Azure</a>
+  <a class="uhf-footer-link" href="https://developer.microsoft.com/en-us/">Microsoft Developer</a>
+  <a class="uhf-footer-link" href="https://learn.microsoft.com/">Microsoft Learn</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/software-development-companies/offers-benefits/isv-success?icid=DSM_Footer_SupportAIMarketplace&amp;ocid=cmm3atxvn98">Support for AI marketplace apps</a>
+  <a class="uhf-footer-link" href="https://techcommunity.microsoft.com/">Microsoft Tech Community</a>
+  <a class="uhf-footer-link" href="https://marketplace.microsoft.com?icid=DSM_Footer_Marketplace&amp;ocid=cmm3atxvn98">Microsoft Marketplace</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/software-development-companies?icid=DSM_Footer_SoftwareCompanies&amp;ocid=cmm3atxvn98">Software companies</a>
+  <a class="uhf-footer-link" href="https://visualstudio.microsoft.com/">Visual Studio</a>
+  </uhf-footer-nav-group>
+  <uhf-footer-nav-group class="uhf-footer-nav-group" heading="Company">
+  <a class="uhf-footer-link" href="https://careers.microsoft.com/">Careers</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/about">About Microsoft</a>
+  <a class="uhf-footer-link" href="https://news.microsoft.com/source/?icid=DSM_Footer_Company_CompanyNews">Company news</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/en-us/privacy?icid=DSM_Footer_Company_Privacy">Privacy at Microsoft</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/investor/default.aspx">Investors</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/en-us/diversity/default?icid=DSM_Footer_Company_Diversity">Diversity and inclusion</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/en-us/accessibility">Accessibility</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/en-us/corporate-responsibility/sustainability?icid=DSM_Footer_Sustainability">Sustainability</a>
+  </uhf-footer-nav-group>
+  </div>
+</uhf-footer-nav>
+  <div slot="uhf-footer-california-privacy-link">
+  
+<a class="uhf-footer-link" href="https://aka.ms/yourcaliforniaprivacychoices">
+  
+  <span>Your Privacy Choices</span>
+</a>
+  
+  </div>
+  <a slot="uhf-footer-consumer-health-privacy-link" class="uhf-footer-link" href="https://go.microsoft.com/fwlink/?linkid=2259814">Consumer Health Privacy</a>
+  
+<uhf-footer-menu slot="uhf-footer-menu" data-nav-label="Microsoft corporate links">
+  <a class="uhf-footer-link" href="https://www.microsoft.com/en-us/sitemap1.aspx" id="uhf-Footer_Sitemap">Sitemap</a>
+  <a class="uhf-footer-link" href="https://support.microsoft.com/contactus" id="uhf-Footer_ContactUs">Contact Microsoft</a>
+  <a class="uhf-footer-link" href="https://go.microsoft.com/fwlink/?LinkId=521839" id="uhf-Footer_PrivacyandCookies">Privacy </a>
+  <a class="uhf-footer-link" href="#" id="uhf-Footer_ManageCookies">Manage cookies</a>
+  <a class="uhf-footer-link" href="https://go.microsoft.com/fwlink/?LinkID=206977" id="uhf-Footer_TermsOfUse">Terms of use</a>
+  <a class="uhf-footer-link" href="https://go.microsoft.com/fwlink/?linkid=2196228" id="uhf-Footer_Trademarks">Trademarks</a>
+  <a class="uhf-footer-link" href="https://go.microsoft.com/fwlink/?linkid=2196227" id="uhf-Footer_SafetyAndEco">Safety &amp; eco</a>
+  <a class="uhf-footer-link" href="https://www.microsoft.com/en-us/legal/compliance/recycling" id="uhf-Recycling">Recycling</a>
+  <a class="uhf-footer-link" href="https://choice.microsoft.com" id="uhf-Footer_AboutourAds">About our ads</a>
+</uhf-footer-menu>
+</uhf-footer>
+
+<div class="back-comment-buttons" data-bi-area="sidebar">
+  
+
+<div class="evo-right-sidebar">
+  <a data-bi-id="click back to top of page" data-bi-name="Back to top" href="#page" title="Back to top" aria-label="click back to top of page" class="evo-sidebar-button back-to-top">
+  <span class="evo-sidebar-button-inner">
+  
+  </span>
+  </a>
+</div>
+</div>
+
+  
+
+</body>
+
+</html>

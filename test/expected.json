@@ -1,0 +1,81 @@
+{
+  "_comment": [
+    "One entry per fixture in test/fixtures. `host` is substituted for",
+    "location.hostname so the per-site table in the script is exercised the way",
+    "it would be on the live page.",
+    "`pdf` assertions are only checked with --pdf; they render the generated",
+    "document the way the print dialog would and read the result back with",
+    "pdftotext. page1EndsWith is what caught the long-gap bug: a tall hero plus",
+    "orphans:3 pushed a whole paragraph to page 2 and left half a page blank.",
+    "Do NOT assert figure counts on wikipedia (varies run to run) or hero on",
+    "microsoft (its lead image loads inconsistently in a headless render)."
+  ],
+
+  "x-thread.html": {
+    "host": "x.com",
+    "title": "Bitcoin-backed home mortgages are launching in the @acmepay app",
+    "hero": false,
+    "avatar": true,
+    "minParagraphs": 4,
+    "replies": 2,
+    "mustContain": ["🏠", "@acmepay app", "@nokonkwo", "Quoted: rates unchanged."],
+    "mustNotContain": ["Acme Markets", "Ada Reyes@adareyes"]
+  },
+
+  "xda-free-vpns.html": {
+    "host": "www.xda-developers.com",
+    "hero": true,
+    "avatar": true,
+    "minParagraphs": 12,
+    "minFigures": 5,
+    "mustContain": ["If you type"],
+    "mustNotContain": [
+      "Unlock Personalized", "Log in or Create", "Forgot your password",
+      "Required: 8 chars", "Maker, meme-r", "He was the kid", "Published Aug"
+    ],
+    "pdf": { "maxPages": 8, "page1EndsWith": "send your data unencrypted across the internet." }
+  },
+
+
+
+  "github-case-folding.html": {
+    "host": "github.blog",
+    "hero": false,
+    "avatar": false,
+    "minParagraphs": 30,
+    "mustNotContain": ["Sign up for", "Subscribe to", "All rights reserved"]
+  },
+
+  "microsoft-typescript-57.html": {
+    "host": "devblogs.microsoft.com",
+    "avatar": false,
+    "minParagraphs": 50,
+    "minLinks": 15,
+    "mustNotContain": ["Sign up for", "privacy policy"]
+  },
+
+  "aws-sqs-20.html": {
+    "host": "aws.amazon.com",
+    "avatar": false,
+    "minParagraphs": 12,
+    "minLinks": 15
+  },
+
+  "cloudflare-agentic.html": {
+    "host": "blog.cloudflare.com",
+    "hero": true,
+    "avatar": false,
+    "minParagraphs": 25,
+    "minLinks": 15,
+    "mustNotContain": ["Subscribe to", "All rights reserved"]
+  },
+
+  "wikipedia-prediction-market.html": {
+    "host": "en.wikipedia.org",
+    "hero": false,
+    "avatar": false,
+    "minParagraphs": 30,
+    "minLinks": 100,
+    "mustContain": ["Prediction markets"]
+  }
+}

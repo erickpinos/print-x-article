@@ -1,0 +1,609 @@
+<!doctype html>
+<html data-static-assets="https://a0.awsstatic.com" class="aws-lng-en_US" data-aws-assets="https://a0.awsstatic.com" data-js-version="1.0.682" data-css-version="1.0.538" prefix="og: https://ogp.me/ns#">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Amazon SQS turns 20: Two decades of reliable messaging at scale | AWS News Blog</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: https://a0.awsstatic.com https://prod.us-east-1.ui.gcr-chat.marketing.aws.dev; base-uri 'none'; connect-src 'self' *.akamaized.net *.googlevideo.com/videoplayback https://*.analytics.console.aws.a2z.com https://*.harmony.a2z.com https://*.marketing.aws.dev https://*.panorama.console.api.aws https://*.prod.chc-features.uxplatform.aws.dev https://*.prod.cxm.marketing.aws.dev https://0vctm1i0if.execute-api.eusc-de-east-1.amazonaws.eu/gamma/spot.json https://112-tzm-766.mktoresp.com https://112-tzm-766.mktoutil.com https://8810.clrt.ai https://a0.awsstatic.com https://a0.p.awsstatic.com https://a1.awsstatic.com https://amazonwebservices.d2.sc.omtrdc.net https://amazonwebservicesinc.tt.omtrdc.net https://api-v2.builderprofile.aws.dev https://api.pulse.aws https://api.regional-table.region-services.aws.a2z.com https://api.us-west-2.prod.pricing.aws.a2z.com https://artifacts.us-west-2.prod.plc.billing.aws.dev https://assets.storylane.io https://auth.aws.amazon.com https://auth.aws.com https://auth.builder-profile-auth.aws.com https://aws.amazon.com https://aws.amazon.com/p/sf/ https://aws.com https://aws.demdex.net https://b0.p.awsstatic.com https://c0.b0.p.awsstatic.com https://calculator.aws https://chatbot-api.us-east-1.prod.mrc-sunrise.marketing.aws.dev https://chatbot-stream-api.us-east-1.prod.mrc-sunrise.marketing.aws.dev https://cm.everesttech.net https://cx0.m.awsstatic.com https://d-90676d7478.awsapps.com https://d0.awsstatic.com https://d0.m.awsstatic.com https://d1.awsstatic.com https://d1fgizr415o1r6.cloudfront.net https://d2bmgek65me099.cloudfront.net https://d2c.aws.amazon.com https://d3borx6sfvnesb.cloudfront.net https://dftu77xade0tc.cloudfront.net https://dpm.demdex.net https://edge.adobedc.net https://fls-na.amazon.com https://global-api-v2.builderprofile.aws.dev https://i18n-string.us-west-2.prod.pricing.aws.a2z.com https://iad.staging.prod.tv.awsstatic.com https://infra-api.us-east-1.prod.mrc-sunrise.marketing.aws.dev https://ingestion.aperture-public-api.feedback.console.aws.dev https://livechat-api.us-east-1.prod.mrc-sunrise.marketing.aws.dev https://log.clrt.ai https://oidc.us-east-1.amazonaws.com https://pricing-table.us-west-2.prod.site.p.awsstatic.com https://prod-api.cosmic.aws.dev https://prod-us-west-2.csp-report.marketing.aws.dev https://prod-us-west-2.csp-report.marketing.aws.dev/submit https://prod.log.shortbread.aws.dev https://prod.tools.shortbread.aws.dev https://prod.us-east-1.api.gcr-chat.marketing.aws.dev https://prod.us-east-1.rest-bot.gcr-chat.marketing.aws.dev https://prod.us-east-1.ui.gcr-chat.marketing.aws.dev https://public.lotus.awt.aws.a2z.com https://r0.m.awsstatic.com https://s0.awsstatic.com https://s3.amazonaws.com/aws-messaging-pricing-information/ https://s3.amazonaws.com/aws-messaging-pricing-information/TextMessageInbound/prices.json https://s3.amazonaws.com/aws-messaging-pricing-information/TextMessageOutbound/prices.json https://s3.amazonaws.com/public-pricing-agc/ https://s3.eusc-de-east-1.amazonaws.eu/aws-messaging-pricing-information/TextMessageInbound/prices.json https://s3.eusc-de-east-1.amazonaws.eu/aws-messaging-pricing-information/TextMessageOutbound/prices.json https://spot-bid-advisor.s3.amazonaws.com https://spot-price-gamma-iad.s3.us-east-1.amazonaws.com/spot.json https://t0.m.awsstatic.com https://target.aws.com https://tes.builder-profile-auth.aws.com https://token.us-west-2.prod.site.p.awsstatic.com https://tv.awsstatic.com https://view-stage.us-west-2.prod.pricing.aws.a2z.com https://view-staging.us-east-1.prod.plc1-prod.pricing.aws.a2z.com https://vs.aws.amazon.com https://vs.aws.com https://webchat-aws.clink.cn https://website.spot.ec2.aws.a2z.com https://www.aws.com https://www.youtube-nocookie.com https://www.youtube.com https://xcxrmtkxx5.execute-api.us-east-1.amazonaws.com/prod/ https://zbrymci1c2.execute-api.eusc-de-east-1.amazonaws.eu/prod/spot.json wss://*.transport.connect.us-east-1.amazonaws.com wss://prod.us-east-1.wss-bot.gcr-chat.marketing.aws.dev wss://webchat-aws.clink.cn; font-src 'self' data: https://a0.awsstatic.com https://f0.awsstatic.com https://fonts.gstatic.com https://prod.us-east-1.ui.gcr-chat.marketing.aws.dev; frame-src 'self' https://*.widget.console.aws.amazon.com https://aws.demdex.net https://aws.storylane.io https://c0.b0.p.awsstatic.com https://calculator.aws https://commenting.awsblogs.com https://conversational-experience-worker.widget.console.aws.amazon.com/lotus/isolatedIFrame https://dpm.demdex.net https://player.vimeo.com https://pricing-table.us-west-2.prod.site.p.awsstatic.com https://token.us-west-2.prod.site.p.awsstatic.com https://www.youtube-nocookie.com https://www.youtube.com; img-src 'self' blob: data: https://*.vidyard.com https://*.ytimg.com https://a0.awsstatic.com https://amazonwebservices.d2.sc.omtrdc.net https://app-pages.storylane.io https://avatars.builderprofile.aws.dev https://aws-quickstart.s3.amazonaws.com https://aws.amazon.com https://aws.demdex.net https://awsmedia.s3.amazonaws.com https://cm.everesttech.net https://cx0.m.awsstatic.com https://d1.awsstatic.com https://d1d1et6laiqoh9.cloudfront.net https://d2.m.awsstatic.com https://d2908q01vomqb2.cloudfront.net https://d2c.aws.amazon.com https://d2cpw7vd6a2efr.cloudfront.net https://d36cz9buwru1tt.cloudfront.net https://d7umqicpi7263.cloudfront.net https://docs.aws.amazon.com https://dpm.demdex.net https://f.d2.m.awsstatic.com https://fls-na.amazon.com https://google.ca https://google.co.in https://google.co.jp https://google.co.th https://google.co.uk https://google.com https://google.com.ar https://google.com.au https://google.com.br https://google.com.hk https://google.com.mx https://google.com.tr https://google.com.tw https://google.de https://google.es https://google.fr https://google.it https://google.nl https://google.pl https://google.ru https://iad.staging.prod.tv.awsstatic.com https://img.youtube.com https://marketingplatform.google.com https://media.amazonwebservices.com https://p.adsymptotic.com https://pages.awscloud.com https://prod.cosmic.aws.dev https://prod.us-east-1.ui.gcr-chat.marketing.aws.dev https://s3.amazonaws.com/aws-quickstart/ https://s3.cn-north-1.amazonaws.com.cn/awschinablog/ https://s3.cn-north-1.amazonaws.com.cn/images-bjs/ https://ssl-static.libsyn.com https://static-cdn.jtvnw.net https://tv.awsstatic.com https://webchat-aws.clink.cn https://www.google.com https://www.linkedin.com https://yt3.ggpht.com; media-src 'self' https://*.libsyn.com https://a0.awsstatic.com https://anchor.fm https://awsmedia.s3.amazonaws.com https://awspodcastsiberiaent.s3.eu-west-3.amazonaws.com https://chtbl.com https://content.production.cdn.art19.com https://cx0.m.awsstatic.com https://d1.awsstatic.com https://d1hemuljm71t2j.cloudfront.net https://d1le29qyzha1u4.cloudfront.net https://d1oqpvwii7b6rh.cloudfront.net https://d1vo51ubqkiilx.cloudfront.net https://d1yyh5dhdgifnx.cloudfront.net https://d2908q01vomqb2.cloudfront.net https://d2a6igt6jhaluh.cloudfront.net https://d3ctxlq1ktw2nl.cloudfront.net https://d3h2ozso0dirfl.cloudfront.net https://dgen8gghn3u86.cloudfront.net https://dk261l6wntthl.cloudfront.net https://download.stormacq.com/aws/podcast/ https://dts.podtrac.com https://iad.staging.prod.tv.awsstatic.com https://media.amazonwebservices.com https://mktg-apac.s3-ap-southeast-1.amazonaws.com https://rss.art19.com https://s3-ap-northeast-1.amazonaws.com/aws-china-media/ https://tv.awsstatic.com https://www.buzzsprout.com; object-src 'none'; script-src 'sha256-wMvK/xfYK76Mdh3cE2BAlHfIn9f8f68nBnVW9WyowiI=' 'nonce-rWKpXUEo4Z1sJq9yVJ5sPcxgUMv+Xw94oYsBjk3YOoo=' 'self' blob: https://*.cdn.console.awsstatic.com https://*.cdn.uis.awsstatic.com https://a.b.cdn.console.awsstatic.com https://a0.awsstatic.com https://amazonwebservicesinc.tt.omtrdc.net https://artifacts.us-west-2.prod.plc.billing.aws.dev https://b0.p.awsstatic.com https://cdn.builderprofile.aws.dev https://cx0.m.awsstatic.com https://d0.m.awsstatic.com https://d2bmgek65me099.cloudfront.net https://d2c.aws.amazon.com https://googleads.g.doubleclick.net https://loader.us-east-1.prod.mrc-sunrise.marketing.aws.dev https://prod.cosmic.aws.dev https://prod.us-east-1.ui.gcr-chat.marketing.aws.dev https://r0.m.awsstatic.com https://spot-price.s3.amazonaws.com https://static.doubleclick.net https://t0.m.awsstatic.com https://token.us-west-2.prod.site.p.awsstatic.com https://website.spot.ec2.aws.a2z.com https://www.google.com https://www.gstatic.com https://www.youtube.com/iframe_api https://www.youtube.com/s/player/; style-src 'self' 'unsafe-inline' https://a0.awsstatic.com https://artifacts.us-west-2.prod.plc.billing.aws.dev https://assets.storylane.io https://b0.p.awsstatic.com https://cx0.m.awsstatic.com https://prod.us-east-1.ui.gcr-chat.marketing.aws.dev https://t0.m.awsstatic.com https://token.us-west-2.prod.site.p.awsstatic.com; report-uri https://prod-us-west-2.csp-report.marketing.aws.dev/submit" data-report-uri="https://prod-us-west-2.csp-report.marketing.aws.dev/submit">
+  
+  <meta name="robots" content="max-image-preview:large">
+  
+  
+  
+  <meta property="og:locale" content="en_US">
+  <meta property="og:site_name" content="Amazon Web Services">
+  <meta property="og:title" content="Amazon SQS turns 20: Two decades of reliable messaging at scale | Amazon Web Services">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://aws.amazon.com/blogs/aws/amazon-sqs-turns-20-two-decades-of-reliable-messaging-at-scale/">
+  <meta property="og:description" content="On July 13, 2006, we launched Amazon Simple Queue Service (Amazon SQS) as one of the first three services available to customers, alongside Amazon EC2 and Amazon S3. We had learned firsthand that distributed systems need a reliable way to pass messages between components without creating tight dependencies. If one service called another directly and […]">
+  <meta property="og:image" content="https://d2908q01vomqb2.cloudfront.net/827bfc458708f0b442009c9c9836f7e4b65557fb/2020/06/03/Blog-Post_thumbnail.png">
+  <meta property="og:image:width" content="768">
+  <meta property="og:image:height" content="385">
+  <meta property="og:updated_time" content="2026-07-13T11:13:57-07:00">
+  <meta property="article:publisher" content="https://www.facebook.com/amazonwebservices">
+  <meta property="article:section" content="Amazon Simple Queue Service (SQS)">
+  <meta property="article:tag" content="Amazon Simple Queue Service (SQS)">
+  <meta property="article:tag" content="Announcements">
+  <meta property="article:tag" content="Launch">
+  <meta property="article:tag" content="Messaging">
+  <meta property="article:tag" content="News">
+  <meta property="article:published_time" content="2026-07-13T11:13:57-07:00">
+  <meta property="article:modified_time" content="2026-07-13T11:13:57-07:00">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@awscloud">
+  <meta name="twitter:domain" content="https://aws.amazon.com/blogs/">
+  <meta name="twitter:title" content="Amazon SQS turns 20: Two decades of reliable messaging at scale | Amazon Web Services">
+  <meta name="twitter:description" content="On July 13, 2006, we launched Amazon Simple Queue Service (Amazon SQS) as one of the first three services available to customers, alongside Amazon EC2 and Amazon S3. We had learned firsthand that distributed systems need a reliable way to pass messages between components without creating tight dependencies. If one service called another directly and […]">
+  <meta name="twitter:image" content="https://d2908q01vomqb2.cloudfront.net/827bfc458708f0b442009c9c9836f7e4b65557fb/2020/06/03/Blog-Post_thumbnail.png">
+  
+  
+  
+  
+  
+  
+  
+  <meta name="robots" content="index, follow">
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+ </head>
+ <body class="awsm page basicpage aws-blogs-page aws-blogs-page-single">
+  <a aria-label="Skip to main content link" class="m-sr-only m-sr-only-focusable m-skip-el" href="#aws-page-content-main" id="aws-page-skip-to-main"> Skip to Main Content</a>
+  <header id="aws-page-header" class="header m-global-header has-subnav" role="banner">
+   <div class="root parsys">
+  <div data-custom-params="{}" data-trk-params="{}">
+  <div data-eb-slot="awsm-8313a88c-9a49-4b68-b949-73755bc0b98c">
+  <div data-eb-tpl-n="awsm-rt/rt-global-nav" data-eb-tpl-v="1.0.0" data-eb-ce="" data-eb-c-scope="8313a88c-9a49-4b68-b949-73755bc0b98c" data-eb-d-scope="INLINE" data-eb-locale="en-US" data-eb-784e8193="" data-eb-ssr-ce="" data-eb-tpl-ns="awsmRT" data-eb-hydrated="pending">
+  
+  
+  <div data-eb-tpl-root="" data-reactroot="">
+  <span data-rigel-portal-reference="true"></span>
+  <div>
+  <div data-rg-lang="en" data-rg-locale="en-US" lang="en-US" dir="ltr">
+  <div data-rg-theme="blue" data-rg-mode="light" data-style-count="0">
+  <nav class="rggn_e1053773 rggn_ed057351 rggn_9dbe9b36" id="global-nav-mobile" data-testid="global-nav-mobile">
+  <div class="rggn_7b75643a">
+  <button data-rg-n="BodyText" aria-label="Open navigation menu" data-testid="global-nav-mobile-menu-button" data-rigel-analytics="{&quot;name&quot;:&quot;NavItem_Menu&quot;,&quot;toggle&quot;:&quot;open&quot;}" class="rggn_8711ccd9 rggn_98b54368 rggn_c623175b rggn_ce356c49 rggn_007aef8b"><span class="rggn_a1b66739 rggn_bc1a8743"> 
+  
+  </span></button>
+  <div class="rggn_03858538">
+  <a aria-label="Click here to return to Amazon Web Services homepage" href="https://aws.amazon.com/?nc2=h_home" data-testid="mobile-nav-item-logo-link" data-rigel-analytics="{&quot;name&quot;:&quot;NavItem_Logo&quot;}"><span class="rggn_38e9dfc7 rggn_4b9fe4a2 rggn_a1b66739 rggn_3ed66ff4 rggn_bc1a8743"> 
+  
+  </span></a>
+  </div>
+  <ul class="rggn_be2a22f9">
+  <li>
+  <div>
+  <button class="rggn_03da0baa" data-label="search toggle" id="search-toggle" data-testid="nav-search-toggle" aria-expanded="false">
+  <p data-rg-n="BodyText" data-rigel-analytics="{&quot;name&quot;:&quot;NavItem_Search&quot;,&quot;toggle&quot;:&quot;close&quot;}" class="rggn_8711ccd9 rggn_98b54368 rggn_c623175b rggn_ce356c49 rggn_007aef8b"><span class="rggn_a1b66739 rggn_3ed66ff4 rggn_bc1a8743"> 
+  
+  </span></p>
+  </button>
+  <div class="rggn_45ff45f3" data-transition-status="close" style="top:0px" data-testid="search">
+  <div role="presentation" class="rggn_8557fdd0">
+  <div id="" class="rggn_70747978 rggn_ddb4146d">
+  <div data-rg-n="GridStack" class="rggn_a7b74351 rggn_92ef7532" style="--rg-gridstack-gap:var(--rg-margin-2)">
+  <button role="button" aria-label="Close" class="rggn_9e423fbb rggn_1ed8cbde rggn_5962fadc rggn_e90ac70d rggn_3ef5a62a rggn_38d8ffac rggn_f7822e54 rggn_090951dc rggn_b675880e rggn_837570f1 rggn_a9ffa635 rggn_b0761591"><span class="rggn_127a95e3 rggn_a1b66739 rggn_3ed66ff4 rggn_bc1a8743"> 
+  
+  </span></button>
+  <div data-rg-n="Grid" data-testid="search-bar" class="rggn_0f1b9ff4 rggn_85859631" style="--rg-grid-gap:var(--rg-margin-3)">
+  <div data-rg-n="Col" class="rggn_7ca45506 rggn_710fa332 rggn_41cd749d">
+  <div role="button" tabindex="0" data-rigel-analytics="{&quot;name&quot;:&quot;SearchBar_OpenButton&quot;}">
+  <span class="rggn_a1b66739 rggn_3ed66ff4 rggn_bc1a8743"> 
+  
+  </span>
+  </div>
+  </div>
+  <div data-rg-n="Col" class="rggn_7ca45506 rggn_b3628528 rggn_da2ef39d rggn_90b792b3 rggn_7b802c53 rggn_900fec60 rggn_47b99bc1">
+  <div class="rggn_0f883e6a">
+  <div class="rggn_94438ba7">
+  <form>
+  <div>
+  <label aria-label="Search" class="rggn_9e423fbb rggn_1ed8cbde rggn_5962fadc rggn_e90ac70d rggn_1e736681 rggn_9e59f17d"><span class="rggn_fdbea277 rggn_a1b66739 rggn_bc1a8743"> 
+  
+  </span><input type="text" data-rg-n="BodyText" placeholder="I’m looking for..." autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="true" aria-controls="globalnav-search-results" aria-activedescendant="" aria-describedby="globalnav-search-suggestions" value="" data-rigel-analytics="{&quot;name&quot;:&quot;Input&quot;,&quot;properties&quot;:{&quot;variant&quot;:&quot;input&quot;}}" class="rggn_8711ccd9 rggn_98b54368 rggn_8c841604 rggn_275611e5"></label>
+  </div>
+  </form>
+  </div>
+  <div class="rggn_532f95bb">
+  <div data-rg-theme="blue" data-rg-mode="light" data-style-count="0">
+  <div class="rggn_9d11d2aa rggn_b6d88a82">
+  <div data-rg-theme="blue" data-rg-mode="light" data-style-count="0">
+  <div class="rggn_75f03c95">
+  <span> 
+  <div class="rggn_f91457ee">
+  <button role="button" aria-expanded="false" aria-haspopup="dialog" class="rggn_9e423fbb rggn_1ed8cbde rggn_5962fadc rggn_e90ac70d rggn_38d8ffac rggn_f7822e54 rggn_18409398 rggn_b78e9379 rggn_90c47075"><span class="rggn_d3d7facc"><span class="rggn_a1b66739 rggn_3ed66ff4 rggn_bc1a8743"> 
+  
+  </span></span><span data-rg-n="UtilityText" class="rggn_8711ccd9 rggn_5e58a6df rggn_82d7eac3 rggn_f5857abf rggn_aa83ac72">Filter: All</span></button>
+  </div>
+  </span> <span></span>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  <div data-rg-n="Grid" data-testid="search-results" id="globalnav-search-results" role="listbox" class="rggn_d2638cf4 rggn_85859631" style="--rg-grid-gap:var(--rg-margin-3)">
+  <div class="rggn_40bcb38f rggn_eacfad35"></div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </li>
+  <li data-private="true" data-rigel-analytics="{&quot;name&quot;:&quot;Navatar&quot;}">
+  <div class="awsm-ik-navatar awsm-ik-navatar-light">
+  <button class="awsm-ik-navatar-icon" aria-label="navatar-icon"><span class="awsm-ik-loader-container" data-testid="navatar-icon-loader"><span class="loader-circle loader-circle-left"></span><span class="loader-circle loader-circle-right"></span></span></button>
+  </div>
+  </li>
+  </ul>
+  </div>
+  <div class="" data-testid="mobile-subnav-expanded"></div>
+  </nav>
+  <nav aria-label="Global navigation" class="rggn_e1053773 rggn_059f0463" id="global-nav-desktop" data-testid="global-nav-desktop">
+  <div class="rggn_34338690">
+  <div class="rggn_a8a2854c" aria-label="Secondary global navigation">
+  <div class="rggn_f99f709a rggn_cfc97a30 rggn_53dc9aec rggn_23885d27 rggn_c82f547b rggn_4ba04ca0">
+  <ul class="rggn_3da1576c rggn_1035c2c9 rggn_2e12d6ba">
+  <div class="rggn_ba4cf4bd" aria-hidden="true">
+  <div data-scroll-sentinel="start" class="rggn_83f5293f rggn_35b3a639"></div>
+  </div>
+  <li class="rggn_9d375661 rggn_8ed090e4" data-rg-theme="blue" data-rg-mode="light">
+  <div class="" data-rigel-analytics="{&quot;name&quot;:&quot;ListItem&quot;,&quot;properties&quot;:{&quot;as&quot;:&quot;div&quot;,&quot;button&quot;:&quot;false&quot;,&quot;disabled&quot;:false,&quot;selected&quot;:false}}" aria-disabled="false">
+  <button class="rggn_12eba964" data-rigel-analytics="{&quot;name&quot;:&quot;LanguageSelector&quot;,&quot;toggle&quot;:&quot;open&quot;}" aria-expanded="false" aria-haspopup="dialog"><span data-rg-n="BodyText" class="rggn_8711ccd9 rggn_98b54368 rggn_2788faca rggn_007aef8b"><span class="rggn_4a77510b rggn_a1b66739 rggn_3ed66ff4 rggn_bc1a8743"> 
+  
+  </span>English<span class="rggn_4a77510b rggn_b16be37f rggn_a1b66739 rggn_3ed66ff4 rggn_bc1a8743"> 
+  
+  </span></span></button>
+  </div>
+  </li>
+  <li class="rggn_9d375661 rggn_8ed090e4" data-rg-theme="blue" data-rg-mode="light">
+  <div class="" aria-disabled="false">
+  <a data-rg-n="Link" href="https://aws.amazon.com/contact-us/?nc2=h_ut_cu" data-rigel-analytics="{&quot;name&quot;:&quot;UtilityItem&quot;,&quot;properties&quot;:{&quot;size&quot;:2}}" class="rggn_8711ccd9 rggn_98b54368 rggn_13008707 rggn_bdf33f16 rggn_f34f99d0 rggn_007aef8b rggn_2a7f98ee"><span class="rggn_2788faca">Contact us</span></a>
+  </div>
+  </li>
+  <li class="rggn_9d375661 rggn_8ed090e4" data-rg-theme="blue" data-rg-mode="light">
+  <div class="" aria-disabled="false">
+  <a data-rg-n="Link" href="https://aws.amazon.com/marketplace/?nc2=h_utmp" data-rigel-analytics="{&quot;name&quot;:&quot;UtilityItem&quot;,&quot;properties&quot;:{&quot;size&quot;:2}}" class="rggn_8711ccd9 rggn_98b54368 rggn_13008707 rggn_bdf33f16 rggn_f34f99d0 rggn_007aef8b rggn_2a7f98ee"><span class="rggn_2788faca">AWS Marketplace</span></a>
+  </div>
+  </li>
+  <li class="rggn_9d375661 rggn_8ed090e4" data-rg-theme="blue" data-rg-mode="light">
+  <div class="" aria-disabled="false">
+  <button class="rggn_12eba964" data-rigel-analytics="{&quot;name&quot;:&quot;UtilityItem&quot;,&quot;toggle&quot;:&quot;open&quot;}" aria-expanded="false" aria-haspopup="menu"><span data-rg-n="BodyText" class="rggn_8711ccd9 rggn_98b54368 rggn_2788faca rggn_007aef8b">Support  <span class="rggn_4a77510b rggn_b16be37f rggn_a1b66739 rggn_3ed66ff4 rggn_bc1a8743"> 
+  
+  </span></span></button>
+  </div>
+  </li>
+  <li class="rggn_9d375661 rggn_8ed090e4" data-rg-theme="blue" data-rg-mode="light">
+  <div class="" aria-disabled="false">
+  <button class="rggn_12eba964" data-rigel-analytics="{&quot;name&quot;:&quot;UtilityItem&quot;,&quot;toggle&quot;:&quot;open&quot;}" aria-expanded="false" aria-haspopup="menu"><span data-rg-n="BodyText" class="rggn_8711ccd9 rggn_98b54368 rggn_2788faca rggn_007aef8b">My account  <span class="rggn_4a77510b rggn_b16be37f rggn_a1b66739 rggn_3ed66ff4 rggn_bc1a8743"> 
+  
+  </span></span></button>
+  </div>
+  </li>
+  <div class="rggn_ba4cf4bd" style="justify-content:end" aria-hidden="true">
+  <div data-scroll-sentinel="end" class="rggn_83f5293f rggn_35b3a639"></div>
+  </div>
+  </ul>
+  </div>
+  <div class="rggn_377e598a" role="button" tabindex="0" data-private="true" data-rigel-analytics="{&quot;name&quot;:&quot;Navatar&quot;}">
+  <div class="awsm-ik-navatar awsm-ik-navatar-light">
+  <button class="awsm-ik-navatar-icon" aria-label="navatar-icon"><span class="awsm-ik-loader-container" data-testid="navatar-icon-loader"><span class="loader-circle loader-circle-left"></span><span class="loader-circle loader-circle-right"></span></span></button>
+  </div>
+  </div>
+  </div>
+  </div>
+  <div class="rggn_24d84766">
+  <div data-rg-n="Grid" data-testid="nav-bar" aria-label="Primary global navigation" class="rggn_7b75643a rggn_85859631" style="--rg-grid-gap:var(--rg-margin-3)">
+  <ul class="rggn_be2a22f9">
+  <li class="rggn_03858538"><a aria-label="Click here to return to Amazon Web Services homepage" href="https://aws.amazon.com/?nc2=h_home" data-testid="nav-item-logo-link" data-rigel-analytics="{&quot;name&quot;:&quot;NavItem_Logo&quot;}"><span class="rggn_38e9dfc7 rggn_4b9fe4a2 rggn_a1b66739 rggn_3ed66ff4 rggn_bc1a8743"> 
+  
+  </span></a></li>
+  </ul>
+  <ul class="rggn_be2a22f9 rggn_0ec3f087">
+  <li>
+  <div>
+  <button class="rggn_03da0baa" data-label="search toggle" id="search-toggle" data-testid="nav-search-toggle" aria-expanded="false">
+  <p data-rg-n="BodyText" data-rigel-analytics="{&quot;name&quot;:&quot;NavItem_Search&quot;,&quot;toggle&quot;:&quot;open&quot;}" class="rggn_8711ccd9 rggn_98b54368 rggn_c623175b rggn_ce356c49 rggn_007aef8b"><span class="rggn_a1b66739 rggn_3ed66ff4 rggn_bc1a8743"> 
+  
+  </span>Search</p>
+  </button>
+  <div class="rggn_45ff45f3" data-transition-status="close" style="top:0px" data-testid="search">
+  <div role="presentation" class="rggn_8557fdd0">
+  <div id="" class="rggn_70747978 rggn_ddb4146d">
+  <div data-rg-n="GridStack" class="rggn_a7b74351 rggn_92ef7532" style="--rg-gridstack-gap:var(--rg-margin-2)">
+  <button role="button" aria-label="Close" class="rggn_9e423fbb rggn_1ed8cbde rggn_5962fadc rggn_e90ac70d rggn_3ef5a62a rggn_38d8ffac rggn_f7822e54 rggn_090951dc rggn_b675880e rggn_837570f1 rggn_a9ffa635 rggn_b0761591"><span class="rggn_127a95e3 rggn_a1b66739 rggn_3ed66ff4 rggn_bc1a8743"> 
+  
+  </span></button>
+  <div data-rg-n="Grid" data-testid="search-bar" class="rggn_0f1b9ff4 rggn_85859631" style="--rg-grid-gap:var(--rg-margin-3)">
+  <div data-rg-n="Col" class="rggn_7ca45506 rggn_710fa332 rggn_41cd749d">
+  <div role="button" tabindex="0" data-rigel-analytics="{&quot;name&quot;:&quot;SearchBar_OpenButton&quot;}">
+  <span class="rggn_a1b66739 rggn_3ed66ff4 rggn_bc1a8743"> 
+  
+  </span>
+  </div>
+  </div>
+  <div data-rg-n="Col" class="rggn_7ca45506 rggn_b3628528 rggn_da2ef39d rggn_90b792b3 rggn_7b802c53 rggn_900fec60 rggn_47b99bc1">
+  <div class="rggn_0f883e6a">
+  <div class="rggn_94438ba7">
+  <form>
+  <div>
+  <label aria-label="Search" class="rggn_9e423fbb rggn_1ed8cbde rggn_5962fadc rggn_e90ac70d rggn_1e736681 rggn_9e59f17d"><span class="rggn_fdbea277 rggn_a1b66739 rggn_bc1a8743"> 
+  
+  </span><input type="text" data-rg-n="BodyText" placeholder="I’m looking for..." autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="true" aria-controls="globalnav-search-results" aria-activedescendant="" aria-describedby="globalnav-search-suggestions" value="" data-rigel-analytics="{&quot;name&quot;:&quot;Input&quot;,&quot;properties&quot;:{&quot;variant&quot;:&quot;input&quot;}}" class="rggn_8711ccd9 rggn_98b54368 rggn_8c841604 rggn_275611e5"></label>
+  </div>
+  </form>
+  </div>
+  <div class="rggn_532f95bb">
+  <div data-rg-theme="blue" data-rg-mode="light" data-style-count="0">
+  <div class="rggn_9d11d2aa rggn_b6d88a82">
+  <div data-rg-theme="blue" data-rg-mode="light" data-style-count="0">
+  <div class="rggn_75f03c95">
+  <span> 
+  <div class="rggn_f91457ee">
+  <button role="button" aria-expanded="false" aria-haspopup="dialog" class="rggn_9e423fbb rggn_1ed8cbde rggn_5962fadc rggn_e90ac70d rggn_38d8ffac rggn_f7822e54 rggn_18409398 rggn_b78e9379 rggn_90c47075"><span class="rggn_d3d7facc"><span class="rggn_a1b66739 rggn_3ed66ff4 rggn_bc1a8743"> 
+  
+  </span></span><span data-rg-n="UtilityText" class="rggn_8711ccd9 rggn_5e58a6df rggn_82d7eac3 rggn_f5857abf rggn_aa83ac72">Filter: All</span></button>
+  </div>
+  </span> <span></span>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  <div data-rg-n="Grid" data-testid="search-results" id="globalnav-search-results" role="listbox" class="rggn_d2638cf4 rggn_85859631" style="--rg-grid-gap:var(--rg-margin-3)">
+  <div class="rggn_40bcb38f rggn_eacfad35"></div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </li>
+  <li><a data-rg-n="BodyText" href="https://console.aws.amazon.com/console/home/?nc2=h_si&amp;src=header-signin" data-rigel-analytics="{&quot;name&quot;:&quot;NavItem_SignIn&quot;}" class="rggn_8711ccd9 rggn_98b54368 rggn_70005696 rggn_007aef8b rggn_2a7f98ee"> 
+  <div class="rggn_c623175b">Sign in to console</div>
+  </a></li>
+  <li><a role="button" href="https://portal.aws.amazon.com/gp/aws/developer/registration/index.html?nc2=h_su&amp;src=header_signup" rel="noopener noreferrer" target="_blank" data-testid="create-account-button" data-rigel-analytics="{&quot;name&quot;:&quot;NavItem_CreateAccount&quot;,&quot;properties&quot;:{&quot;variant&quot;:&quot;primary&quot;}}" class="rggn_9e423fbb rggn_1ed8cbde rggn_5962fadc rggn_e90ac70d rggn_38d8ffac rggn_f7822e54 rggn_303c672b rggn_b78e9379 rggn_1361e3f3"><span data-rg-n="UtilityText" class="rggn_8711ccd9 rggn_5e58a6df rggn_82d7eac3 rggn_f5857abf rggn_aa83ac72">Create account</span></a></li>
+  </ul>
+  </div>
+  </div>
+  </nav>
+  <div class="rggn_65f0a205">
+  <div data-rg-theme="blue" data-rg-mode="light" data-style-count="0">
+  <button class="rggn_11480f5d" aria-label="Open feedback" aria-expanded="false" data-testid="feedback-button"><span class="rggn_b6db605f rggn_a1b66739 rggn_3ed66ff4 rggn_bc1a8743"> 
+  
+  </span></button>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+   </div>
+   <div class="root parsys">
+  <div data-custom-params="{}" data-trk-params="{}">
+  <div data-eb-slot="awsm-9abec49a-d8f1-4de8-baa6-df5f108931ae">
+  <div data-eb-tpl-n="awsm-rt/rt-subnav" data-eb-tpl-v="1.0.0" data-eb-ce="" data-eb-c-scope="9abec49a-d8f1-4de8-baa6-df5f108931ae" data-eb-d-scope="INLINE" data-eb-locale="en-US" data-eb-4d2447fd="" data-eb-ssr-ce="" data-eb-tpl-ns="awsmRT" data-eb-hydrated="pending">
+  
+  
+  <div data-eb-tpl-root="" data-reactroot="">
+  <span data-rigel-portal-reference="true"></span>
+  <div>
+  <div data-rg-lang="en" data-rg-locale="en-US" lang="en-US" dir="ltr">
+  <div data-rg-theme="orange" data-rg-mode="light" data-rg-style-count="0">
+  <div>
+  <div id="m-subnav" data-testid="subnav-desktop" class="rgsn_359d1dc8">
+  <div class="rgsn_9e423fbb rgsn_1b2a14d4 rgsn_3d631df0 rgsn_41460f40 rgsn_1587b0f0" style="--rg-box-p:var(--rg-padding-5);--rg-box-bg:var(--rg-color-background-page);--rg-box-r:var(--rg-radius-unit-2x)">
+  <div class="rgsn_c6b2261b">
+  <p data-rg-n="UtilityText" class="rgsn_8711ccd9 rgsn_82d7eac3 rgsn_c71ac0be rgsn_aa83ac72">AWS Blogs</p>
+  <div class="rgsn_f99f709a rgsn_cfc97a30 rgsn_76baadf8 rgsn_23885d27 rgsn_c82f547b">
+  <ul data-rg-list-dir="h" class="rgsn_3da1576c rgsn_1035c2c9">
+  <li aria-disabled="false" data-rigel-analytics="{&quot;name&quot;:&quot;SubnavDesktop_ListItem&quot;}" data-rg-theme="orange" data-rg-mode="light" class="rgsn_35a33a1b rgsn_8ed090e4 rgsn_5299a281 rgsn_9add067f"><a href="https://aws.amazon.com/blogs/"><span data-rg-n="BodyText" class="rgsn_8711ccd9 rgsn_98b54368 rgsn_007aef8b">Home</span></a></li>
+  <li aria-disabled="false" tabindex="0" aria-expanded="false" aria-haspopup="true" aria-label="Blogs submenu" data-rigel-analytics="{&quot;name&quot;:&quot;SubnavDesktop_ListItem&quot;}" data-rg-theme="orange" data-rg-mode="light" class="rgsn_35a33a1b rgsn_8ed090e4 rgsn_5299a281" role="button"><span data-rg-n="BodyText" class="rgsn_8711ccd9 rgsn_98b54368 rgsn_f26cd89e rgsn_007aef8b">Blogs</span>
+  <div class="rgsn_bb9a2578">
+  <span data-rg-n="BodyText" class="rgsn_8711ccd9 rgsn_98b54368 rgsn_605e1087 rgsn_275611e5"><span class="rgsn_19d4a58a rgsn_a1b66739 rgsn_3ed66ff4 rgsn_bc1a8743"> 
+  
+  </span></span>
+  </div></li>
+  <li aria-disabled="false" tabindex="0" aria-expanded="false" aria-haspopup="true" aria-label="Editions submenu" data-rigel-analytics="{&quot;name&quot;:&quot;SubnavDesktop_ListItem&quot;}" data-rg-theme="orange" data-rg-mode="light" class="rgsn_35a33a1b rgsn_8ed090e4 rgsn_5299a281" role="button"><span data-rg-n="BodyText" class="rgsn_8711ccd9 rgsn_98b54368 rgsn_f26cd89e rgsn_007aef8b">Editions</span>
+  <div class="rgsn_bb9a2578">
+  <span data-rg-n="BodyText" class="rgsn_8711ccd9 rgsn_98b54368 rgsn_605e1087 rgsn_275611e5"><span class="rgsn_19d4a58a rgsn_a1b66739 rgsn_3ed66ff4 rgsn_bc1a8743"> 
+  
+  </span></span>
+  </div></li>
+  </ul>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+   </div>
+  </header>
+  <div id="aws-page-content" class="page-content blog-page" data-page-alert-target="true">
+   <div class="aws-blog-content lb-row lb-row-max-large lb-snap lb-gutter-mid">
+  <main class="lb-col lb-tiny-24 lb-mid-16" role="main" id="aws-page-content-main" tabindex="-1">
+  <h2 class="lb-h5 blog-title"><a href="https://aws.amazon.com/blogs/aws/">AWS News Blog</a></h2>
+  <article class="blog-post" vocab="https://schema.org/" typeof="TechArticle">
+  <meta property="inLanguage" content="en-US">
+  <h1 class="lb-h2 blog-post-title" property="name headline">Amazon SQS turns 20: Two decades of reliable messaging at scale</h1>
+  <footer class="blog-post-meta" data-lb-comp="aws-blog:share-dialog">
+  <span>by Esra Kayabali</span> <span>on <time property="datePublished" datetime="2026-07-13T11:13:57-07:00">13 JUL 2026</time></span> <span>in <span class="blog-post-categories"><a href="https://aws.amazon.com/blogs/aws/category/messaging/amazon-simple-queue-service-sqs/" title="View all posts in Amazon Simple Queue Service (SQS)"><span property="articleSection">Amazon Simple Queue Service (SQS)</span></a>, <a href="https://aws.amazon.com/blogs/aws/category/post-types/announcements/" title="View all posts in Announcements"><span property="articleSection">Announcements</span></a>, <a href="https://aws.amazon.com/blogs/aws/category/news/launch/" title="View all posts in Launch"><span property="articleSection">Launch</span></a>, <a href="https://aws.amazon.com/blogs/aws/category/messaging/" title="View all posts in Messaging"><span property="articleSection">Messaging</span></a>, <a href="https://aws.amazon.com/blogs/aws/category/news/" title="View all posts in News"><span property="articleSection">News</span></a></span></span> <span><a href="https://aws.amazon.com/blogs/aws/amazon-sqs-turns-20-two-decades-of-reliable-messaging-at-scale/" property="url">Permalink</a></span> <span><a href="https://aws.amazon.com/blogs/aws/amazon-sqs-turns-20-two-decades-of-reliable-messaging-at-scale/#Comments"><i class="icon-comment"></i> Comments</a> </span> <span><a href="#" role="button" data-share-dialog-toggle><span class="span icon-share"></span> Share</a></span>
+  <div class="blog-share-dialog" data-share-dialog style="display: none;">
+  <ul>
+  <li><a class="lb-txt" href="https://www.facebook.com/sharer/sharer.php?u=https://aws.amazon.com/blogs/aws/amazon-sqs-turns-20-two-decades-of-reliable-messaging-at-scale/" target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook"><span class="icon-facebook-square"></span></a></li>
+  <li><a class="lb-txt" href="https://twitter.com/intent/tweet/?text=Amazon%20SQS%20turns%2020%3A%20Two%20decades%20of%20reliable%20messaging%20at%20scale&amp;via=awscloud&amp;url=https://aws.amazon.com/blogs/aws/amazon-sqs-turns-20-two-decades-of-reliable-messaging-at-scale/" target="_blank" rel="noopener noreferrer" aria-label="Share on Twitter"><span class="icon-twitter-square"></span></a></li>
+  <li><a class="lb-txt" href="https://www.linkedin.com/shareArticle?mini=true&amp;title=Amazon%20SQS%20turns%2020%3A%20Two%20decades%20of%20reliable%20messaging%20at%20scale&amp;source=Amazon%20Web%20Services&amp;url=https://aws.amazon.com/blogs/aws/amazon-sqs-turns-20-two-decades-of-reliable-messaging-at-scale/" target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn"><span class="icon-linkedin-square"></span></a></li>
+  <li><a class="lb-txt" href="mailto:?subject=Amazon%20SQS%20turns%2020%3A%20Two%20decades%20of%20reliable%20messaging%20at%20scale&amp;body=Amazon%20SQS%20turns%2020%3A%20Two%20decades%20of%20reliable%20messaging%20at%20scale%0A%0Ahttps://aws.amazon.com/blogs/aws/amazon-sqs-turns-20-two-decades-of-reliable-messaging-at-scale/" target="_blank" rel="noopener noreferrer" aria-label="Share on Email"><span class="icon-envelope-square"></span></a></li>
+  <li class="blog-share-dialog-url"><input type="text" value="https://aws.amazon.com/blogs/aws/amazon-sqs-turns-20-two-decades-of-reliable-messaging-at-scale/" title="Link to Amazon SQS turns 20: Two decades of reliable messaging at scale" readonly data-share-dialog-url></li>
+  </ul>
+  </div>
+  </footer>
+  <section class="blog-post-content lb-rtxt" property="articleBody">
+  <table id="amazon-polly-audio-table">
+  <tbody>
+  <tr>
+  <td id="amazon-polly-audio-tab">
+  <div id="amazon-ai-player-label"></div>
+  <div id="amazon-ai-player-container">
+  <audio class="amazon-ai-player" id="amazon-ai-player" preload="none" controls>
+  <source type="audio/mpeg" src="https://d2908q01vomqb2.cloudfront.net/polly/da4b9237bacccdf19c0760cab7aec4a8359010b0amazon_polly_104972.mp3?version=1783770576">
+  </audio>
+  </div>
+  <div id="amazon-polly-subscribe-tab"></div>
+  <div id="amazon-polly-by-tab">
+  <a href="https://aws.amazon.com/polly/" target="_blank" rel="noopener noreferrer"><img src="https://a0.awsstatic.com/aws-blog/images/Voiced_by_Amazon_Polly_EN.png" alt="Voiced by Polly" width="554" height="56"></a>
+  </div>
+  </td>
+  </tr>
+  </tbody>
+  </table>
+  <p>On July 13, 2006, we <a href="https://aws.amazon.com/blogs/aws/amazon_simple_q/">launched</a> <a href="https://aws.amazon.com/sqs/">Amazon Simple Queue Service (Amazon SQS)</a> as one of the first three services available to customers, alongside <a href="https://aws.amazon.com/blogs/aws/amazon_ec2_beta/">Amazon EC2</a> and <a href="https://aws.amazon.com/blogs/aws/amazon_s3/">Amazon S3</a>. We had learned firsthand that distributed systems need a reliable way to pass messages between components without creating tight dependencies. If one service called another directly and that service was slow or unavailable, failures cascaded through the entire system. Message queuing solved this by letting services communicate asynchronously: a producer could drop a message into a queue and move on, while a consumer picked it up when ready. This approach kept individual service failures from affecting the rest of the system.</p>
+  <p>When Amazon SQS launched publicly in July 2006, it made this pattern available to every AWS customer. Twenty years later, that core function, decoupling producers from consumers, remains the reason customers use SQS. The scale, performance, and operational controls around it look very different now though.</p>
+  <p><a href="https://aws.amazon.com/blogs/aws/author/jbarr/">Jeff Barr</a> covered the first 15 years of SQS milestones in his&nbsp;<a href="https://aws.amazon.com/blogs/aws/amazon-sqs-15-years-and-still-queueing/">15th anniversary post</a>, from the original 8 KB message limit in 2006 through FIFO queues, server-side encryption, and Lambda integration. Over the last five years, we have continued to scale SQS, added stronger security defaults, and introduced new capabilities that address increasingly complex workload patterns.</p>
+  <p><span style="text-decoration: underline"><strong>Key milestones between 2021 and 2026</strong></span>
+  <br>
+  <strong>High throughput mode for FIFO queues (2021):</strong>&nbsp;In <a href="https://aws.amazon.com/about-aws/whats-new/2021/05/amazon-sqs-now-supports-a-high-throughput-mode-for-fifo-queues/">May 2021</a>, we launched general availability of high throughput mode for FIFO queues, supporting up to 3,000 transactions per second (TPS) per API action, a tenfold increase over the previous limit. We continued raising this ceiling over the following two years: to 6,000 TPS in <a href="https://aws.amazon.com/about-aws/whats-new/2022/10/amazon-sqs-increased-throughput-quota-fifo-high-throughput-ht-mode-6000-transactions-per-second-tps/">October 2022</a>, to 9,000 TPS in <a href="https://aws.amazon.com/about-aws/whats-new/2023/08/amazon-sqs-increased-throughput-quota-fifo-high-throughput-mode/">August 2023</a>, and to 18,000 TPS in <a href="https://aws.amazon.com/about-aws/whats-new/2023/10/amazon-sqs-increased-throughput-quota-fifo-high-throughput-mode/">October 2023</a>, before reaching 70,000 TPS per API action in select Regions by <a href="https://aws.amazon.com/about-aws/whats-new/2023/11/amazon-sqs-throughput-quota-fifo-high-throughput-mode/">November 2023</a>.</p>
+  <p><strong>Server-side encryption with SSE-SQS (2021):</strong>&nbsp;In <a href="https://aws.amazon.com/about-aws/whats-new/2021/11/amazon-sqs-server-side-encryption-keys-sse/">November 2021</a>, we introduced server-side encryption with Amazon SQS-managed encryption keys (SSE-SQS), giving customers an encryption option that required no key management. In <a href="https://aws.amazon.com/about-aws/whats-new/2022/10/amazon-sqs-announces-server-side-encryption-ssq-managed-sse-sqs-default/">October 2022</a>, we made SSE-SQS the default for all newly created queues, so customers no longer needed to explicitly enable it.</p>
+  <p><strong>Dead-letter queue redrive enhancements (2021):</strong>&nbsp;We progressively expanded how customers recover unconsumed messages from dead-letter queues. In <a href="https://aws.amazon.com/about-aws/whats-new/2021/12/amazon-sqs-dead-letter-queue-management-experience-queues/">December 2021</a>, we added DLQ redrive to source queue directly in the SQS console. In <a href="https://aws.amazon.com/about-aws/whats-new/2023/06/amazon-sqs-dead-letter-queue-redrive-aws-sdk-cli/">June 2023</a>, we extended this capability to the AWS SDK and CLI through new APIs, including <code>StartMessageMoveTask</code>,&nbsp;<code>CancelMessageMoveTask</code>, and&nbsp;<code>ListMessageMoveTasks</code>. In <a href="https://aws.amazon.com/about-aws/whats-new/2023/11/amazon-sqs-fifo-dead-letter-queue-redrive/">November 2023</a>, we added redrive support for FIFO queues.</p>
+  <p><strong>Attribute-based access control, ABAC (2022):</strong>&nbsp;In <a href="https://aws.amazon.com/about-aws/whats-new/2022/11/amazon-sqs-attribute-based-access-control-abac-flexible-scalable-access-permissions/">November 2022</a>, we introduced ABAC, giving customers the ability to configure access permissions based on queue tags rather than maintaining static policies as resources scaled.</p>
+  <p><strong>JSON protocol support (2023):</strong>&nbsp;In <a href="https://aws.amazon.com/about-aws/whats-new/2023/11/amazon-sqs-support-json-protocol/">November 2023</a>, we added support for the JSON protocol in the AWS SDK, reducing end-to-end message processing latency by up to 23% for a 5 KB payload and lowering client-side CPU and memory usage.</p>
+  <p><strong>Amazon EventBridge Pipes console integration (2023):</strong>&nbsp;We <a href="https://aws.amazon.com/about-aws/whats-new/2023/11/amazon-sqs-eventbridge-pipes-console-integration/">added</a> the ability to connect a queue directly to EventBridge Pipes from the SQS console, routing messages to a broad range of AWS service targets without writing custom integration code.</p>
+  <p><strong>Extended Client Library for Python (2024):</strong>&nbsp;We <a href="https://aws.amazon.com/about-aws/whats-new/2024/02/amazon-sqs-extended-client-library-python-payloads/">brought</a> the Extended Client Library, previously available for Java, to Python developers, allowing messages up to 2 GB to be sent through SQS by storing the payload in Amazon S3 and passing a reference through the queue.</p>
+  <p><strong>FIFO in-flight message limit increase (2024):</strong>&nbsp;We <a href="https://aws.amazon.com/about-aws/whats-new/2024/11/amazon-sqs-increases-in-flight-limit-fifo-queues/">increased</a> the in-flight message limit for FIFO queues from 20,000 to 120,000 messages, so consumers can process significantly more messages concurrently without being constrained by the previous ceiling.</p>
+  <p><strong>Fair queues for multi-tenant workloads (2025):</strong>&nbsp;We <a href="https://aws.amazon.com/about-aws/whats-new/2025/07/amazon-sqs-introduces-fair/">introduced</a> fair queues to mitigate the noisy neighbor problem in multi-tenant standard queues. By including a message group ID when sending messages, customers can prevent a single tenant from delaying message delivery for others, without any changes required on the consumer side.</p>
+  <p><strong>1 MiB maximum message payload size (2025):</strong>&nbsp;We <a href="https://aws.amazon.com/about-aws/whats-new/2025/08/amazon-sqs-max-payload-size-1mib/">increased</a> the maximum message payload from 256 KiB to 1 MiB for both standard and FIFO queues, helping customers send larger messages without offloading data to external storage. AWS Lambda event source mapping for SQS was updated in parallel to support the new payload size.</p>
+  <p><span style="text-decoration: underline"><strong>The constant underneath the change</strong></span>
+  <br>
+  Despite two decades of feature additions, the fundamental use case for SQS has not shifted. Customers use it to decouple services, buffer bursts of traffic, and build systems that stay resilient when individual components fail. That same pattern now extends to AI workloads. Customers use SQS queues to buffer requests to large language models, manage inference throughput, and coordinate communication between autonomous AI agents operating as independent services. For an example of this architecture in practice, read <a href="https://aws.amazon.com/blogs/machine-learning/creating-asynchronous-ai-agents-with-amazon-bedrock/">Creating asynchronous AI agents with Amazon Bedrock</a>.</p>
+  <p>To learn more about Amazon SQS, visit the&nbsp;<a href="https://aws.amazon.com/sqs/">Amazon SQS product page</a>, review the&nbsp;<a href="https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html">developer guide</a>, or explore recent updates on the <a href="https://aws.amazon.com/blogs/compute/category/messaging/amazon-simple-queue-service-sqs/">AWS Blogs</a>.</p>
+  <a href="https://www.linkedin.com/in/esrakayabali/">— Esra</a> 
+  </section>
+  <footer>
+  <div class="blog-author-box" property="author" typeof="Person">
+  <div class="blog-author-image">
+  <img alt="Esra Kayabali" src="https://d2908q01vomqb2.cloudfront.net/da4b9237bacccdf19c0760cab7aec4a8359010b0/2025/03/24/esrakayabali11-400x400-1.jpg" width="125" property="image">
+  </div>
+  <h3 class="lb-h4" property="name">Esra Kayabali</h3>
+  <p property="description">Esra Kayabali is a Principal Solutions Architect at AWS, specializing in analytics, including data warehousing, data lakes, big data analytics, batch and real-time data streaming, and data integration. She has more than ten years of software development and solution architecture experience. She is passionate about collaborative learning, knowledge sharing, and guiding community in their cloud technologies journey.</p>
+  </div>
+  </footer>
+  <aside id="Comments" class="blog-comments">
+  <div data-lb-comp="aws-blog:cosmic-comments" data-env="prod" data-content-id="7e3e9d31-6c85-4093-9537-12ecf7ba201d" data-title="Amazon SQS turns 20: Two decades of reliable messaging at scale" data-url="https://aws.amazon.com/blogs/aws/amazon-sqs-turns-20-two-decades-of-reliable-messaging-at-scale/">
+  <p data-failed-message="Comments cannot be loaded… Please refresh and try again.">Loading comments…</p>
+  </div>
+  </aside>
+  <div class="js-mbox" data-mbox="en_blog_post_comments"></div>
+  </article>
+  </main>
+  <div class="blog-sidebar lb-col lb-tiny-24 lb-mid-8">
+  <div class="awsm">
+  <div class="lb-box" style="padding-left:30px;">
+  <h3 id="Resources" class="lb-txt-none lb-h3 lb-title" style="margin-top:30px;">Resources</h3>
+  <div class="data-attr-wrapper lb-none-pad lb-none-v-margin lb-box" data-da-type="ha" data-da-channel="ha" data-da-language="en" data-da-placement="blog-sb-resources" data-da-campaign="acq_awsblogsb" data-da-content="news-resources" data-da-trk="blog_initial">
+  <ul class="lb-txt-none lb-none-v-margin lb-ul lb-list-style-none lb-li-none-v-margin lb-tiny-ul-block">
+  <li><a href="https://aws.amazon.com/getting-started?sc_ichannel=ha&amp;sc_icampaign=acq_awsblogsb&amp;sc_icontent=news-resources">Getting Started</a></li>
+  <li><a href="https://aws.amazon.com/new?sc_ichannel=ha&amp;sc_icampaign=acq_awsblogsb&amp;sc_icontent=news-resources">What's New</a></li>
+  <li><a href="https://aws.amazon.com/blogs?sc_ichannel=ha&amp;sc_icampaign=acq_awsblogsb&amp;sc_icontent=news-resources">Top Posts</a></li>
+  <li><a href="https://aws.amazon.com/podcasts/aws-podcast?sc_ichannel=ha&amp;sc_icampaign=acq_awsblogsb&amp;sc_icontent=news-resources">Official AWS Podcast</a></li>
+  <li><a href="https://aws.amazon.com/solutions/case-studies?sc_ichannel=ha&amp;sc_icampaign=acq_awsblogsb&amp;sc_icontent=news-resources">Case Studies</a></li>
+  <li><a href="https://repost.aws/" title="https://repost.aws/" alt="https://repost.aws/">AWS re:Post</a></li>
+  </ul>
+  <div class="lb-grid lb-row lb-row-max-large lb-snap">
+  <div class="lb-col lb-tiny-24 lb-mid-8">
+  <hr class="lb-divider">
+  </div>
+  <div class="lb-col lb-tiny-24 lb-mid-8"></div>
+  <div class="lb-col lb-tiny-24 lb-mid-8"></div>
+  </div>
+  </div>
+  <h3 id="Follow" class="lb-txt-none lb-h3 lb-title">Follow</h3>
+  <div class="data-attr-wrapper lb-none-pad lb-none-v-margin lb-box" data-da-type="ha" data-da-channel="ha" data-da-language="en" data-da-placement="blog-sb-social" data-da-campaign="acq_awsblogsb" data-da-content="news-social" data-da-trk="blog_initial">
+  <ul class="lb-txt-none lb-none-v-margin lb-ul lb-list-style-none lb-li-none-v-margin lb-tiny-ul-block">
+  <li><a href="https://twitter.com/awscloud"><i class="icon-twitter-square lb-before"></i>&nbsp;Twitter</a></li>
+  <li><a href="https://www.facebook.com/amazonwebservices"><i class="icon-facebook-square lb-before"></i>&nbsp;Facebook</a></li>
+  <li><a href="https://www.linkedin.com/company/amazon-web-services/"><i class="icon-linkedin-square lb-before"></i>&nbsp;LinkedIn</a></li>
+  <li><a href="https://www.twitch.tv/aws"><i class="icon-twitch lb-before"></i>&nbsp;Twitch</a></li>
+  <li><a href="https://aws.amazon.com/blogs/aws/feed/"><i class="icon-rss-square lb-before"></i>&nbsp;RSS Feed</a></li>
+  <li><a href="https://pages.awscloud.com/communication-preferences?sc_ichannel=ha&amp;sc_icampaign=acq_awsblogsb&amp;sc_icontent=news-social"><i class="icon-envelope-square lb-before"></i>&nbsp;Email Updates</a></li>
+  </ul>
+  </div>
+  </div>
+  </div>
+  <div class="js-mbox" data-mbox="en_blog_post_sidebar"></div>
+  </div>
+   </div>
+  </div>
+  <div id="aws-page-footer" class="footer">
+   <div class="root parsys">
+  <div class="component-wrapper">
+  <div class="lb-mbox js-mbox" data-lb-comp="mbox" data-lb-comp-ignore="true" data-mbox="en_ams-footer-legal-links-ccba">
+  <div data-custom-params="{}" data-trk-params="{}">
+  <div data-eb-slot="awsm-60b05ba9-929a-48e0-9388-3f7530fe485f">
+  <div data-eb-tpl-n="awsm-rt/rt-footer" data-eb-tpl-v="1.0.0" data-eb-ce="" data-eb-c-scope="60b05ba9-929a-48e0-9388-3f7530fe485f" data-eb-d-scope="INLINE" data-eb-locale="en-US" data-eb-6a8f3296="" data-eb-ssr-ce="" data-eb-tpl-ns="awsmRT" data-eb-hydrated="pending">
+  
+  
+  <div data-eb-tpl-root="" data-reactroot="">
+  <span data-rigel-portal-reference="true"></span>
+  <footer role="contentinfo">
+  <div data-rg-lang="en" data-rg-locale="en-US" lang="en-US" dir="ltr">
+  <div data-rg-theme="orange" data-rg-mode="dark" data-style-count="0">
+  <div>
+  <div id="" class="rgft_70747978 rgft_ddb4146d">
+  <div data-rg-n="GridStack" class="rgft_563c562a rgft_92ef7532" style="--rg-gridstack-gap:var(--rg-margin-2)">
+  <div data-rg-n="Grid" class="rgft_45aa1f39 rgft_85859631" style="--rg-grid-gap:var(--rg-margin-3)">
+  <div data-rg-n="Col" class="rgft_7ca45506 rgft_f6ca794c">
+  <div data-rg-n="Grid" class="rgft_11eb7627 rgft_85859631" style="--rg-grid-gap:var(--rg-margin-3)">
+  <div data-rg-n="Col" class="rgft_7ca45506 rgft_2f390d15 rgft_2aef2225 rgft_387166a7 rgft_1cdd9d8d rgft_a80e4900 rgft_f36c46cb">
+  <a role="button" href="https://signin.aws.amazon.com/signup?request_type=register" rel="noopener noreferrer" target="_blank" data-testid="footer-create-account-button" data-rigel-analytics="{&quot;name&quot;:&quot;Button&quot;,&quot;properties&quot;:{&quot;variant&quot;:&quot;primary&quot;}}" class="rgft_9e423fbb rgft_1ed8cbde rgft_5962fadc rgft_e90ac70d rgft_38d8ffac rgft_f7822e54 rgft_303c672b rgft_b78e9379 rgft_d0491a70"><span data-rg-n="UtilityText" class="rgft_8711ccd9 rgft_5e58a6df rgft_82d7eac3 rgft_f5857abf rgft_aa83ac72">Create an AWS account</span></a>
+  </div>
+  <div data-rg-n="Col" class="rgft_7ca45506 rgft_4381b023 rgft_114d6be0">
+  <h2 data-rg-n="TitleText" class="rgft_8711ccd9 rgft_7047aa37 rgft_b97b7b3b">Learn</h2>
+  <ul class="rgft_290ac8b1">
+  <li><a data-rg-n="Link" href="/what-is-aws/?nc1=f_cc" data-rigel-analytics="{&quot;name&quot;:&quot;Link&quot;,&quot;properties&quot;:{&quot;size&quot;:1}}" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_27323f5c rgft_275611e5 rgft_2a7f98ee">What Is AWS?</a></li>
+  <li><a data-rg-n="Link" href="/what-is-cloud-computing/?nc1=f_cc" data-rigel-analytics="{&quot;name&quot;:&quot;Link&quot;,&quot;properties&quot;:{&quot;size&quot;:1}}" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_27323f5c rgft_275611e5 rgft_2a7f98ee">What Is Cloud Computing?</a></li>
+  <li><a data-rg-n="Link" href="/what-is/agentic-ai/?nc1=f_cc" data-rigel-analytics="{&quot;name&quot;:&quot;Link&quot;,&quot;properties&quot;:{&quot;size&quot;:1}}" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_27323f5c rgft_275611e5 rgft_2a7f98ee">What Is Agentic AI?</a></li>
+  <li><a data-rg-n="Link" href="/what-is/?nc1=f_cc" data-rigel-analytics="{&quot;name&quot;:&quot;Link&quot;,&quot;properties&quot;:{&quot;size&quot;:1}}" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_27323f5c rgft_275611e5 rgft_2a7f98ee">Cloud Computing Concepts Hub</a></li>
+  <li><a data-rg-n="Link" href="/security/?nc1=f_cc" data-rigel-analytics="{&quot;name&quot;:&quot;Link&quot;,&quot;properties&quot;:{&quot;size&quot;:1}}" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_27323f5c rgft_275611e5 rgft_2a7f98ee">AWS Cloud Security</a></li>
+  <li><a data-rg-n="Link" href="/new/?nc1=f_cc" data-rigel-analytics="{&quot;name&quot;:&quot;Link&quot;,&quot;properties&quot;:{&quot;size&quot;:1}}" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_27323f5c rgft_275611e5 rgft_2a7f98ee">What's New</a></li>
+  <li><a data-rg-n="Link" href="/blogs/?nc1=f_cc" data-rigel-analytics="{&quot;name&quot;:&quot;Link&quot;,&quot;properties&quot;:{&quot;size&quot;:1}}" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_27323f5c rgft_275611e5 rgft_2a7f98ee">Blogs</a></li>
+  <li><a data-rg-n="Link" href="https://press.aboutamazon.com/press-releases/aws" rel="noopener noreferrer" target="_blank" data-rigel-analytics="{&quot;name&quot;:&quot;Link&quot;,&quot;properties&quot;:{&quot;size&quot;:1}}" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_27323f5c rgft_275611e5 rgft_2a7f98ee">Press Releases</a></li>
+  </ul>
+  </div>
+  <div data-rg-n="Col" class="rgft_7ca45506 rgft_4381b023 rgft_114d6be0">
+  <h2 data-rg-n="TitleText" class="rgft_8711ccd9 rgft_7047aa37 rgft_b97b7b3b">Resources</h2>
+  <ul class="rgft_290ac8b1">
+  <li><a data-rg-n="Link" href="/getting-started/?nc1=f_cc" data-rigel-analytics="{&quot;name&quot;:&quot;Link&quot;,&quot;properties&quot;:{&quot;size&quot;:1}}" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_27323f5c rgft_275611e5 rgft_2a7f98ee">Getting Started</a></li>
+  <li><a data-rg-n="Link" href="/training/?nc1=f_cc" data-rigel-analytics="{&quot;name&quot;:&quot;Link&quot;,&quot;properties&quot;:{&quot;size&quot;:1}}" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_27323f5c rgft_275611e5 rgft_2a7f98ee">Training</a></li>
+  <li><a data-rg-n="Link" href="/trust-center/?nc1=f_cc" data-rigel-analytics="{&quot;name&quot;:&quot;Link&quot;,&quot;properties&quot;:{&quot;size&quot;:1}}" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_27323f5c rgft_275611e5 rgft_2a7f98ee">AWS Trust Center</a></li>
+  <li><a data-rg-n="Link" href="/solutions/?nc1=f_cc" data-rigel-analytics="{&quot;name&quot;:&quot;Link&quot;,&quot;properties&quot;:{&quot;size&quot;:1}}" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_27323f5c rgft_275611e5 rgft_2a7f98ee">AWS Solutions Library</a></li>
+  <li><a data-rg-n="Link" href="/architecture/?nc1=f_cc" data-rigel-analytics="{&quot;name&quot;:&quot;Link&quot;,&quot;properties&quot;:{&quot;size&quot;:1}}" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_27323f5c rgft_275611e5 rgft_2a7f98ee">Architecture Center</a></li>
+  <li><a data-rg-n="Link" href="/faqs/?nc1=f_dr" data-rigel-analytics="{&quot;name&quot;:&quot;Link&quot;,&quot;properties&quot;:{&quot;size&quot;:1}}" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_27323f5c rgft_275611e5 rgft_2a7f98ee">Product and Technical FAQs</a></li>
+  <li><a data-rg-n="Link" href="/resources/analyst-reports/?nc1=f_cc" data-rigel-analytics="{&quot;name&quot;:&quot;Link&quot;,&quot;properties&quot;:{&quot;size&quot;:1}}" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_27323f5c rgft_275611e5 rgft_2a7f98ee">Analyst Reports</a></li>
+  <li><a data-rg-n="Link" href="/partners/work-with-partners/?nc1=f_dr" data-rigel-analytics="{&quot;name&quot;:&quot;Link&quot;,&quot;properties&quot;:{&quot;size&quot;:1}}" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_27323f5c rgft_275611e5 rgft_2a7f98ee">AWS Partners</a></li>
+  </ul>
+  </div>
+  <div data-rg-n="Col" class="rgft_7ca45506 rgft_4381b023 rgft_114d6be0">
+  <h2 data-rg-n="TitleText" class="rgft_8711ccd9 rgft_7047aa37 rgft_b97b7b3b">Developers</h2>
+  <ul class="rgft_290ac8b1">
+  <li><a data-rg-n="Link" href="/developer/?nc1=f_dr" data-rigel-analytics="{&quot;name&quot;:&quot;Link&quot;,&quot;properties&quot;:{&quot;size&quot;:1}}" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_27323f5c rgft_275611e5 rgft_2a7f98ee">Builder Center</a></li>
+  <li><a data-rg-n="Link" href="/developer/tools/?nc1=f_dr" data-rigel-analytics="{&quot;name&quot;:&quot;Link&quot;,&quot;properties&quot;:{&quot;size&quot;:1}}" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_27323f5c rgft_275611e5 rgft_2a7f98ee">SDKs &amp; Tools</a></li>
+  <li><a data-rg-n="Link" href="/developer/language/net/?nc1=f_dr" data-rigel-analytics="{&quot;name&quot;:&quot;Link&quot;,&quot;properties&quot;:{&quot;size&quot;:1}}" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_27323f5c rgft_275611e5 rgft_2a7f98ee">.NET on AWS</a></li>
+  <li><a data-rg-n="Link" href="/developer/language/python/?nc1=f_dr" data-rigel-analytics="{&quot;name&quot;:&quot;Link&quot;,&quot;properties&quot;:{&quot;size&quot;:1}}" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_27323f5c rgft_275611e5 rgft_2a7f98ee">Python on AWS</a></li>
+  <li><a data-rg-n="Link" href="/developer/language/java/?nc1=f_dr" data-rigel-analytics="{&quot;name&quot;:&quot;Link&quot;,&quot;properties&quot;:{&quot;size&quot;:1}}" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_27323f5c rgft_275611e5 rgft_2a7f98ee">Java on AWS</a></li>
+  <li><a data-rg-n="Link" href="/developer/language/php/?nc1=f_cc" data-rigel-analytics="{&quot;name&quot;:&quot;Link&quot;,&quot;properties&quot;:{&quot;size&quot;:1}}" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_27323f5c rgft_275611e5 rgft_2a7f98ee">PHP on AWS</a></li>
+  <li><a data-rg-n="Link" href="/developer/language/javascript/?nc1=f_dr" data-rigel-analytics="{&quot;name&quot;:&quot;Link&quot;,&quot;properties&quot;:{&quot;size&quot;:1}}" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_27323f5c rgft_275611e5 rgft_2a7f98ee">JavaScript on AWS</a></li>
+  </ul>
+  </div>
+  <div data-rg-n="Col" class="rgft_7ca45506 rgft_4381b023 rgft_114d6be0">
+  <h2 data-rg-n="TitleText" class="rgft_8711ccd9 rgft_7047aa37 rgft_b97b7b3b">Help</h2>
+  <ul class="rgft_290ac8b1">
+  <li><a data-rg-n="Link" href="/contact-us/?nc1=f_m" data-rigel-analytics="{&quot;name&quot;:&quot;Link&quot;,&quot;properties&quot;:{&quot;size&quot;:1}}" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_27323f5c rgft_275611e5 rgft_2a7f98ee">Contact Us</a></li>
+  <li><a data-rg-n="Link" href="https://console.aws.amazon.com/support/home/?nc1=f_dr" rel="noopener noreferrer" target="_blank" data-rigel-analytics="{&quot;name&quot;:&quot;Link&quot;,&quot;properties&quot;:{&quot;size&quot;:1}}" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_27323f5c rgft_275611e5 rgft_2a7f98ee">File a Support Ticket</a></li>
+  <li><a data-rg-n="Link" href="https://repost.aws/?nc1=f_dr" rel="noopener noreferrer" target="_blank" data-rigel-analytics="{&quot;name&quot;:&quot;Link&quot;,&quot;properties&quot;:{&quot;size&quot;:1}}" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_27323f5c rgft_275611e5 rgft_2a7f98ee">AWS re:Post</a></li>
+  <li><a data-rg-n="Link" href="https://repost.aws/knowledge-center/?nc1=f_dr" rel="noopener noreferrer" target="_blank" data-rigel-analytics="{&quot;name&quot;:&quot;Link&quot;,&quot;properties&quot;:{&quot;size&quot;:1}}" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_27323f5c rgft_275611e5 rgft_2a7f98ee">Knowledge Center</a></li>
+  <li><a data-rg-n="Link" href="/premiumsupport/?nc1=f_dr" data-rigel-analytics="{&quot;name&quot;:&quot;Link&quot;,&quot;properties&quot;:{&quot;size&quot;:1}}" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_27323f5c rgft_275611e5 rgft_2a7f98ee">AWS Support Overview</a></li>
+  <li><a data-rg-n="Link" href="https://iq.aws.amazon.com/?utm=mkt.foot/?nc1=f_m" rel="noopener noreferrer" target="_blank" data-rigel-analytics="{&quot;name&quot;:&quot;Link&quot;,&quot;properties&quot;:{&quot;size&quot;:1}}" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_27323f5c rgft_275611e5 rgft_2a7f98ee">Get Expert Help</a></li>
+  <li><a data-rg-n="Link" href="/accessibility/?nc1=f_cc" data-rigel-analytics="{&quot;name&quot;:&quot;Link&quot;,&quot;properties&quot;:{&quot;size&quot;:1}}" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_27323f5c rgft_275611e5 rgft_2a7f98ee">AWS Accessibility</a></li>
+  <li><a data-rg-n="Link" href="/legal/?nc1=f_cc" data-rigel-analytics="{&quot;name&quot;:&quot;Link&quot;,&quot;properties&quot;:{&quot;size&quot;:1}}" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_27323f5c rgft_275611e5 rgft_2a7f98ee">Legal</a></li>
+  </ul>
+  </div>
+  <div data-rg-n="Col" class="rgft_7ca45506 rgft_2f390d15 rgft_2aef2225 rgft_387166a7 rgft_1cdd9d8d rgft_a80e4900 rgft_f36c46cb rgft_fc2c8cd2">
+  <button role="button" tabindex="0" data-testid="language-selector-button" aria-expanded="false" aria-haspopup="dialog" class="rgft_9e423fbb rgft_1ed8cbde rgft_5962fadc rgft_e90ac70d rgft_38d8ffac rgft_f7822e54 rgft_18409398 rgft_b78e9379 rgft_90c47075"><span class="rgft_d3d7facc"><span class="rgft_a1b66739 rgft_3ed66ff4 rgft_bc1a8743"> 
+  
+  </span></span><span data-rg-n="UtilityText" class="rgft_8711ccd9 rgft_5e58a6df rgft_82d7eac3 rgft_f5857abf rgft_aa83ac72">English<span class="rgft_aadbf8f1 rgft_a1b66739 rgft_3ed66ff4 rgft_bc1a8743"> 
+  
+  </span></span></button>
+  </div>
+  <div data-rg-n="Col" class="rgft_7ca45506 rgft_f6ca794c rgft_29322bb5">
+  <button data-rg-n="Link" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_a69dc288 rgft_d9725c73 rgft_3669185e rgft_2a7f98ee">Back to top<span class="rgft_a1b66739 rgft_3ed66ff4 rgft_bc1a8743"> 
+  
+  </span></button>
+  </div>
+  <div data-rg-n="Col" class="rgft_7ca45506 rgft_2f390d15 rgft_2aef2225 rgft_67470d0b rgft_f962cbf7 rgft_f6cf9812 rgft_86571464 rgft_6bf4d00d">
+  <span data-rg-n="BodyText" class="rgft_8711ccd9 rgft_98b54368 rgft_007aef8b">Amazon is an Equal Opportunity Employer: Minority / Women / Disability / Veteran / Gender Identity / Sexual Orientation / Age.</span>
+  </div>
+  <div data-rg-n="Col" class="rgft_7ca45506 rgft_2f390d15 rgft_2aef2225 rgft_b815655e rgft_6e4a3878 rgft_afa17dc5 rgft_9618eab1">
+  <div class="rgft_5570117e">
+  <a href="https://twitter.com/awscloud" aria-label="x" data-rigel-analytics="{&quot;name&quot;:&quot;Footer_SocialMediaLink&quot;}" tabindex="0"><span class="rgft_a1b66739 rgft_3ed66ff4 rgft_bc1a8743"> 
+  
+  </span></a> <a href="https://www.facebook.com/amazonwebservices" aria-label="facebook" data-rigel-analytics="{&quot;name&quot;:&quot;Footer_SocialMediaLink&quot;}" tabindex="0"><span class="rgft_a1b66739 rgft_3ed66ff4 rgft_bc1a8743"> 
+  
+  </span></a> <a href="https://www.linkedin.com/company/amazon-web-services/" aria-label="linkedin" data-rigel-analytics="{&quot;name&quot;:&quot;Footer_SocialMediaLink&quot;}" tabindex="0"><span class="rgft_a1b66739 rgft_3ed66ff4 rgft_bc1a8743"> 
+  
+  </span></a> <a href="https://www.instagram.com/amazonwebservices/" aria-label="instagram" data-rigel-analytics="{&quot;name&quot;:&quot;Footer_SocialMediaLink&quot;}" tabindex="0"><span class="rgft_a1b66739 rgft_3ed66ff4 rgft_bc1a8743"> 
+  
+  </span></a> <a href="https://www.twitch.tv/aws" aria-label="twitch" data-rigel-analytics="{&quot;name&quot;:&quot;Footer_SocialMediaLink&quot;}" tabindex="0"><span class="rgft_a1b66739 rgft_3ed66ff4 rgft_bc1a8743"> 
+  
+  </span></a> <a href="https://www.youtube.com/user/AmazonWebServices/Cloud/" aria-label="youtube" data-rigel-analytics="{&quot;name&quot;:&quot;Footer_SocialMediaLink&quot;}" tabindex="0"><span class="rgft_a1b66739 rgft_3ed66ff4 rgft_bc1a8743"> 
+  
+  </span></a> <a href="/podcasts/?nc1=f_cc" aria-label="podcasts" data-rigel-analytics="{&quot;name&quot;:&quot;Footer_SocialMediaLink&quot;}" tabindex="0"><span class="rgft_a1b66739 rgft_3ed66ff4 rgft_bc1a8743"> 
+  
+  </span></a> <a href="https://pages.awscloud.com/communication-preferences?trk=homepage" aria-label="email" data-rigel-analytics="{&quot;name&quot;:&quot;Footer_SocialMediaLink&quot;}" tabindex="0"><span class="rgft_a1b66739 rgft_3ed66ff4 rgft_bc1a8743"> 
+  
+  </span></a>
+  </div>
+  </div>
+  <div data-rg-n="Col" class="rgft_7ca45506 rgft_f6ca794c rgft_caf08481">
+  <ul class="rgft_fbe69ca6">
+  <li><a data-rg-n="Link" href="/privacy/?nc1=f_pr" data-rigel-analytics="{&quot;name&quot;:&quot;Link&quot;,&quot;properties&quot;:{&quot;size&quot;:2}}" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_27323f5c rgft_007aef8b rgft_2a7f98ee">Privacy</a></li>
+  <li><a data-rg-n="Link" href="/terms/?nc1=f_pr" data-rigel-analytics="{&quot;name&quot;:&quot;Link&quot;,&quot;properties&quot;:{&quot;size&quot;:2}}" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_27323f5c rgft_007aef8b rgft_2a7f98ee">Site terms</a></li>
+  <li><a data-rg-n="Link" href="#" rel="noopener noreferrer" target="_blank" data-rigel-analytics="{&quot;name&quot;:&quot;Link&quot;,&quot;properties&quot;:{&quot;size&quot;:2}}" class="rgft_8711ccd9 rgft_98b54368 rgft_13008707 rgft_27323f5c rgft_007aef8b rgft_2a7f98ee">Cookie Preferences</a></li>
+  </ul>
+  <div class="rgft_7a36e004">
+  <div>
+  <span data-rg-n="BodyText" class="rgft_8711ccd9 rgft_98b54368 rgft_007aef8b">© 2026, Amazon Web Services, Inc. or its affiliates. All rights reserved.</span>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </footer>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+   </div>
+  </div>
+  <div id="aws-page-end"></div>
+  
+ </body>
+</html>

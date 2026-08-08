@@ -1,0 +1,1155 @@
+<!doctype html>
+<html lang="en-US" class="mt-0">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	
+	<meta name='robots' content='index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' />
+
+	
+	<title>Don&#039;t stop early: Case-folding source code at memory speed - The GitHub Blog</title>
+	<meta name="description" content="How a branch-free loop and byte-space arithmetic let GitHub case-fold every byte of code search at &gt;45 GiB/s on a single core." />
+	
+	<meta property="og:locale" content="en_US" />
+	<meta property="og:type" content="article" />
+	<meta property="og:title" content="Don&#039;t stop early: Case-folding source code at memory speed" />
+	<meta property="og:description" content="How a branch-free loop and byte-space arithmetic let GitHub case-fold every byte of code search at &gt;45 GiB/s on a single core." />
+	<meta property="og:url" content="https://github.blog/engineering/architecture-optimization/dont-stop-early-case-folding-source-code-at-memory-speed/" />
+	<meta property="og:site_name" content="The GitHub Blog" />
+	<meta property="article:published_time" content="2026-07-31T16:00:00+00:00" />
+	<meta property="og:image" content="https://github.blog/wp-content/uploads/2026/01/generic-github-invertocat-logo.png?fit=1920%2C1080" />
+	<meta property="og:image:width" content="1920" />
+	<meta property="og:image:height" content="1080" />
+	<meta property="og:image:type" content="image/png" />
+	<meta name="author" content="Alexander Neubeck, Greg Orzell" />
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:label1" content="Written by" />
+	<meta name="twitter:data1" content="Alexander Neubeck, Greg Orzell" />
+	<meta name="twitter:label2" content="Est. reading time" />
+	<meta name="twitter:data2" content="16 minutes" />
+
+	
+	
+
+<meta name="generator" content="WordPress 7.0.3" />
+
+	
+		
+<meta name="ha-url" content="https://collector.githubapp.com/github-blog/collect">
+
+<meta name="msapplication-TileImage" content="https://github.blog/wp-content/uploads/2019/01/cropped-github-favicon-512.png?fit=270%2C270" />
+
+</head>
+<body class="wp-singular post-template-default single single-post postid-97648 single-format-standard wp-embed-responsive wp-theme-github-2021 wp-child-theme-github-2021-child font-mktg no-sidebar" data-color-mode="light" data-light-theme="light" data-dark-theme="dark">
+		<div data-color-mode="dark" data-light-theme="light" data-dark-theme="dark_dimmed" class="pt-header pt-lg-0">
+		<header id="header" class="header position-fixed position-lg-static pb-lg-header z-4 top-0 left-0 right-0 d-flex flex-column flex-items-stretch color-bg-default">
+  <a href="#start-of-content" class="p-3 color-bg-accent-emphasis color-fg-on-emphasis show-on-focus">
+  Skip to content			</a>
+  <a href="#sidebar" id="skip-to-sidebar" class="p-3 color-bg-accent-emphasis color-fg-on-emphasis show-on-focus">
+  Skip to sidebar  </a>
+  <div class="position-relative container-xl width-full mx-auto p-responsive-blog">
+  <div class="d-flex flex-items-center flex-justify-between pt-3 pb-3 color-fg-default">
+  
+<a href="https://github.com" target="_blank" rel="noreferrer" aria-label="GitHub homepage" class="Header-link position-relative d-flex flex-items-center color-fg-default">
+	
+</a>
+<span class="d-inline-block ml-2 f1-mktg f2-md-mktg" style="opacity: 0.3;">/</span>
+<a class="d-inline-block Header-link font-weight-semibold ml-2 f2 color-fg-default" href="https://github.blog/">
+	Blog</a>
+  
+<nav class="d-none d-lg-block" aria-label="Secondary navigation">
+	<ul id="secondary-navigation" class="secondary-navigation flex-items-center flex-nowrap list-style-none ml-4" aria-hidden="false"><li id="menu-item-78809"><a href="https://github.blog/changelog/" class="position-relative d-flex flex-items-center flex-start no-wrap py-2 px-4 f4 lh-condensed-ultra Link--secondary color-fg-default text-medium"><span class="menu-item-label">Changelog</span></a></li>
+<li id="menu-item-78810"><a href="https://docs.github.com/" class="position-relative d-flex flex-items-center flex-start no-wrap py-2 px-4 f4 lh-condensed-ultra Link--secondary color-fg-default text-medium"><span class="menu-item-label">Docs</span></a></li>
+<li id="menu-item-78811"><a href="https://github.com/customer-stories" class="position-relative d-flex flex-items-center flex-start no-wrap py-2 px-4 f4 lh-condensed-ultra Link--secondary color-fg-default text-medium"><span class="menu-item-label">Customer stories</span></a></li>
+</ul></nav>
+  
+<div class="d-none d-lg-flex flex-1">
+	<form id="desktop-search" class="desktop-search position-relative ml-lg-4 flex-1" action="https://github.blog" method="get" aria-hidden="true" aria-label="Search form" role="search">
+		<div class="position-relative d-flex flex-1 height-full color-bg-transparent" data-color-mode="light" data-light-theme="light" data-dark-theme="dark" >
+			<input aria-label="Search the blog" type="search" class="p-2 pl-3 pr-6 border-0 rounded-2 flex-1" placeholder="Search the blog…" value="" name="s" id="search-input">
+			<button type="submit" class="position-absolute right-0 z-3 d-flex flex-items-center flex-justify-center flex-self-center mr-2 p-2 border-0 rounded-2 color-bg-transparent color-fg-subtle" aria-label="Search">
+  
+			</button>
+		</div>
+	</form>
+	<button aria-label="Toggle search" class="flex-self-center ml-auto p-2 border-0 color-bg-transparent color-fg-default rounded-3 js-toggle" aria-controls="desktop-search" aria-expanded="false" >
+		
+		
+	</button>
+
+		<a		class="Button Button--size-medium Button--primary ml-3"
+		href="https://github.com/features/ai/github-app?utm_source=blog-header-button-cta&#038;utm_medium=blog&#038;utm_campaign=github-app-cli-Q1-push"  target="_blank"		data-analytics-click="Blog, click on button, text: Use Copilot for free; ref_location:top nav;"  >
+		<span class="Button__text">
+		<span class="Text Text--200 Text--antialiased Text--weight-semibold Button--label Button--label-medium Button--label-primary">
+			Try GitHub Copilot app		</span>
+		</span>
+
+			</a>
+		<a		class="Button Button--size-medium Button--secondary ml-3"
+		href="https://githubuniverse.com/?utm_source=Blog-button&#038;utm_medium=GitHub&#038;utm_campaign=blog_button_seb_uni_26"  target="_blank"		data-analytics-click="Blog, click on button, text: Attend Universe; ref_location:top nav;"  >
+		<span class="Button__text">
+		<span class="Text Text--200 Text--antialiased Text--weight-semibold Button--label Button--label-medium Button--label-secondary">
+			Attend GitHub Universe		</span>
+		</span>
+
+			</a>
+	</div>
+  
+<div class="d-flex d-lg-none flex-items-center flex-1 mr-n2">
+	<button aria-label="Toggle search" class="ml-auto p-2 border-0 color-bg-transparent color-fg-default rounded-3 js-toggle" aria-controls="mobile-search" aria-expanded="false" >
+		
+		
+	</button>
+	<button class="mobile-nav-focus-trap js-mobile-nav-focus-trap" data-target="#mobile-menu" data-focus-order="last"></button>
+	<button id="mobile-menu-toggle"  aria-label="Toggle menu" class="ml-2 p-2 border-0 color-bg-transparent color-fg-default rounded-3 js-toggle" aria-controls="mobile-menu" aria-expanded="false" data-trap-focus="#header">
+		
+		
+	</button>
+</div>
+  </div>
+			</div>
+  <div class="position-relative pb-lg-navigation" data-sticky-navigation=".sticky-navigation">
+  
+<nav aria-label="Primary navigation" class="sticky-navigation position-absolute z-4 top-0 left-0 d-none d-lg-block width-full color-border-subtle color-bg-default">
+	<div class="position-relative container-xl width-full mx-auto p-responsive-blog">
+		<ul id="primary-navigation" class="primary-navigation position-relative d-flex flex-row flex-nowrap flex-grow-0 flex-justify-between list-style-none"><li id="menu-item-78814"><a href="https://github.blog/ai-and-ml/" class="position-relative d-flex flex-items-center flex-start no-wrap py-3 f4-mktg text-bold js-toggle" aria-controls="primary-78814-dropdown" aria-expanded="false" aria-haspopup="true" role="button">AI &amp; ML</a>
+<ul class="dropdown d-flex flex-wrap width-full position-absolute left-0 list-style-none mt-2 rounded-3 z-3 overflow-hidden color-border-subtle" aria-label="AI &amp; ML sub-menu" aria-hidden="true" data-color-mode="light" data-dark-theme="dark" data-light-theme="light" id="primary-78814-dropdown" tabindex="-1">
+	<li id="menu-item-78863" class="flex-1 p-5 py-xl-7 px-xl-7"><div class="col-9 mb-4 mb-lg-7"><a href="https://github.blog/ai-and-ml/" class="d-flex flex-items-center flex-start f3 lh-condensed color-fg-default text-bold">AI &amp; ML</a><p class="mt-1 my-0 f4 color-fg-muted">Learn about artificial intelligence and machine learning across the GitHub ecosystem and the wider industry.</p></div>
+	<ul class="d-flex flex-wrap list-style-none" aria-label="AI &amp; ML sub-menu">
+		<li id="menu-item-78815" class="col-6 d-block f4 color-fg-default color-border-subtle pr-4 pr-lg-8 border-right"><a href="https://github.blog/ai-and-ml/generative-ai/" class="d-block f4 color-fg-default text-bold">Generative AI</a><p class="mb-0 f5 color-fg-muted">Learn how to build with generative AI.</p></li>
+		<li id="menu-item-78816" class="col-6 d-block f4 color-fg-default color-border-subtle pl-4 pl-lg-8"><a href="https://github.blog/ai-and-ml/github-copilot/" class="d-block f4 color-fg-default text-bold">GitHub Copilot</a><p class="mb-0 f5 color-fg-muted">Change how you work with GitHub Copilot.</p></li>
+		<li id="menu-item-78817" class="col-6 d-block f4 color-fg-default color-border-subtle pr-4 pr-lg-8 border-right pt-2 pt-lg-4"><a href="https://github.blog/ai-and-ml/llms/" class="d-block f4 color-fg-default text-bold">LLMs</a><p class="mb-0 f5 color-fg-muted">Everything developers need to know about LLMs.</p></li>
+		<li id="menu-item-78818" class="col-6 d-block f4 color-fg-default color-border-subtle pl-4 pl-lg-8 pt-2 pt-lg-4"><a href="https://github.blog/ai-and-ml/machine-learning/" class="d-block f4 color-fg-default text-bold">Machine learning</a><p class="mb-0 f5 color-fg-muted">Machine learning tips, tricks, and best practices.</p></li>
+	</ul>
+</li>
+	<li id="menu-item-78864" class="p-5 py-xl-7 px-xl-8 col-4 color-bg-subtle post-card"><div class="d-block position-relative mb-3 rounded-2 tease-thumbnail overflow-hidden"><img width="800" height="425" src="https://github.blog/wp-content/uploads/2024/06/AI-DarkMode-4.png?resize=800%2C425" class="tease-thumbnail__img d-block width-full height-auto aspect-ratio-1032-548 object-fit-cover" alt="" decoding="async" fetchpriority="high" srcset="https://github.blog/wp-content/uploads/2024/06/AI-DarkMode-4.png?w=300 300w, https://github.blog/wp-content/uploads/2024/06/AI-DarkMode-4.png?w=800 800w, https://github.blog/wp-content/uploads/2024/06/AI-DarkMode-4.png?w=400 400w, https://github.blog/wp-content/uploads/2024/06/AI-DarkMode-4.png?w=1032 1032w, https://github.blog/wp-content/uploads/2024/06/AI-DarkMode-4.png?w=516 516w" sizes="(max-width: 800px) 100vw, 800px" /></div><a href="https://github.blog/ai-and-ml/generative-ai/how-ai-code-generation-works/" class="d-block mb-2 f3 lh-condensed color-fg-default text-bold post-card__link">How AI code generation works</a><p class="mb-3 f5 color-fg-muted">Explore the capabilities and benefits of AI code generation and how it can improve your developer experience.</p><span class="Link d-inline-flex flex-items-center" role="presentation">Learn more</span></li>
+</ul>
+</li>
+<li id="menu-item-78819"><a href="https://github.blog/developer-skills/" class="position-relative d-flex flex-items-center flex-start no-wrap py-3 f4-mktg text-bold js-toggle" aria-controls="primary-78819-dropdown" aria-expanded="false" aria-haspopup="true" role="button">Developer skills</a>
+<ul class="dropdown d-flex flex-wrap width-full position-absolute left-0 list-style-none mt-2 rounded-3 z-3 overflow-hidden color-border-subtle" aria-label="Developer skills sub-menu" aria-hidden="true" data-color-mode="light" data-dark-theme="dark" data-light-theme="light" id="primary-78819-dropdown" tabindex="-1">
+	<li id="menu-item-78865" class="flex-1 p-5 py-xl-7 px-xl-7"><div class="col-9 mb-4 mb-lg-7"><a href="https://github.blog/developer-skills/" class="d-flex flex-items-center flex-start f3 lh-condensed color-fg-default text-bold">Developer skills</a><p class="mt-1 my-0 f4 color-fg-muted">Resources for developers to grow in their skills and careers.</p></div>
+	<ul class="d-flex flex-wrap list-style-none" aria-label="Developer skills sub-menu">
+		<li id="menu-item-78820" class="col-6 d-block f4 color-fg-default color-border-subtle pr-4 pr-lg-8 border-right"><a href="https://github.blog/developer-skills/application-development/" class="d-block f4 color-fg-default text-bold">Application development</a><p class="mb-0 f5 color-fg-muted">Insights and best practices for building apps.</p></li>
+		<li id="menu-item-78821" class="col-6 d-block f4 color-fg-default color-border-subtle pl-4 pl-lg-8"><a href="https://github.blog/developer-skills/career-growth/" class="d-block f4 color-fg-default text-bold">Career growth</a><p class="mb-0 f5 color-fg-muted">Tips &amp; tricks to grow as a professional developer.</p></li>
+		<li id="menu-item-78822" class="col-6 d-block f4 color-fg-default color-border-subtle pr-4 pr-lg-8 border-right pt-2 pt-lg-4"><a href="https://github.blog/developer-skills/github/" class="d-block f4 color-fg-default text-bold">GitHub</a><p class="mb-0 f5 color-fg-muted">Improve how you use GitHub at work.</p></li>
+		<li id="menu-item-78823" class="col-6 d-block f4 color-fg-default color-border-subtle pl-4 pl-lg-8 pt-2 pt-lg-4"><a href="https://github.blog/developer-skills/github-education/" class="d-block f4 color-fg-default text-bold">GitHub Education</a><p class="mb-0 f5 color-fg-muted">Learn how to move into your first professional role.</p></li>
+		<li id="menu-item-78824" class="col-6 d-block f4 color-fg-default color-border-subtle pr-4 pr-lg-8 border-right pt-2 pt-lg-4"><a href="https://github.blog/developer-skills/programming-languages-and-frameworks/" class="d-block f4 color-fg-default text-bold">Programming languages &amp; frameworks</a><p class="mb-0 f5 color-fg-muted">Stay current on what’s new (or new again).</p></li>
+	</ul>
+</li>
+	<li id="menu-item-78866" class="p-5 py-xl-7 px-xl-8 col-4 color-bg-subtle post-card"><div class="d-block position-relative mb-3 rounded-2 tease-thumbnail overflow-hidden"><img width="800" height="425" src="https://github.blog/wp-content/uploads/2024/05/Enterprise-DarkMode-3.png?resize=800%2C425" class="tease-thumbnail__img d-block width-full height-auto aspect-ratio-1032-548 object-fit-cover" alt="" decoding="async" srcset="https://github.blog/wp-content/uploads/2024/05/Enterprise-DarkMode-3.png?w=300 300w, https://github.blog/wp-content/uploads/2024/05/Enterprise-DarkMode-3.png?w=800 800w, https://github.blog/wp-content/uploads/2024/05/Enterprise-DarkMode-3.png?w=400 400w, https://github.blog/wp-content/uploads/2024/05/Enterprise-DarkMode-3.png?w=1032 1032w, https://github.blog/wp-content/uploads/2024/05/Enterprise-DarkMode-3.png?w=516 516w" sizes="(max-width: 800px) 100vw, 800px" /></div><a href="https://docs.github.com/en/get-started" class="d-block mb-2 f3 lh-condensed color-fg-default text-bold post-card__link">Get started with GitHub documentation</a><p class="mb-3 f5 color-fg-muted">Learn how to start building, shipping, and maintaining software with GitHub.</p><span class="Link d-inline-flex flex-items-center" role="presentation">Learn more</span></li>
+</ul>
+</li>
+<li id="menu-item-78825"><a href="https://github.blog/engineering/" class="position-relative d-flex flex-items-center flex-start no-wrap py-3 f4-mktg text-bold js-toggle" aria-controls="primary-78825-dropdown" aria-expanded="false" aria-haspopup="true" role="button">Engineering</a>
+<ul class="dropdown d-flex flex-wrap width-full position-absolute left-0 list-style-none mt-2 rounded-3 z-3 overflow-hidden color-border-subtle" aria-label="Engineering sub-menu" aria-hidden="true" data-color-mode="light" data-dark-theme="dark" data-light-theme="light" id="primary-78825-dropdown" tabindex="-1">
+	<li id="menu-item-78867" class="flex-1 p-5 py-xl-7 px-xl-7"><div class="col-9 mb-4 mb-lg-7"><a href="https://github.blog/engineering/" class="d-flex flex-items-center flex-start f3 lh-condensed color-fg-default text-bold">Engineering</a><p class="mt-1 my-0 f4 color-fg-muted">Get an inside look at how we’re building the home for all developers.</p></div>
+	<ul class="d-flex flex-wrap list-style-none" aria-label="Engineering sub-menu">
+		<li id="menu-item-78827" class="col-6 d-block f4 color-fg-default color-border-subtle pr-4 pr-lg-8 border-right"><a href="https://github.blog/engineering/architecture-optimization/" class="d-block f4 color-fg-default text-bold">Architecture &amp; optimization</a><p class="mb-0 f5 color-fg-muted">Discover how we deliver a performant and highly available experience across the GitHub platform.</p></li>
+		<li id="menu-item-78828" class="col-6 d-block f4 color-fg-default color-border-subtle pl-4 pl-lg-8"><a href="https://github.blog/engineering/engineering-principles/" class="d-block f4 color-fg-default text-bold">Engineering principles</a><p class="mb-0 f5 color-fg-muted">Explore best practices for building software at scale with a majority remote team.</p></li>
+		<li id="menu-item-78829" class="col-6 d-block f4 color-fg-default color-border-subtle pr-4 pr-lg-8 border-right pt-2 pt-lg-4"><a href="https://github.blog/engineering/infrastructure/" class="d-block f4 color-fg-default text-bold">Infrastructure</a><p class="mb-0 f5 color-fg-muted">Get a glimpse at the technology underlying the world’s leading AI-powered developer platform.</p></li>
+		<li id="menu-item-78830" class="col-6 d-block f4 color-fg-default color-border-subtle pl-4 pl-lg-8 pt-2 pt-lg-4"><a href="https://github.blog/engineering/platform-security/" class="d-block f4 color-fg-default text-bold">Platform security</a><p class="mb-0 f5 color-fg-muted">Learn how we build security into everything we do across the developer lifecycle.</p></li>
+		<li id="menu-item-78858" class="col-6 d-block f4 color-fg-default color-border-subtle pr-4 pr-lg-8 border-right pt-2 pt-lg-4"><a href="https://github.blog/engineering/user-experience/" class="d-block f4 color-fg-default text-bold">User experience</a><p class="mb-0 f5 color-fg-muted">Find out what goes into making GitHub the home for all developers.</p></li>
+	</ul>
+</li>
+	<li id="menu-item-78868" class="p-5 py-xl-7 px-xl-8 col-4 color-bg-subtle post-card"><div class="d-block position-relative mb-3 rounded-2 tease-thumbnail overflow-hidden"><img width="800" height="425" src="https://github.blog/wp-content/uploads/2024/07/Screenshot-2024-07-23-at-8.42.45 AM.png?resize=800%2C425" class="tease-thumbnail__img d-block width-full height-auto aspect-ratio-1032-548 object-fit-cover" alt="" decoding="async" srcset="https://github.blog/wp-content/uploads/2024/07/Screenshot-2024-07-23-at-8.42.45 AM.png?w=800 800w, https://github.blog/wp-content/uploads/2024/07/Screenshot-2024-07-23-at-8.42.45 AM.png?w=400 400w, https://github.blog/wp-content/uploads/2024/07/Screenshot-2024-07-23-at-8.42.45 AM.png?w=1032 1032w, https://github.blog/wp-content/uploads/2024/07/Screenshot-2024-07-23-at-8.42.45 AM.png?w=516 516w" sizes="(max-width: 800px) 100vw, 800px" /></div><a href="https://github.blog/engineering/how-we-use-github-to-be-more-productive-collaborative-and-secure/" class="d-block mb-2 f3 lh-condensed color-fg-default text-bold post-card__link">How we use GitHub to be more productive, collaborative, and secure</a><p class="mb-3 f5 color-fg-muted">Our engineering and security teams do some incredible work. Let’s take a look at how we use GitHub to be more productive, build collaboratively, and shift security left.</p><span class="Link d-inline-flex flex-items-center" role="presentation">Learn more</span></li>
+</ul>
+</li>
+<li id="menu-item-78832"><a href="https://github.blog/enterprise-software/" class="position-relative d-flex flex-items-center flex-start no-wrap py-3 f4-mktg text-bold js-toggle" aria-controls="primary-78832-dropdown" aria-expanded="false" aria-haspopup="true" role="button">Enterprise software</a>
+<ul class="dropdown d-flex flex-wrap width-full position-absolute left-0 list-style-none mt-2 rounded-3 z-3 overflow-hidden color-border-subtle" aria-label="Enterprise software sub-menu" aria-hidden="true" data-color-mode="light" data-dark-theme="dark" data-light-theme="light" id="primary-78832-dropdown" tabindex="-1">
+	<li id="menu-item-78869" class="flex-1 p-5 py-xl-7 px-xl-7"><div class="col-9 mb-4 mb-lg-7"><a href="https://github.blog/enterprise-software/" class="d-flex flex-items-center flex-start f3 lh-condensed color-fg-default text-bold">Enterprise software</a><p class="mt-1 my-0 f4 color-fg-muted">Explore how to write, build, and deploy enterprise software at scale.</p></div>
+	<ul class="d-flex flex-wrap list-style-none" aria-label="Enterprise software sub-menu">
+		<li id="menu-item-78833" class="col-6 d-block f4 color-fg-default color-border-subtle pr-4 pr-lg-8 border-right"><a href="https://github.blog/enterprise-software/automation/" class="d-block f4 color-fg-default text-bold">Automation</a><p class="mb-0 f5 color-fg-muted">Automating your way to faster and more secure ships.</p></li>
+		<li id="menu-item-78834" class="col-6 d-block f4 color-fg-default color-border-subtle pl-4 pl-lg-8"><a href="https://github.blog/enterprise-software/ci-cd/" class="d-block f4 color-fg-default text-bold">CI/CD</a><p class="mb-0 f5 color-fg-muted">Guides on continuous integration and delivery.</p></li>
+		<li id="menu-item-78835" class="col-6 d-block f4 color-fg-default color-border-subtle pr-4 pr-lg-8 border-right pt-2 pt-lg-4"><a href="https://github.blog/enterprise-software/collaboration/" class="d-block f4 color-fg-default text-bold">Collaboration</a><p class="mb-0 f5 color-fg-muted">Tips, tools, and tricks to improve developer collaboration.</p></li>
+		<li id="menu-item-78836" class="col-6 d-block f4 color-fg-default color-border-subtle pl-4 pl-lg-8 pt-2 pt-lg-4"><a href="https://github.blog/enterprise-software/devops/" class="d-block f4 color-fg-default text-bold">DevOps</a><p class="mb-0 f5 color-fg-muted">DevOps resources for enterprise engineering teams.</p></li>
+		<li id="menu-item-78837" class="col-6 d-block f4 color-fg-default color-border-subtle pr-4 pr-lg-8 border-right pt-2 pt-lg-4"><a href="https://github.blog/enterprise-software/devsecops/" class="d-block f4 color-fg-default text-bold">DevSecOps</a><p class="mb-0 f5 color-fg-muted">How to integrate security into the SDLC.</p></li>
+		<li id="menu-item-78838" class="col-6 d-block f4 color-fg-default color-border-subtle pl-4 pl-lg-8 pt-2 pt-lg-4"><a href="https://github.blog/enterprise-software/governance-and-compliance/" class="d-block f4 color-fg-default text-bold">Governance &amp; compliance</a><p class="mb-0 f5 color-fg-muted">Ensuring your builds stay clean.</p></li>
+	</ul>
+</li>
+	<li id="menu-item-78870" class="p-5 py-xl-7 px-xl-8 col-4 color-bg-subtle post-card"><div class="d-block position-relative mb-3 rounded-2 tease-thumbnail overflow-hidden"><img width="800" height="425" src="https://github.blog/wp-content/uploads/2024/07/Screenshot-2024-07-23-at-8.43.47 AM.png?resize=800%2C425" class="tease-thumbnail__img d-block width-full height-auto aspect-ratio-1032-548 object-fit-cover" alt="" decoding="async" srcset="https://github.blog/wp-content/uploads/2024/07/Screenshot-2024-07-23-at-8.43.47 AM.png?w=800 800w, https://github.blog/wp-content/uploads/2024/07/Screenshot-2024-07-23-at-8.43.47 AM.png?w=400 400w, https://github.blog/wp-content/uploads/2024/07/Screenshot-2024-07-23-at-8.43.47 AM.png?w=1032 1032w, https://github.blog/wp-content/uploads/2024/07/Screenshot-2024-07-23-at-8.43.47 AM.png?w=516 516w" sizes="(max-width: 800px) 100vw, 800px" /></div><a href="https://github.com/resources/whitepapers/gartner-magic-quadrant-and-critical-capabilities-for-ai-code-assistants" class="d-block mb-2 f3 lh-condensed color-fg-default text-bold post-card__link">GitHub recognized as a Leader in the Gartner® Magic Quadrant™ for AI Code Assistants</a><p class="mb-3 f5 color-fg-muted">Learn why Gartner positioned GitHub as a Leader for the second year in a row.</p><span class="Link d-inline-flex flex-items-center" role="presentation">Learn more</span></li>
+</ul>
+</li>
+<li id="menu-item-78840"><a href="https://github.blog/news-insights/" class="position-relative d-flex flex-items-center flex-start no-wrap py-3 f4-mktg text-bold js-toggle" aria-controls="primary-78840-dropdown" aria-expanded="false" aria-haspopup="true" role="button">News &amp; insights</a>
+<ul class="dropdown d-flex flex-wrap width-full position-absolute left-0 list-style-none mt-2 rounded-3 z-3 overflow-hidden color-border-subtle" aria-label="News &amp; insights sub-menu" aria-hidden="true" data-color-mode="light" data-dark-theme="dark" data-light-theme="light" id="primary-78840-dropdown" tabindex="-1">
+	<li id="menu-item-78871" class="flex-1 p-5 py-xl-7 px-xl-7"><div class="col-9 mb-4 mb-lg-7"><a href="https://github.blog/news-insights/" class="d-flex flex-items-center flex-start f3 lh-condensed color-fg-default text-bold">News &amp; insights</a><p class="mt-1 my-0 f4 color-fg-muted">Keep up with what’s new and notable from inside GitHub.</p></div>
+	<ul class="d-flex flex-wrap list-style-none" aria-label="News &amp; insights sub-menu">
+		<li id="menu-item-78841" class="col-6 d-block f4 color-fg-default color-border-subtle pr-4 pr-lg-8 border-right"><a href="https://github.blog/news-insights/company-news/" class="d-block f4 color-fg-default text-bold">Company news</a><p class="mb-0 f5 color-fg-muted">An inside look at news and product updates from GitHub.</p></li>
+		<li id="menu-item-78844" class="col-6 d-block f4 color-fg-default color-border-subtle pl-4 pl-lg-8"><a href="https://github.blog/news-insights/product-news/" class="d-block f4 color-fg-default text-bold">Product</a><p class="mb-0 f5 color-fg-muted">The latest on GitHub’s platform, products, and tools.</p></li>
+		<li id="menu-item-78842" class="col-6 d-block f4 color-fg-default color-border-subtle pr-4 pr-lg-8 border-right pt-2 pt-lg-4"><a href="https://github.blog/news-insights/octoverse/" class="d-block f4 color-fg-default text-bold">Octoverse</a><p class="mb-0 f5 color-fg-muted">Insights into the state of open source on GitHub.</p></li>
+		<li id="menu-item-78843" class="col-6 d-block f4 color-fg-default color-border-subtle pl-4 pl-lg-8 pt-2 pt-lg-4"><a href="https://github.blog/news-insights/policy-news-and-insights/" class="d-block f4 color-fg-default text-bold">Policy</a><p class="mb-0 f5 color-fg-muted">The latest policy and regulatory changes in software.</p></li>
+		<li id="menu-item-78845" class="col-6 d-block f4 color-fg-default color-border-subtle pr-4 pr-lg-8 border-right pt-2 pt-lg-4"><a href="https://github.blog/news-insights/research/" class="d-block f4 color-fg-default text-bold">Research</a><p class="mb-0 f5 color-fg-muted">Data-driven insights around the developer ecosystem.</p></li>
+		<li id="menu-item-78847" class="col-6 d-block f4 color-fg-default color-border-subtle pl-4 pl-lg-8 pt-2 pt-lg-4"><a href="https://github.blog/news-insights/the-library/" class="d-block f4 color-fg-default text-bold">The library</a><p class="mb-0 f5 color-fg-muted">Older news and updates from GitHub.</p></li>
+	</ul>
+</li>
+	<li id="menu-item-78872" class="p-5 py-xl-7 px-xl-8 col-4 color-bg-subtle post-card"><div class="d-block position-relative mb-3 rounded-2 tease-thumbnail overflow-hidden"><img width="800" height="425" src="https://github.blog/wp-content/uploads/2024/07/Screenshot-2024-07-23-at-8.44.23 AM.png?resize=800%2C425" class="tease-thumbnail__img d-block width-full height-auto aspect-ratio-1032-548 object-fit-cover" alt="" decoding="async" srcset="https://github.blog/wp-content/uploads/2024/07/Screenshot-2024-07-23-at-8.44.23 AM.png?w=300 300w, https://github.blog/wp-content/uploads/2024/07/Screenshot-2024-07-23-at-8.44.23 AM.png?w=800 800w, https://github.blog/wp-content/uploads/2024/07/Screenshot-2024-07-23-at-8.44.23 AM.png?w=400 400w, https://github.blog/wp-content/uploads/2024/07/Screenshot-2024-07-23-at-8.44.23 AM.png?w=1032 1032w, https://github.blog/wp-content/uploads/2024/07/Screenshot-2024-07-23-at-8.44.23 AM.png?w=516 516w" sizes="(max-width: 800px) 100vw, 800px" /></div><a href="https://github.blog/ai-and-ml/llms/unlocking-the-power-of-unstructured-data-with-rag/" class="d-block mb-2 f3 lh-condensed color-fg-default text-bold post-card__link">Unlocking the power of unstructured data with RAG</a><p class="mb-3 f5 color-fg-muted">Learn how to use retrieval-augmented generation (RAG) to capture more insights.</p><span class="Link d-inline-flex flex-items-center" role="presentation">Learn more</span></li>
+</ul>
+</li>
+<li id="menu-item-78848"><a href="https://github.blog/open-source/" class="position-relative d-flex flex-items-center flex-start no-wrap py-3 f4-mktg text-bold js-toggle" aria-controls="primary-78848-dropdown" aria-expanded="false" aria-haspopup="true" role="button">Open Source</a>
+<ul class="dropdown d-flex flex-wrap width-full position-absolute left-0 list-style-none mt-2 rounded-3 z-3 overflow-hidden color-border-subtle" aria-label="Open Source sub-menu" aria-hidden="true" data-color-mode="light" data-dark-theme="dark" data-light-theme="light" id="primary-78848-dropdown" tabindex="-1">
+	<li id="menu-item-78873" class="flex-1 p-5 py-xl-7 px-xl-7"><div class="col-9 mb-4 mb-lg-7"><a href="https://github.blog/open-source/" class="d-flex flex-items-center flex-start f3 lh-condensed color-fg-default text-bold">Open Source</a><p class="mt-1 my-0 f4 color-fg-muted">Everything open source on GitHub.</p></div>
+	<ul class="d-flex flex-wrap list-style-none" aria-label="Open Source sub-menu">
+		<li id="menu-item-78851" class="col-6 d-block f4 color-fg-default color-border-subtle pr-4 pr-lg-8 border-right"><a href="https://github.blog/open-source/git/" class="d-block f4 color-fg-default text-bold">Git</a><p class="mb-0 f5 color-fg-muted">The latest Git updates.</p></li>
+		<li id="menu-item-78853" class="col-6 d-block f4 color-fg-default color-border-subtle pl-4 pl-lg-8"><a href="https://github.blog/open-source/maintainers/" class="d-block f4 color-fg-default text-bold">Maintainers</a><p class="mb-0 f5 color-fg-muted">Spotlighting open source maintainers.</p></li>
+		<li id="menu-item-78854" class="col-6 d-block f4 color-fg-default color-border-subtle pr-4 pr-lg-8 border-right pt-2 pt-lg-4"><a href="https://github.blog/open-source/social-impact/" class="d-block f4 color-fg-default text-bold">Social impact</a><p class="mb-0 f5 color-fg-muted">How open source is driving positive change.</p></li>
+		<li id="menu-item-78850" class="col-6 d-block f4 color-fg-default color-border-subtle pl-4 pl-lg-8 pt-2 pt-lg-4"><a href="https://github.blog/open-source/gaming/" class="d-block f4 color-fg-default text-bold">Gaming</a><p class="mb-0 f5 color-fg-muted">Explore open source games on GitHub.</p></li>
+	</ul>
+</li>
+	<li id="menu-item-78874" class="p-5 py-xl-7 px-xl-8 col-4 color-bg-subtle post-card"><div class="d-block position-relative mb-3 rounded-2 tease-thumbnail overflow-hidden"><img width="800" height="425" src="https://github.blog/wp-content/uploads/2024/07/Screenshot-2024-07-23-at-8.46.23 AM.png?resize=800%2C425" class="tease-thumbnail__img d-block width-full height-auto aspect-ratio-1032-548 object-fit-cover" alt="" decoding="async" srcset="https://github.blog/wp-content/uploads/2024/07/Screenshot-2024-07-23-at-8.46.23 AM.png?w=800 800w, https://github.blog/wp-content/uploads/2024/07/Screenshot-2024-07-23-at-8.46.23 AM.png?w=400 400w, https://github.blog/wp-content/uploads/2024/07/Screenshot-2024-07-23-at-8.46.23 AM.png?w=1032 1032w, https://github.blog/wp-content/uploads/2024/07/Screenshot-2024-07-23-at-8.46.23 AM.png?w=516 516w" sizes="(max-width: 800px) 100vw, 800px" /></div><a href="https://resources.github.com/software-development/innersource/" class="d-block mb-2 f3 lh-condensed color-fg-default text-bold post-card__link">An introduction to innersource</a><p class="mb-3 f5 color-fg-muted">Organizations worldwide are incorporating open source methodologies into the way they build and ship their own software.</p><span class="Link d-inline-flex flex-items-center" role="presentation">Learn more</span></li>
+</ul>
+</li>
+<li id="menu-item-78859"><a href="https://github.blog/security/" class="position-relative d-flex flex-items-center flex-start no-wrap py-3 f4-mktg text-bold js-toggle" aria-controls="primary-78859-dropdown" aria-expanded="false" aria-haspopup="true" role="button">Security</a>
+<ul class="dropdown d-flex flex-wrap width-full position-absolute left-0 list-style-none mt-2 rounded-3 z-3 overflow-hidden color-border-subtle" aria-label="Security sub-menu" aria-hidden="true" data-color-mode="light" data-dark-theme="dark" data-light-theme="light" id="primary-78859-dropdown" tabindex="-1">
+	<li id="menu-item-78875" class="flex-1 p-5 py-xl-7 px-xl-7"><div class="col-9 mb-4 mb-lg-7"><a href="https://github.blog/security/" class="d-flex flex-items-center flex-start f3 lh-condensed color-fg-default text-bold">Security</a><p class="mt-1 my-0 f4 color-fg-muted">Stay up to date on everything security.</p></div>
+	<ul class="d-flex flex-wrap list-style-none" aria-label="Security sub-menu">
+		<li id="menu-item-78860" class="col-6 d-block f4 color-fg-default color-border-subtle pr-4 pr-lg-8 border-right"><a href="https://github.blog/security/application-security/" class="d-block f4 color-fg-default text-bold">Application security</a><p class="mb-0 f5 color-fg-muted">Application security, explained.</p></li>
+		<li id="menu-item-78861" class="col-6 d-block f4 color-fg-default color-border-subtle pl-4 pl-lg-8"><a href="https://github.blog/security/supply-chain-security/" class="d-block f4 color-fg-default text-bold">Supply chain security</a><p class="mb-0 f5 color-fg-muted">Demystifying supply chain security.</p></li>
+		<li id="menu-item-78855" class="col-6 d-block f4 color-fg-default color-border-subtle pr-4 pr-lg-8 border-right pt-2 pt-lg-4"><a href="https://github.blog/security/vulnerability-research/" class="d-block f4 color-fg-default text-bold">Vulnerability research</a><p class="mb-0 f5 color-fg-muted">Updates from the GitHub Security Lab.</p></li>
+		<li id="menu-item-78862" class="col-6 d-block f4 color-fg-default color-border-subtle pl-4 pl-lg-8 pt-2 pt-lg-4"><a href="https://github.blog/security/web-application-security/" class="d-block f4 color-fg-default text-bold">Web application security</a><p class="mb-0 f5 color-fg-muted">Helpful tips on securing web applications.</p></li>
+	</ul>
+</li>
+	<li id="menu-item-78876" class="p-5 py-xl-7 px-xl-8 col-4 color-bg-subtle post-card"><div class="d-block position-relative mb-3 rounded-2 tease-thumbnail overflow-hidden"><img width="800" height="425" src="https://github.blog/wp-content/uploads/2024/07/Screenshot-2024-07-23-at-8.47.04 AM.png?resize=800%2C425" class="tease-thumbnail__img d-block width-full height-auto aspect-ratio-1032-548 object-fit-cover" alt="" decoding="async" srcset="https://github.blog/wp-content/uploads/2024/07/Screenshot-2024-07-23-at-8.47.04 AM.png?w=800 800w, https://github.blog/wp-content/uploads/2024/07/Screenshot-2024-07-23-at-8.47.04 AM.png?w=400 400w, https://github.blog/wp-content/uploads/2024/07/Screenshot-2024-07-23-at-8.47.04 AM.png?w=1032 1032w, https://github.blog/wp-content/uploads/2024/07/Screenshot-2024-07-23-at-8.47.04 AM.png?w=516 516w" sizes="(max-width: 800px) 100vw, 800px" /></div><a href="https://resources.github.com/security/the-enterprise-guide-to-ai-powered-devsecops/" class="d-block mb-2 f3 lh-condensed color-fg-default text-bold post-card__link">The enterprise guide to AI-powered DevSecOps</a><p class="mb-3 f5 color-fg-muted">Learn about core challenges in DevSecOps, and how you can start addressing them with AI and automation.</p><span class="Link d-inline-flex flex-items-center" role="presentation">Learn more</span></li>
+</ul>
+</li>
+</ul>	</div>
+</nav>
+  </div>
+  
+<form id="mobile-search" role="search" method="get" class="mobile-search" action="https://github.blog"  aria-hidden="true" aria-label="Search form">
+	<div class="d-flex flex-1 p-3 color-bg-inset">
+		<div class="d-flex flex-1 position-relative color-bg-transparent" data-color-mode="light" data-light-theme="light" data-dark-theme="dark" >
+			
+			<input aria-label="Search the blog" type="search" class="pl-6 search-field form-control p-2 flex-1" placeholder="Search the blog…" value="" name="s" id="search-input">
+		</div>
+
+			<button		class="Button Button--size-medium Button--secondary ml-2"
+  type="submit"  >
+		<span class="Button__text">
+		<span class="Text Text--200 Text--antialiased Text--weight-semibold Button--label Button--label-medium Button--label-secondary">
+			Search		</span>
+		</span>
+
+			</button>
+		</div>
+</form>
+			
+<nav id="mobile-menu" class="mobile-menu position-relative overflow-y-auto flex-1 width-full rounded-top-3" aria-label="Navigation menu" aria-hidden="true" data-color-mode="light" data-light-theme="light" data-dark-theme="dark_dimmed">
+	<div class="p-5">
+  <h2 class="mb-5 text-bold color-fg-subtle">Categories</h2>
+			<ul id="menu-new-primary-navigation" class="list-style-none"><li class="mb-5"><a href="https://github.blog/ai-and-ml/" class="d-flex flex-items-center flex-justify-between lh-condensed-ultra text-bold color-fg-default js-toggle" aria-controls="primary-mobile-78814-dropdown" aria-expanded="false" aria-haspopup="true" role="button">AI &amp; ML</a>
+<ul aria-hidden="true" aria-label="AI &amp; ML sub-menu" class="dropdown overflow-y-auto position-absolute top-0 left-0 right-0 bottom-0 flex-wrap p-5 list-style-none rounded-3 z-3 color-bg-default color-border-subtle" id="primary-mobile-78814-dropdown">
+	<li class="mb-5"><div class="mb-4"><button type="button" class="d-flex flex-items-center mb-4 p-0 border-0 text-semibold color-bg-transparent color-fg-subtle" aria-controls="primary-mobile-78814-dropdown" aria-expanded="true">Back</button><a href="https://github.blog/ai-and-ml/" class="d-flex flex-items-center flex-justify-start lh-condensed-ultra text-bold color-fg-default">AI &amp; ML</a><p class="mt-2 mb-0 color-fg-muted">Learn about artificial intelligence and machine learning across the GitHub ecosystem and the wider industry.</p></div>
+	<ul class="border-top list-style-none">
+		<li class="mt-4"><a href="https://github.blog/ai-and-ml/generative-ai/" class="text-bold lh-condensed-ultra color-fg-default">Generative AI</a><p class="mb-0 f5 color-fg-muted">Learn how to build with generative AI.</p></li>
+		<li class="mt-4"><a href="https://github.blog/ai-and-ml/github-copilot/" class="text-bold lh-condensed-ultra color-fg-default">GitHub Copilot</a><p class="mb-0 f5 color-fg-muted">Change how you work with GitHub Copilot.</p></li>
+		<li class="mt-4"><a href="https://github.blog/ai-and-ml/llms/" class="text-bold lh-condensed-ultra color-fg-default">LLMs</a><p class="mb-0 f5 color-fg-muted">Everything developers need to know about LLMs.</p></li>
+		<li class="mt-4"><a href="https://github.blog/ai-and-ml/machine-learning/" class="text-bold lh-condensed-ultra color-fg-default">Machine learning</a><p class="mb-0 f5 color-fg-muted">Machine learning tips, tricks, and best practices.</p></li>
+	</ul>
+</li>
+	<li class="d-none"><div class="mb-4"><a href="https://github.blog/ai-and-ml/generative-ai/how-ai-code-generation-works/" class="d-flex flex-items-center flex-justify-start lh-condensed-ultra text-bold color-fg-default">How AI code generation works</a><p class="mb-3 f5 color-fg-muted">Explore the capabilities and benefits of AI code generation and how it can improve your developer experience.</p><a href="https://github.blog/ai-and-ml/generative-ai/how-ai-code-generation-works/" target="" class="Link d-inline-flex flex-items-center">Learn more</a></div></li>
+</ul>
+</li>
+<li class="mb-5"><a href="https://github.blog/developer-skills/" class="d-flex flex-items-center flex-justify-between lh-condensed-ultra text-bold color-fg-default js-toggle" aria-controls="primary-mobile-78819-dropdown" aria-expanded="false" aria-haspopup="true" role="button">Developer skills</a>
+<ul aria-hidden="true" aria-label="Developer skills sub-menu" class="dropdown overflow-y-auto position-absolute top-0 left-0 right-0 bottom-0 flex-wrap p-5 list-style-none rounded-3 z-3 color-bg-default color-border-subtle" id="primary-mobile-78819-dropdown">
+	<li class="mb-5"><div class="mb-4"><button type="button" class="d-flex flex-items-center mb-4 p-0 border-0 text-semibold color-bg-transparent color-fg-subtle" aria-controls="primary-mobile-78819-dropdown" aria-expanded="true">Back</button><a href="https://github.blog/developer-skills/" class="d-flex flex-items-center flex-justify-start lh-condensed-ultra text-bold color-fg-default">Developer skills</a><p class="mt-2 mb-0 color-fg-muted">Resources for developers to grow in their skills and careers.</p></div>
+	<ul class="border-top list-style-none">
+		<li class="mt-4"><a href="https://github.blog/developer-skills/application-development/" class="text-bold lh-condensed-ultra color-fg-default">Application development</a><p class="mb-0 f5 color-fg-muted">Insights and best practices for building apps.</p></li>
+		<li class="mt-4"><a href="https://github.blog/developer-skills/career-growth/" class="text-bold lh-condensed-ultra color-fg-default">Career growth</a><p class="mb-0 f5 color-fg-muted">Tips &amp; tricks to grow as a professional developer.</p></li>
+		<li class="mt-4"><a href="https://github.blog/developer-skills/github/" class="text-bold lh-condensed-ultra color-fg-default">GitHub</a><p class="mb-0 f5 color-fg-muted">Improve how you use GitHub at work.</p></li>
+		<li class="mt-4"><a href="https://github.blog/developer-skills/github-education/" class="text-bold lh-condensed-ultra color-fg-default">GitHub Education</a><p class="mb-0 f5 color-fg-muted">Learn how to move into your first professional role.</p></li>
+		<li class="mt-4"><a href="https://github.blog/developer-skills/programming-languages-and-frameworks/" class="text-bold lh-condensed-ultra color-fg-default">Programming languages &amp; frameworks</a><p class="mb-0 f5 color-fg-muted">Stay current on what’s new (or new again).</p></li>
+	</ul>
+</li>
+	<li class="d-none"><div class="mb-4"><a href="https://docs.github.com/en/get-started" class="d-flex flex-items-center flex-justify-start lh-condensed-ultra text-bold color-fg-default">Get started with GitHub documentation</a><p class="mb-3 f5 color-fg-muted">Learn how to start building, shipping, and maintaining software with GitHub.</p><a href="https://docs.github.com/en/get-started" target="" class="Link d-inline-flex flex-items-center">Learn more</a></div></li>
+</ul>
+</li>
+<li class="mb-5"><a href="https://github.blog/engineering/" class="d-flex flex-items-center flex-justify-between lh-condensed-ultra text-bold color-fg-default js-toggle" aria-controls="primary-mobile-78825-dropdown" aria-expanded="false" aria-haspopup="true" role="button">Engineering</a>
+<ul aria-hidden="true" aria-label="Engineering sub-menu" class="dropdown overflow-y-auto position-absolute top-0 left-0 right-0 bottom-0 flex-wrap p-5 list-style-none rounded-3 z-3 color-bg-default color-border-subtle" id="primary-mobile-78825-dropdown">
+	<li class="mb-5"><div class="mb-4"><button type="button" class="d-flex flex-items-center mb-4 p-0 border-0 text-semibold color-bg-transparent color-fg-subtle" aria-controls="primary-mobile-78825-dropdown" aria-expanded="true">Back</button><a href="https://github.blog/engineering/" class="d-flex flex-items-center flex-justify-start lh-condensed-ultra text-bold color-fg-default">Engineering</a><p class="mt-2 mb-0 color-fg-muted">Get an inside look at how we’re building the home for all developers.</p></div>
+	<ul class="border-top list-style-none">
+		<li class="mt-4"><a href="https://github.blog/engineering/architecture-optimization/" class="text-bold lh-condensed-ultra color-fg-default">Architecture &amp; optimization</a><p class="mb-0 f5 color-fg-muted">Discover how we deliver a performant and highly available experience across the GitHub platform.</p></li>
+		<li class="mt-4"><a href="https://github.blog/engineering/engineering-principles/" class="text-bold lh-condensed-ultra color-fg-default">Engineering principles</a><p class="mb-0 f5 color-fg-muted">Explore best practices for building software at scale with a majority remote team.</p></li>
+		<li class="mt-4"><a href="https://github.blog/engineering/infrastructure/" class="text-bold lh-condensed-ultra color-fg-default">Infrastructure</a><p class="mb-0 f5 color-fg-muted">Get a glimpse at the technology underlying the world’s leading AI-powered developer platform.</p></li>
+		<li class="mt-4"><a href="https://github.blog/engineering/platform-security/" class="text-bold lh-condensed-ultra color-fg-default">Platform security</a><p class="mb-0 f5 color-fg-muted">Learn how we build security into everything we do across the developer lifecycle.</p></li>
+		<li class="mt-4"><a href="https://github.blog/engineering/user-experience/" class="text-bold lh-condensed-ultra color-fg-default">User experience</a><p class="mb-0 f5 color-fg-muted">Find out what goes into making GitHub the home for all developers.</p></li>
+	</ul>
+</li>
+	<li class="d-none"><div class="mb-4"><a href="https://github.blog/engineering/how-we-use-github-to-be-more-productive-collaborative-and-secure/" class="d-flex flex-items-center flex-justify-start lh-condensed-ultra text-bold color-fg-default">How we use GitHub to be more productive, collaborative, and secure</a><p class="mb-3 f5 color-fg-muted">Our engineering and security teams do some incredible work. Let’s take a look at how we use GitHub to be more productive, build collaboratively, and shift security left.</p><a href="https://github.blog/engineering/how-we-use-github-to-be-more-productive-collaborative-and-secure/" target="" class="Link d-inline-flex flex-items-center">Learn more</a></div></li>
+</ul>
+</li>
+<li class="mb-5"><a href="https://github.blog/enterprise-software/" class="d-flex flex-items-center flex-justify-between lh-condensed-ultra text-bold color-fg-default js-toggle" aria-controls="primary-mobile-78832-dropdown" aria-expanded="false" aria-haspopup="true" role="button">Enterprise software</a>
+<ul aria-hidden="true" aria-label="Enterprise software sub-menu" class="dropdown overflow-y-auto position-absolute top-0 left-0 right-0 bottom-0 flex-wrap p-5 list-style-none rounded-3 z-3 color-bg-default color-border-subtle" id="primary-mobile-78832-dropdown">
+	<li class="mb-5"><div class="mb-4"><button type="button" class="d-flex flex-items-center mb-4 p-0 border-0 text-semibold color-bg-transparent color-fg-subtle" aria-controls="primary-mobile-78832-dropdown" aria-expanded="true">Back</button><a href="https://github.blog/enterprise-software/" class="d-flex flex-items-center flex-justify-start lh-condensed-ultra text-bold color-fg-default">Enterprise software</a><p class="mt-2 mb-0 color-fg-muted">Explore how to write, build, and deploy enterprise software at scale.</p></div>
+	<ul class="border-top list-style-none">
+		<li class="mt-4"><a href="https://github.blog/enterprise-software/automation/" class="text-bold lh-condensed-ultra color-fg-default">Automation</a><p class="mb-0 f5 color-fg-muted">Automating your way to faster and more secure ships.</p></li>
+		<li class="mt-4"><a href="https://github.blog/enterprise-software/ci-cd/" class="text-bold lh-condensed-ultra color-fg-default">CI/CD</a><p class="mb-0 f5 color-fg-muted">Guides on continuous integration and delivery.</p></li>
+		<li class="mt-4"><a href="https://github.blog/enterprise-software/collaboration/" class="text-bold lh-condensed-ultra color-fg-default">Collaboration</a><p class="mb-0 f5 color-fg-muted">Tips, tools, and tricks to improve developer collaboration.</p></li>
+		<li class="mt-4"><a href="https://github.blog/enterprise-software/devops/" class="text-bold lh-condensed-ultra color-fg-default">DevOps</a><p class="mb-0 f5 color-fg-muted">DevOps resources for enterprise engineering teams.</p></li>
+		<li class="mt-4"><a href="https://github.blog/enterprise-software/devsecops/" class="text-bold lh-condensed-ultra color-fg-default">DevSecOps</a><p class="mb-0 f5 color-fg-muted">How to integrate security into the SDLC.</p></li>
+		<li class="mt-4"><a href="https://github.blog/enterprise-software/governance-and-compliance/" class="text-bold lh-condensed-ultra color-fg-default">Governance &amp; compliance</a><p class="mb-0 f5 color-fg-muted">Ensuring your builds stay clean.</p></li>
+	</ul>
+</li>
+	<li class="d-none"><div class="mb-4"><a href="https://github.com/resources/whitepapers/gartner-magic-quadrant-and-critical-capabilities-for-ai-code-assistants" class="d-flex flex-items-center flex-justify-start lh-condensed-ultra text-bold color-fg-default">GitHub recognized as a Leader in the Gartner® Magic Quadrant™ for AI Code Assistants</a><p class="mb-3 f5 color-fg-muted">Learn why Gartner positioned GitHub as a Leader for the second year in a row.</p><a href="https://github.com/resources/whitepapers/gartner-magic-quadrant-and-critical-capabilities-for-ai-code-assistants" target="" class="Link d-inline-flex flex-items-center">Learn more</a></div></li>
+</ul>
+</li>
+<li class="mb-5"><a href="https://github.blog/news-insights/" class="d-flex flex-items-center flex-justify-between lh-condensed-ultra text-bold color-fg-default js-toggle" aria-controls="primary-mobile-78840-dropdown" aria-expanded="false" aria-haspopup="true" role="button">News &amp; insights</a>
+<ul aria-hidden="true" aria-label="News &amp; insights sub-menu" class="dropdown overflow-y-auto position-absolute top-0 left-0 right-0 bottom-0 flex-wrap p-5 list-style-none rounded-3 z-3 color-bg-default color-border-subtle" id="primary-mobile-78840-dropdown">
+	<li class="mb-5"><div class="mb-4"><button type="button" class="d-flex flex-items-center mb-4 p-0 border-0 text-semibold color-bg-transparent color-fg-subtle" aria-controls="primary-mobile-78840-dropdown" aria-expanded="true">Back</button><a href="https://github.blog/news-insights/" class="d-flex flex-items-center flex-justify-start lh-condensed-ultra text-bold color-fg-default">News &amp; insights</a><p class="mt-2 mb-0 color-fg-muted">Keep up with what’s new and notable from inside GitHub.</p></div>
+	<ul class="border-top list-style-none">
+		<li class="mt-4"><a href="https://github.blog/news-insights/company-news/" class="text-bold lh-condensed-ultra color-fg-default">Company news</a><p class="mb-0 f5 color-fg-muted">An inside look at news and product updates from GitHub.</p></li>
+		<li class="mt-4"><a href="https://github.blog/news-insights/product-news/" class="text-bold lh-condensed-ultra color-fg-default">Product</a><p class="mb-0 f5 color-fg-muted">The latest on GitHub’s platform, products, and tools.</p></li>
+		<li class="mt-4"><a href="https://github.blog/news-insights/octoverse/" class="text-bold lh-condensed-ultra color-fg-default">Octoverse</a><p class="mb-0 f5 color-fg-muted">Insights into the state of open source on GitHub.</p></li>
+		<li class="mt-4"><a href="https://github.blog/news-insights/policy-news-and-insights/" class="text-bold lh-condensed-ultra color-fg-default">Policy</a><p class="mb-0 f5 color-fg-muted">The latest policy and regulatory changes in software.</p></li>
+		<li class="mt-4"><a href="https://github.blog/news-insights/research/" class="text-bold lh-condensed-ultra color-fg-default">Research</a><p class="mb-0 f5 color-fg-muted">Data-driven insights around the developer ecosystem.</p></li>
+		<li class="mt-4"><a href="https://github.blog/news-insights/the-library/" class="text-bold lh-condensed-ultra color-fg-default">The library</a><p class="mb-0 f5 color-fg-muted">Older news and updates from GitHub.</p></li>
+	</ul>
+</li>
+	<li class="d-none"><div class="mb-4"><a href="https://github.blog/ai-and-ml/llms/unlocking-the-power-of-unstructured-data-with-rag/" class="d-flex flex-items-center flex-justify-start lh-condensed-ultra text-bold color-fg-default">Unlocking the power of unstructured data with RAG</a><p class="mb-3 f5 color-fg-muted">Learn how to use retrieval-augmented generation (RAG) to capture more insights.</p><a href="https://github.blog/ai-and-ml/llms/unlocking-the-power-of-unstructured-data-with-rag/" target="" class="Link d-inline-flex flex-items-center">Learn more</a></div></li>
+</ul>
+</li>
+<li class="mb-5"><a href="https://github.blog/open-source/" class="d-flex flex-items-center flex-justify-between lh-condensed-ultra text-bold color-fg-default js-toggle" aria-controls="primary-mobile-78848-dropdown" aria-expanded="false" aria-haspopup="true" role="button">Open Source</a>
+<ul aria-hidden="true" aria-label="Open Source sub-menu" class="dropdown overflow-y-auto position-absolute top-0 left-0 right-0 bottom-0 flex-wrap p-5 list-style-none rounded-3 z-3 color-bg-default color-border-subtle" id="primary-mobile-78848-dropdown">
+	<li class="mb-5"><div class="mb-4"><button type="button" class="d-flex flex-items-center mb-4 p-0 border-0 text-semibold color-bg-transparent color-fg-subtle" aria-controls="primary-mobile-78848-dropdown" aria-expanded="true">Back</button><a href="https://github.blog/open-source/" class="d-flex flex-items-center flex-justify-start lh-condensed-ultra text-bold color-fg-default">Open Source</a><p class="mt-2 mb-0 color-fg-muted">Everything open source on GitHub.</p></div>
+	<ul class="border-top list-style-none">
+		<li class="mt-4"><a href="https://github.blog/open-source/git/" class="text-bold lh-condensed-ultra color-fg-default">Git</a><p class="mb-0 f5 color-fg-muted">The latest Git updates.</p></li>
+		<li class="mt-4"><a href="https://github.blog/open-source/maintainers/" class="text-bold lh-condensed-ultra color-fg-default">Maintainers</a><p class="mb-0 f5 color-fg-muted">Spotlighting open source maintainers.</p></li>
+		<li class="mt-4"><a href="https://github.blog/open-source/social-impact/" class="text-bold lh-condensed-ultra color-fg-default">Social impact</a><p class="mb-0 f5 color-fg-muted">How open source is driving positive change.</p></li>
+		<li class="mt-4"><a href="https://github.blog/open-source/gaming/" class="text-bold lh-condensed-ultra color-fg-default">Gaming</a><p class="mb-0 f5 color-fg-muted">Explore open source games on GitHub.</p></li>
+	</ul>
+</li>
+	<li class="d-none"><div class="mb-4"><a href="https://resources.github.com/software-development/innersource/" class="d-flex flex-items-center flex-justify-start lh-condensed-ultra text-bold color-fg-default">An introduction to innersource</a><p class="mb-3 f5 color-fg-muted">Organizations worldwide are incorporating open source methodologies into the way they build and ship their own software.</p><a href="https://resources.github.com/software-development/innersource/" target="" class="Link d-inline-flex flex-items-center">Learn more</a></div></li>
+</ul>
+</li>
+<li class="mb-5"><a href="https://github.blog/security/" class="d-flex flex-items-center flex-justify-between lh-condensed-ultra text-bold color-fg-default js-toggle" aria-controls="primary-mobile-78859-dropdown" aria-expanded="false" aria-haspopup="true" role="button">Security</a>
+<ul aria-hidden="true" aria-label="Security sub-menu" class="dropdown overflow-y-auto position-absolute top-0 left-0 right-0 bottom-0 flex-wrap p-5 list-style-none rounded-3 z-3 color-bg-default color-border-subtle" id="primary-mobile-78859-dropdown">
+	<li class="mb-5"><div class="mb-4"><button type="button" class="d-flex flex-items-center mb-4 p-0 border-0 text-semibold color-bg-transparent color-fg-subtle" aria-controls="primary-mobile-78859-dropdown" aria-expanded="true">Back</button><a href="https://github.blog/security/" class="d-flex flex-items-center flex-justify-start lh-condensed-ultra text-bold color-fg-default">Security</a><p class="mt-2 mb-0 color-fg-muted">Stay up to date on everything security.</p></div>
+	<ul class="border-top list-style-none">
+		<li class="mt-4"><a href="https://github.blog/security/application-security/" class="text-bold lh-condensed-ultra color-fg-default">Application security</a><p class="mb-0 f5 color-fg-muted">Application security, explained.</p></li>
+		<li class="mt-4"><a href="https://github.blog/security/supply-chain-security/" class="text-bold lh-condensed-ultra color-fg-default">Supply chain security</a><p class="mb-0 f5 color-fg-muted">Demystifying supply chain security.</p></li>
+		<li class="mt-4"><a href="https://github.blog/security/vulnerability-research/" class="text-bold lh-condensed-ultra color-fg-default">Vulnerability research</a><p class="mb-0 f5 color-fg-muted">Updates from the GitHub Security Lab.</p></li>
+		<li class="mt-4"><a href="https://github.blog/security/web-application-security/" class="text-bold lh-condensed-ultra color-fg-default">Web application security</a><p class="mb-0 f5 color-fg-muted">Helpful tips on securing web applications.</p></li>
+	</ul>
+</li>
+	<li class="d-none"><div class="mb-4"><a href="https://resources.github.com/security/the-enterprise-guide-to-ai-powered-devsecops/" class="d-flex flex-items-center flex-justify-start lh-condensed-ultra text-bold color-fg-default">The enterprise guide to AI-powered DevSecOps</a><p class="mb-3 f5 color-fg-muted">Learn about core challenges in DevSecOps, and how you can start addressing them with AI and automation.</p><a href="https://resources.github.com/security/the-enterprise-guide-to-ai-powered-devsecops/" target="" class="Link d-inline-flex flex-items-center">Learn more</a></div></li>
+</ul>
+</li>
+</ul>  <ul id="menu-secondary-navigation" class="pt-5 border-top list-style-none"><li class="mb-5"><a href="https://github.blog/changelog/" class="d-flex flex-items-center flex-justify-between lh-condensed-ultra text-bold color-fg-default">Changelog</a></li>
+<li class="mb-5"><a href="https://docs.github.com/" class="d-flex flex-items-center flex-justify-between lh-condensed-ultra text-bold color-fg-default">Docs</a></li>
+<li class="mb-5"><a href="https://github.com/customer-stories" class="d-flex flex-items-center flex-justify-between lh-condensed-ultra text-bold color-fg-default">Customer stories</a></li>
+</ul>	<a		class="Button Button--size-medium Button--secondary Button--block my-3"
+		href="https://githubuniverse.com/?utm_source=Blog-button&#038;utm_medium=GitHub&#038;utm_campaign=blog_button_seb_uni_26"  target="_blank"		data-analytics-click="Blog, click on button, text: Attend Universe; ref_location:top nav;"  >
+		<span class="Button__text">
+		<span class="Text Text--200 Text--antialiased Text--weight-semibold Button--label Button--label-medium Button--label-secondary">
+			Attend GitHub Universe		</span>
+		</span>
+
+			</a>
+		<a		class="Button Button--size-medium Button--primary Button--block"
+		href="https://github.com/features/ai/github-app?utm_source=blog-header-button-cta&#038;utm_medium=blog&#038;utm_campaign=github-app-cli-Q1-push"  target="_blank"		data-analytics-click="Blog, click on button, text: Use Copilot for free; ref_location:top nav;"  >
+		<span class="Button__text">
+		<span class="Text Text--200 Text--antialiased Text--weight-semibold Button--label Button--label-medium Button--label-primary">
+			Try GitHub Copilot app		</span>
+		</span>
+
+			</a>
+		</div>
+	<button class="mobile-nav-focus-trap js-mobile-nav-focus-trap" data-target="#mobile-menu-toggle" data-focus-order="target"></button>
+</nav>
+		</header>
+	</div>
+	<main id="start-of-content">
+<header class="position-relative" data-color-mode="dark" data-light-theme="light" data-dark-theme="dark_dimmed">
+	<div class="container-xl p-responsive-blog">
+		<div class="gutter-spacious">
+			<div class="col-12 offset-lg-1 col-lg-10 col-xl-8 py-5 py-md-6 ">
+  <div class="f5 mb-5 mb-md-8"><span><span><a class="Link--primary" href="https://github.blog/">Home</a></span> <span class="mx-2 opacity-5">/</span> <span><a class="Link--primary" href="https://github.blog/engineering/">Engineering</a></span> <span class="mx-2 opacity-5">/</span> <span><a class="Link--primary" href="https://github.blog/engineering/architecture-optimization/">Architecture &amp; optimization</a></span></span></div>  <h1 class="h3-mktg lh-condensed mb-3 color-fg-default">Don&#8217;t stop early: Case-folding source code at memory speed</h1>  <div class="f4-mktg color-fg-muted">
+  <p>How a branch-free loop and byte-space arithmetic let GitHub case-fold every byte of code search at >45 GiB/s on a single core.</p>
+  </div>
+			</div>
+  <div class="offset-lg-1 col-lg-10">
+  <div class="position-relative overflow-hidden rounded-2 z-1">
+  
+  <img width="1600" height="850" src="https://github.blog/wp-content/uploads/2026/01/generic-github-invertocat-logo.png?resize=1600%2C850" class="d-block cover-image wp-post-image" alt="Geometric background featuring cubes with the GitHub invertocat logo and related icons." decoding="async" loading="lazy" srcset="https://github.blog/wp-content/uploads/2026/01/generic-github-invertocat-logo.png?w=1600 1600w, https://github.blog/wp-content/uploads/2026/01/generic-github-invertocat-logo.png?w=800 800w, https://github.blog/wp-content/uploads/2026/01/generic-github-invertocat-logo.png?w=400 400w, https://github.blog/wp-content/uploads/2026/01/generic-github-invertocat-logo.png?w=1032 1032w, https://github.blog/wp-content/uploads/2026/01/generic-github-invertocat-logo.png?w=516 516w" sizes="auto, (max-width: 1600px) 100vw, 1600px" />  </div>
+  </div>
+  </div>
+	</div>
+			<div class="position-absolute bottom-0 width-full" style="background:#fff; height:80px;"></div>
+	</header>
+<section class="container-xl mx-auto p-responsive-blog mt-4">
+	<div class="gutter-spacious">
+		<div class="col-12 offset-lg-1 col-lg-10">
+			<div class="d-lg-flex flex-justify-between flex-items-center">
+  <div class="mb-4 mb-lg-0">
+	<div class="mb-1">
+		<div class="d-flex flex-items-center mb-6px">
+		<span>
+  <span class="text-bold">
+  <a href="https://github.blog/author/aneubeck/" title="Posts by Alexander Neubeck" class="author url fn Link--primary no-wrap position-relative z-2" rel="author">Alexander Neubeck</a> & <a href="https://github.blog/author/gorzell/" title="Posts by Greg Orzell" class="author url fn Link--primary no-wrap position-relative z-2" rel="author">Greg Orzell</a>			</span>
+  </span>
+</div>
+	</div>
+	<div data-color-mode="auto" data-light-theme="light_tritanopia" class="d-flex flex-column flex-md-row text-mono color-fg-muted">
+		<time datetime="2026-07-31" class="d-block">
+			July 31, 2026		</time>
+
+  <div class="d-flex flex-items-center mt-2 mt-md-0">
+  <span class="d-none d-md-block mx-3">|</span>
+  
+  16 minutes			</div>
+			</div>
+</div>
+  <ul class="list-style-none d-flex flex-items-center">
+	<li>
+		<span class="text-semibold">
+			Share:		</span>
+	</li>
+	<li class="ml-3">
+		<a href="https://x.com/share?text=Don%26%238217%3Bt%20stop%20early%3A%20Case-folding%20source%20code%20at%20memory%20speed&#038;url=https%3A%2F%2Fgithub.blog%2Fengineering%2Farchitecture-optimization%2Fdont-stop-early-case-folding-source-code-at-memory-speed%2F" target="_blank" rel="noopener noreferrer" class="d-flex flex-justify-center flex-items-center border circle px-2 py-2" aria-label="Share on X">
+			
+		</a>
+	</li>
+	<li class="ml-3">
+		<a href="https://www.facebook.com/sharer/sharer.php?t=Don%26%238217%3Bt%20stop%20early%3A%20Case-folding%20source%20code%20at%20memory%20speed&#038;u=https%3A%2F%2Fgithub.blog%2Fengineering%2Farchitecture-optimization%2Fdont-stop-early-case-folding-source-code-at-memory-speed%2F" target="_blank" rel="noopener noreferrer" class="d-flex flex-justify-center flex-items-center border circle px-2 py-2" aria-label="Share on Facebook">
+			
+		</a>
+	</li>
+	<li class="ml-3">
+		<a href="https://www.linkedin.com/shareArticle?title=Don%26%238217%3Bt%20stop%20early%3A%20Case-folding%20source%20code%20at%20memory%20speed&#038;url=https%3A%2F%2Fgithub.blog%2Fengineering%2Farchitecture-optimization%2Fdont-stop-early-case-folding-source-code-at-memory-speed%2F" target="_blank" rel="noopener noreferrer" class="d-flex flex-justify-center flex-items-center border circle px-2 py-2" aria-label="Share on LinkedIn">
+			
+		</a>
+	</li>
+</ul>
+			</div>
+			<div class="indigo-separator mt-4"></div>
+		</div>
+	</div>
+</section>
+	<div class="container-xl mx-auto p-responsive-blog mt-4 mt-md-7 mb-7 mb-md-9">
+		<div class="d-flex flex-wrap flex-justify-center gutter-spacious">
+			<section class="col-12 col-md-8 col-lg-7 post__content is-layout-constrained post-97648 post type-post status-publish format-standard has-post-thumbnail hentry category-architecture-optimization category-engineering category-open-source tag-case-folding tag-code-search tag-open-source tag-rust">
+	<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><body><p class="wp-block-paragraph">Suppose a user searches for caf&eacute; and your corpus contains CAF&Eacute;, or they type stra&szlig;e and you&rsquo;ve stored STRASSE. To make these count as matches, you need a canonical form that erases case distinctions, so that two strings which differ only in case compare equal. That form is case folding, and it shows up wherever text is matched rather than displayed: search engines, regex (?i) flags, case-insensitive usernames and hostnames.</p>
+
+<p class="wp-block-paragraph">It&rsquo;s a basic operation, but at GitHub we run it a lot. Blackbird, GitHub&rsquo;s code search engine, indexes over 180 million repositories&mdash;more than 480TB of source code. Every byte is case-folded before we extract ngrams and build the index, and for every potential query result, another (implicit or explicit) case folding operation is needed to locate matches. At that scale, the speed of even a basic operation starts to matter.</p>
+
+<p class="wp-block-paragraph">This post is about how we made it fast, and it starts somewhere counterintuitive: the biggest win in the ASCII fast path came from removing an optimization, not adding one. It turns out to be faster to sweep the whole buffer with no branches than to stop early at the first non-ASCII byte. We open-sourced the result as a Rust crate called casefold.</p>
+
+<h2 id="h-folding-is-not-lowercasing" class="wp-block-heading">Folding is not lowercasing</h2>
+
+<p class="wp-block-paragraph">It is tempting to reach for <code>str::to_lowercase</code>, but lowercasing and folding are different operations with different goals:</p>
+
+<p class="wp-block-paragraph">Lowercasing is for display, and it&rsquo;s locale- and context-sensitive: Greek final sigma lowercases to &sigmaf; at the end of a word and &sigma; elsewhere, and Turkish I lowercases differently than English I. Case folding is for comparison, and it&rsquo;s deliberately context-free and locale-independent. The point is a relation that stays stable and symmetric, so that if A folds to match B, B folds to match A in any locale. The Unicode Character Database ships an explicit CaseFolding.txt for exactly that.</p>
+
+<p class="wp-block-paragraph">The two operations diverge on real characters&mdash;&szlig;, &#304;, final sigma&mdash;which is why lowercasing as a stand-in silently produces wrong matches. This crate implements only the simple (1-to-1) folds&mdash;statuses C and S in <code>CaseFolding.txt</code>&mdash;and not the multi-character &ldquo;full&rdquo; folds (&szlig; &rarr; ss) or Turkic locale folds (the dotted &#304;). This isn&rsquo;t an unusual choice: common tools and regex engines like ripgrep make the same restriction, and being consistent across tools is important.</p>
+
+<h2 id="h-the-counterintuitive-core-don-t-stop-early" class="wp-block-heading">The counterintuitive core: Don&rsquo;t stop early</h2>
+
+<p class="wp-block-paragraph">We deal mostly with source code, so the text we fold is overwhelmingly ASCII and making it run at memory speed is the single most important thing we can do. Everything else just has to keep the rare non-ASCII path from spoiling it.</p>
+
+<p class="wp-block-paragraph">The fold of an ASCII letter is trivial&mdash;<code>A..=Z</code> map to <code>a..=z</code>, everything else is unchanged&mdash;so the ASCII pass is really just &ldquo;sweep the buffer, lowercase in place.&rdquo; Ask any LLM for it and you might get something like this:</p>
+
+<div class="wp-block-code-wrapper">
+<pre class="wp-block-code language-plaintext"><code>let bytes = s.as_bytes_mut(); 
+for (i, b) in bytes.iter_mut().enumerate() { 
+  if *b &gt;= 0x80 { 
+  break; // non-ASCII at index i: hand the rest to the Unicode path 
+  } 
+  if b.is_ascii_uppercase() { 
+  *b += 32; // 'A'..='Z' &rarr; 'a'..='z' 
+  } 
+}</code></pre>
+<clipboard-copy aria-label="Copy" class="code-copy-btn" data-copy-feedback="Copied!" value="let bytes = s.as_bytes_mut(); 
+for (i, b) in bytes.iter_mut().enumerate() { 
+  if *b &gt;= 0x80 { 
+  break; // non-ASCII at index i: hand the rest to the Unicode path 
+  } 
+  if b.is_ascii_uppercase() { 
+  *b += 32; // 'A'..='Z' &rarr; 'a'..='z' 
+  } 
+}" tabindex="0" role="button"></clipboard-copy></div>
+
+<p class="wp-block-paragraph">It looks ideal: do the cheap byte work, and the instant you hit a non-ASCII byte, break and let the &ldquo;real&rdquo; Unicode path take over: &ldquo;only do the cheap work until you have to.&rdquo; On an Apple M4 this runs at about <strong>3 GiB/s</strong>. That sounds fine in isolation, but it is more than <strong>15&times; short</strong> of &ldquo;optimal&rdquo; because of the if branches.</p>
+
+<p class="wp-block-paragraph">Let&rsquo;s delete every branch, line by line:</p>
+
+<ul class="wp-block-list">
+<li><code>if b &gt;= 0x80 { break }</code> &rarr; don&rsquo;t stop at all. <code>OR</code>every byte into an accumulator and test it <em>once</em>, after the loop: <code>high_bit_acc |= *b</code>. Same information (was there any non-ASCII byte?), zero branches in the body.</li>
+
+<li><strong>The</strong> <code>A..=Z</code> <strong>range test</strong> &rarr; make it arithmetic. <code>b.wrapping_sub(b'A') &lt; 26</code> is true exactly for <code>A..=Z</code> (any other byte wraps to &ge; 26), yielding a 0/1 mask with no branch.</li>
+
+<li><strong>The conditional write</strong> &rarr; fold the mask into the store.<code>| (is_upper &lt;&lt; 5)</code>sets bit 5&mdash;turning an upper-case letter lower-case and being a no-op on everything else&mdash;the byte is always written, never branched on.</li>
+</ul>
+
+<p class="wp-block-paragraph">What&rsquo;s left has no branch in its body and no early exit:</p>
+
+<div class="wp-block-code-wrapper">
+<pre class="wp-block-code language-plaintext"><code>let mut high_bit_acc: u8 = 0; 
+for b in &amp;mut bytes { 
+  high_bit_acc |= *b; // detect any non-ASCII byte 
+  let is_upper = b.wrapping_sub(b'A') &lt; 26; // branchless A..=Z test 
+  *b |= u8::from(is_upper) &lt;&lt; 5; // set bit 5 &rarr; lowercase, else no-op 
+} 
+if high_bit_acc &amp; 0x80 == 0 { 
+  return bytes; // pure ASCII: already folded in place, no second buffer 
+}</code></pre>
+<clipboard-copy aria-label="Copy" class="code-copy-btn" data-copy-feedback="Copied!" value="let mut high_bit_acc: u8 = 0; 
+for b in &amp;mut bytes { 
+  high_bit_acc |= *b; // detect any non-ASCII byte 
+  let is_upper = b.wrapping_sub(b'A') &lt; 26; // branchless A..=Z test 
+  *b |= u8::from(is_upper) &lt;&lt; 5; // set bit 5 &rarr; lowercase, else no-op 
+} 
+if high_bit_acc &amp; 0x80 == 0 { 
+  return bytes; // pure ASCII: already folded in place, no second buffer 
+}" tabindex="0" role="button"></clipboard-copy></div>
+
+<p class="wp-block-paragraph">A loop with no data-dependent control flow is trivially vectorizable: LLVM emits 16-byte-at-a-time NEON and the whole thing runs at &gt; <strong>45 GiB/s</strong>&mdash;essentially memory bandwidth. And we come out of the pass already knowing, from <code>high_bit_acc</code>, whether there&rsquo;s any non-ASCII work left to do.</p>
+
+<p class="wp-block-paragraph">How much did each step matter? Measuring the cumulative ladder on pure ASCII (Apple M4, 5.7 KB buffer):</p>
+
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th><strong>Version</strong>&nbsp;</th><th><strong>Throughput</strong>&nbsp;</th><th><strong>Vectorized?</strong>&nbsp;</th></tr></thead><tbody><tr><td>naive (break + branch test)&nbsp;</td><td>3.1 GiB/s&nbsp;</td><td>no (0 vector&nbsp;instrs)&nbsp;</td></tr><tr><td>&rarr; branchless test/write,&nbsp;<em>keep</em>&nbsp;break&nbsp;</td><td>2.6 GiB/s&nbsp;</td><td>no (0 vector&nbsp;instrs)&nbsp;</td></tr><tr><td>&rarr; drop the early-exit break&nbsp;</td><td>7.6 GiB/s&nbsp;</td><td><strong>partially</strong>&nbsp;(25 vector&nbsp;instrs)&nbsp;</td></tr><tr><td>&rarr; branchless test + write (the loop)&nbsp;</td><td><strong>&gt;45&nbsp;GiB/s</strong>&nbsp;</td><td>fully (41 vector&nbsp;instrs)&nbsp;</td></tr></tbody></table></figure>
+
+<p class="wp-block-paragraph">The early-exit is what gates vectorization: keep the break but make the body perfectly branch-free and you still get <strong>zero</strong> vector instructions (~2.6 GiB/s); a data-dependent loop exit is enough on its own to keep the loop scalar. Only once the break is gone can the compiler vectorize. The final step&mdash;making the upper-case fold branchless&mdash;then turns a <em>partially</em> vectorized loop (which still compiles the conditional store to a compare-blend-masked-store, ~7.6 GiB/s) into the straight-line arithmetic that hits memory bandwidth.</p>
+
+<figure class="wp-block-table"><table class="has-fixed-layout"><tbody><tr><td><strong>Note: Branchless is a</strong> <strong>pessimization</strong> <strong>in scalar code.</strong> Look again at the table: making the body branchless while <em>keeping</em> the break (2.6 GiB/s) is actually <strong>slower</strong> than the naive branchy loop (3.1 GiB/s). The asm explains why. The branchy version only stores a byte when it actually changes one; its conditional <code>strb</code>is skipped for every lowercase letter, digit and space (the vast majority of real text), and the well-predicted branch that guards it is nearly free. The branchless version replaces that rarely taken store with an <strong>unconditional</strong> <code>strb</code><strong>every iteration</strong>, writing back all ~5,700 bytes instead of just the handful of upper-case ones. Extra write traffic for no benefit. Branchless-write only <em>wins</em> once the loop vectorizes, because then the store becomes a single 16-byte vector write regardless of content, and the per-byte cost disappears. The lesson: a branchless body is worth it <strong>only</strong> as the enabler for vectorization. On its own, in scalar code, it can cost you.</td></tr></tbody></table></figure>
+
+<p class="wp-block-paragraph">There&rsquo;s also a middle ground, and it&rsquo;s what standard libraries use. Instead of testing one byte at a time, <code>[u8]::is_ascii</code> scans a <strong>machine word at a time</strong>&mdash;on a 64-bit target it tests 16 bytes per iteration by OR-ing two u64 lanes and checking all their high bits with a <code>single &amp; 0x8080_8080_8080_8080</code> mask. You can build the ASCII fast path on top of that: chunk-scan to find the ASCII prefix, then run the branchless (vectorizable) convert over it. That keeps the early-exit ability&mdash;it still bails on the first non-ASCII block&mdash;while letting both halves go fast. The catch is that it reads the data <strong>twice</strong> (once to scan, once to convert), landing at about <strong>23 GiB/s</strong>&mdash;roughly half of the single-pass branchless sweep, and ~7&times; the naive break loop. A solid, general-purpose default; just not the absolute ceiling when you control the whole loop and can fold detection and conversion into one branch-free pass.</p>
+
+<p class="wp-block-paragraph"><strong>Wouldn&rsquo;t</strong> <strong><em>fusing</em></strong> <strong>the two passes be faster?</strong> It&rsquo;s the obvious next thought: keep the chunked early-exit but convert each 16-byte block right after you&rsquo;ve confirmed it&rsquo;s ASCII, reading the data only <em>once</em>. Measured, it&rsquo;s <strong>~2.6&times; slower</strong>&mdash;8.7 GiB/s versus the two-pass 23. The inner block convert still vectorizes to a single 16-byte op, but now there&rsquo;s a data-dependent early-exit branch <em>every 16 bytes</em>, and that branch pins the loop to one block at a time: the compiler doesn&rsquo;t unroll or software-pipeline across blocks, and each iteration pays the full load&rarr;test&rarr;branch&rarr;convert&rarr;store latency with nothing to hide it behind. Split into two passes, each one is clean: the scan is a branch-light, <strong>store-free</strong> word scan that races through memory, and the convert is the fully-vectorized branch-free sweep at &gt;45 GiB/s. Two fast, branch-free passes beat one branchy fused pass&mdash;even though the fused version touches the data half as many times. It&rsquo;s the same lesson one more time: in the hot loop, the branch is the enemy.</p>
+
+<h2 id="h-avoiding-the-heap" class="wp-block-heading">Avoiding the heap</h2>
+
+<p class="wp-block-paragraph">Forty-Five GiB/s also means doing zero unnecessary allocation. <code>simple_fold</code> takes the input String <em>by value</em>, owning the heap buffer it can mutate and return it. If the OR-accumulator&rsquo;s high bit was clear, the input was pure ASCII already folded in place. We hand the <strong>same allocation</strong> straight back, no second buffer and no copy. Otherwise, we <code>memchr</code>to the first non-ASCII byte and scan the tail from there, leaving the output buffer <em>unallocated</em> (a null write cursor) until we hit a character that folds to <strong>different bytes</strong>. Text whose multibyte content never folds&mdash;CJK, Hangul, Kana, Arabic, Hebrew, symbols&mdash;also returns the original allocation untouched, never copying a byte.</p>
+
+<p class="wp-block-paragraph">Why a <em>second</em> buffer rather than rewriting in place like the ASCII pass? Because folding can make the string <strong>longer</strong>: almost every fold preserves the UTF-8 length or shrinks it, but two outliers grow&mdash;<code>U+023A</code> (&#570;) and <code>U+023E</code> (&#11391;) are 2 bytes each yet fold to 3-byte characters (&#11365;, &#576;). Once one appears, the output no longer fits in the input&rsquo;s bytes, and we need somewhere new to write.</p>
+
+<p class="wp-block-paragraph">We allocate that buffer <strong>once</strong>, sized for the worst case, rather than growing it as more folds appear. Incremental reserve calls would mean re-checking capacity, occasionally reallocating, copying everything written so far, and juggling extra length/capacity bookkeeping; a single up-front allocation lets a raw write cursor run straight to the end with none of that. And since the cursor is <code>null</code>until that first growing/changing fold, it doubles as the &ldquo;have we allocated the extra buffer yet?&rdquo; flag.</p>
+
+<p class="wp-block-paragraph">Sizing it needs a bound on growth, and those same two outliers give it: every 2 input bytes yield at most 3 output bytes, capping the output at <strong>1.5&times; the input</strong>&mdash;exactly the capacity we reserve:</p>
+
+<div class="wp-block-code-wrapper">
+<pre class="wp-block-code language-plaintext"><code>out = Vec::with_capacity(bytes.len() + bytes.len() / 2 + 4); </code></pre>
+<clipboard-copy aria-label="Copy" class="code-copy-btn" data-copy-feedback="Copied!" value="out = Vec::with_capacity(bytes.len() + bytes.len() / 2 + 4);" tabindex="0" role="button"></clipboard-copy></div>
+
+<p class="wp-block-paragraph">After that the loop writes through a raw pointer with no capacity checks and calls <code>set_len</code> once at the end. Two more details keep it branch-light. The run of unchanged bytes between two folds is moved with a single <code>copy_nonoverlapping</code> rather than byte by byte. And each fold unconditionally writes all 4 bytes of a little-endian word before bumping the cursor by only the <em>folded</em> length (1&ndash;4)&mdash;dropping a branch on the output length from the hot path, with the + 4 in the reservation as the headroom that makes the final character&rsquo;s over-store safe.</p>
+
+<h2 id="h-making-unicode-cheap-too" class="wp-block-heading">Making Unicode cheap too</h2>
+
+<p class="wp-block-paragraph">When a character <em>does</em> fold, we still don&rsquo;t want to fall off a cliff&mdash;decode UTF-8, hash lookup, re-encode. Unicode 16.0 has 1484 simple-fold mappings, but they&rsquo;re a <em>very</em> sparse and <em>very</em> structured relation. Four observations shrink them to <strong>1776 bytes</strong> and let the fold run <strong>without ever decoding a full character</strong>.</p>
+
+<p class="wp-block-paragraph">Even on the non-ASCII path, the overwhelming majority of characters do not fold. The hot operation isn&rsquo;t really &ldquo;fold this character,&rdquo; it&rsquo;s &ldquo;does this character fold?&rdquo; Almost always no. The table has to make that <strong>negative test</strong> as cheap as possible; the actual folding is the rare case on an already-rare path. That priority is what shapes the layout below&mdash;the page bitmap exists precisely so a non-folding character is rejected in a single bit test, straight from its leading UTF-8 bytes, without decoding or scanning anything.</p>
+
+<p class="wp-block-paragraph">This is exactly why a <code>HashMap&lt;u32, u32&gt;</code> is the <em>wrong</em> shape for the job, not just a bigger one. A hash map is optimized for the <strong>hit</strong>: it finds a present key in roughly one probe, and only spends extra work (more probes, full key comparison) when load factor or collisions bite. But our workload is dominated by <strong>misses</strong>&mdash;characters that aren&rsquo;t in the table at all&mdash;and a miss is a hash map&rsquo;s <em>least</em> favorite query: it still has to hash the key, jump to a bucket, and walk the probe sequence far enough to <em>prove absence</em>.</p>
+
+<h2 id="h-foldable-code-points-cluster-into-64-code-point-pages" class="wp-block-heading">Foldable code points cluster into 64-code-point &ldquo;pages&rdquo;</h2>
+
+<p class="wp-block-paragraph">Foldable code points bunch together. Slice the code space into 64-code-point &ldquo;pages&rdquo; and the ~1484 folds touch just <strong>59</strong> of ~1960 possible pages. A one-bit-per-page <strong>presence</strong> <strong>bitmap</strong> answers the negative test on its own: a clear bit is a <em>definitive</em> &ldquo;no fold&rdquo;&mdash;copy through, done&mdash;which is what makes fold-free scripts cheap. Only on a set bit do we consult a second structure, a <strong>cumulative-popcount side table</strong> that ranks the page (how many populated pages precede it) to find its slice of entries, storing nothing for the ~1900 empty pages.</p>
+
+<div class="wp-block-code-wrapper">
+<pre class="wp-block-code language-plaintext"><code>let (word_idx, bit_idx, c_len) = if lead &lt; 0xE0 { 
+  (0usize, lead &amp; 0x1F, 2usize) // 2-byte: word 0 
+} else if lead &lt; 0xF0 { 
+  ((lead &amp; 0x0F) as usize, bytes[read + 1] &amp; 0x3F, 3) // 3-byte: word = nibble 
+ 
+} else { 
+  ( 
+  (((lead &amp; 0x07) as usize) &lt;&lt; 6) | (bytes[read + 1] &amp; 0x3F) as usize, 
+  bytes[read + 2] &amp; 0x3F, 
+  4usize, 
+  ) // 4-byte: merge 2 bytes 
+}; 
+// reject without decoding: clear bit &rArr; no fold 
+if word_idx &gt;= PAGE_BITMAP.len() || (PAGE_BITMAP[word_idx] &gt;&gt; bit_idx) &amp; 1 == 0 { 
+  read += c_len; 
+  continue; 
+} </code></pre>
+<clipboard-copy aria-label="Copy" class="code-copy-btn" data-copy-feedback="Copied!" value="let (word_idx, bit_idx, c_len) = if lead &lt; 0xE0 { 
+  (0usize, lead &amp; 0x1F, 2usize) // 2-byte: word 0 
+} else if lead &lt; 0xF0 { 
+  ((lead &amp; 0x0F) as usize, bytes[read + 1] &amp; 0x3F, 3) // 3-byte: word = nibble 
+ 
+} else { 
+  ( 
+  (((lead &amp; 0x07) as usize) &lt;&lt; 6) | (bytes[read + 1] &amp; 0x3F) as usize, 
+  bytes[read + 2] &amp; 0x3F, 
+  4usize, 
+  ) // 4-byte: merge 2 bytes 
+}; 
+// reject without decoding: clear bit &rArr; no fold 
+if word_idx &gt;= PAGE_BITMAP.len() || (PAGE_BITMAP[word_idx] &gt;&gt; bit_idx) &amp; 1 == 0 { 
+  read += c_len; 
+  continue; 
+}" tabindex="0" role="button"></clipboard-copy></div>
+
+<p class="wp-block-paragraph">Because <code>word_idx</code>depends only on the lead byte (and, for four-byte sequences, the first continuation byte), the bitmap load can be issued early.</p>
+
+<h2 id="h-within-a-page-folds-come-in-runs" class="wp-block-heading">Within a page, folds come in runs</h2>
+
+<p class="wp-block-paragraph">A set page bit tells us <em>something</em> on this page folds, but not which code points or to what. The obvious encoding is one entry per foldable code point&mdash;but that is both bulky and slow to search: a page can hold dozens of folds, and we&rsquo;d have to scan them all to find the one matching the current code point. The structure of the data rescues us again. Adjacent code points overwhelmingly share the same delta to their fold: A&ndash;Z all map <code>+32</code>, and Latin Extended is full of <em>alternating</em> runs like <code>0x0100</code>, <code>0x0102</code>, <code>0x0104</code>, &hellip; where every second code point folds. Instead of per-code-point entries we store <strong>runs</strong>&mdash;start, end, stride, delta&mdash;and a 1-bit stride flag covers both the contiguous and the every-other case. This interval compression collapses the ~1484 individual folds into just <strong>238</strong> runs across the 59 pages (&asymp;four per page), leaving the within-page search only a handful of entries to look at instead of dozens. This range-with-delta encoding (including the stride trick) is borrowed from Go&rsquo;s unicode package, whose <a href="https://github.com/golang/go/blob/master/src/unicode/tables.go"><code>CaseRange</code></a> records store a Lo/Hi range plus per-case deltas, with an <code>UpperLower</code> sentinel marking the alternating blocks. Runs are split at the page boundaries so a run never straddles two pages.</p>
+
+<h2 id="h-a-run-record-is-two-clean-bytes" class="wp-block-heading">A run record is two clean bytes</h2>
+
+<p class="wp-block-paragraph">With both endpoints inside one page they fit in 6 bits, split across two arrays: <code>RUN_END_LOW[``i``] = end &amp; 0x3F</code> (the scan key) and <code>RUN_START_STRIDE[``i``] = (start &amp; 0x3F) | ((stride &minus; 1) &lt;&lt; 6)</code> (read only on a hit). Because each key is one clean byte, the within-page search can go <strong>wide</strong>: rather than comparing <code>cp &amp; 0x3F</code> against the runs one at a time, we load <strong>8 end_low bytes into a single u64 and test all of them at once</strong> with one branchless SWAR step&mdash;<code>(chunk | 0x80&hellip;80) &minus; broadcast(low) &amp; 0x80&hellip;80</code> sets the top bit of every lane whose key is <code>&ge; cp &amp; 0x3F</code>. A single bit-scan of that mask (the keys are sorted, so the first set lane is the run we want) finds the slot. A page holds ~4 runs on average; that one 8-wide compare almost always resolves the entire search in a single step. One unlucky page does hold 30 runs, which puts the compare inside a short loop that strides eight keys at a time&mdash;but that loop trips at most a handful of times on exactly one page in all of Unicode, and never on the common ones. Either way: no per-run branch, and no code-point reconstruction anywhere.</p>
+
+<div class="wp-block-code-wrapper">
+<pre class="wp-block-code language-plaintext"><code>/// Offset of the first run with `end_low &gt;= low_v` in a page of `n` runs, 
+/// or `n` if none. Scans 8 `end_low` bytes at a time via SWAR. 
+#[inline] 
+fn scan_end_low(lo: usize, n: usize, low_v: u8) -&gt; usize { 
+  const HIGH: u64 = 0x8080_8080_8080_8080; 
+  const ONES: u64 = 0x0101_0101_0101_0101; 
+  let bcast = (low_v as u64).wrapping_mul(ONES); 
+  let mut base = 0; 
+  while base &lt; n { 
+  // RUN_END_LOW is padded by 8 bytes so this read is always in bounds. 
+  let chunk = u64::from_le_bytes( 
+  RUN_END_LOW[lo + base..lo + base + 8] 
+  .try_into() 
+  .expect("8-byte slice"), 
+  ); 
+  // `(b | 0x80) - low_v` keeps its high bit iff `b &gt;= low_v` (no 
+  // cross-lane borrow). The first set lane is the first run `&gt;= low_v`. 
+  let ge = (chunk | HIGH).wrapping_sub(bcast) &amp; HIGH; 
+  if ge != 0 { 
+  let j = base + (ge.trailing_zeros() / 8) as usize; 
+  return if j &lt; n { j } else { n }; 
+  } 
+  base += 8; 
+  } 
+  n 
+} </code></pre>
+<clipboard-copy aria-label="Copy" class="code-copy-btn" data-copy-feedback="Copied!" value='/// Offset of the first run with `end_low &gt;= low_v` in a page of `n` runs, 
+/// or `n` if none. Scans 8 `end_low` bytes at a time via SWAR. 
+#[inline] 
+fn scan_end_low(lo: usize, n: usize, low_v: u8) -&gt; usize { 
+  const HIGH: u64 = 0x8080_8080_8080_8080; 
+  const ONES: u64 = 0x0101_0101_0101_0101; 
+  let bcast = (low_v as u64).wrapping_mul(ONES); 
+  let mut base = 0; 
+  while base &lt; n { 
+  // RUN_END_LOW is padded by 8 bytes so this read is always in bounds. 
+  let chunk = u64::from_le_bytes( 
+  RUN_END_LOW[lo + base..lo + base + 8] 
+  .try_into() 
+  .expect("8-byte slice"), 
+  ); 
+  // `(b | 0x80) - low_v` keeps its high bit iff `b &gt;= low_v` (no 
+  // cross-lane borrow). The first set lane is the first run `&gt;= low_v`. 
+  let ge = (chunk | HIGH).wrapping_sub(bcast) &amp; HIGH; 
+  if ge != 0 { 
+  let j = base + (ge.trailing_zeros() / 8) as usize; 
+  return if j &lt; n { j } else { n }; 
+  } 
+  base += 8; 
+  } 
+  n 
+}' tabindex="0" role="button"></clipboard-copy></div>
+
+<h2 id="h-folding-is-a-little-endian-byte-addition" class="wp-block-heading">Folding is a little-endian byte addition</h2>
+
+<p class="wp-block-paragraph">On a little-endian machine the folded character&rsquo;s UTF-8 bytes, read as a <code>u32</code>, equal the source bytes (as a <code>u32</code>) plus a <strong>per-run constant</strong>. A parallel <code>BYTE_DELTA[i]</code> table then turns the whole fold into a masked load, one <code>wrapping_add</code>, and a 4-byte store:</p>
+
+<div class="wp-block-code-wrapper">
+<pre class="wp-block-code language-plaintext"><code>let word = u32::from_le_bytes(next_four_bytes) &amp; length_mask; // keep this char's bytes 
+let folded = word.wrapping_add(BYTE_DELTA[i]); // the fold, as one byte add 
+write_u32_le(dst, folded); // store all 4 bytes... 
+dst += utf8_len(folded); // ...advance by the folded length</code></pre>
+<clipboard-copy aria-label="Copy" class="code-copy-btn" data-copy-feedback="Copied!" value="let word = u32::from_le_bytes(next_four_bytes) &amp; length_mask; // keep this char's bytes 
+let folded = word.wrapping_add(BYTE_DELTA[i]); // the fold, as one byte add 
+write_u32_le(dst, folded); // store all 4 bytes... 
+dst += utf8_len(folded); // ...advance by the folded length" tabindex="0" role="button"></clipboard-copy></div>
+
+<p class="wp-block-paragraph">Both lengths in that snippet&mdash;the <code>length_mask</code> for the source character and the <em>advance by the folded length</em> for the destination&mdash;come from one more tiny trick. A UTF-8 sequence&rsquo;s length is fixed by the top four bits of its lead byte, letting the 16 possible lengths pack one nibble each into a single 64-bit constant (<code>0x4322_1111_1111_1111</code>); the length is then a shift and a mask, <code>(LEN_BITS &gt;&gt; (4 * (lead &gt;&gt; 4))) &amp; 0xF</code>&mdash;no if chain, no table memory, nothing for the predictor to get wrong. (A <em>count leading ones</em>&mdash;<code>(!lead).leading_zeros()</code>&mdash;would also work, since a lead byte carries one leading 1-bit per byte of the sequence.)</p>
+
+<div class="wp-block-code-wrapper">
+<pre class="wp-block-code language-plaintext"><code>/// Number of bytes in the UTF-8 sequence whose lead byte is `lead`. 
+#[inline] 
+pub fn utf8_len(lead: u8) -&gt; usize { 
+  const UTF8_LEN_BY_LEAD: u64 = 0x4322_1111_1111_1111; 
+  ((UTF8_LEN_BY_LEAD &gt;&gt; (4 * (lead &gt;&gt; 4))) &amp; 0xF) as usize 
+}</code></pre>
+<clipboard-copy aria-label="Copy" class="code-copy-btn" data-copy-feedback="Copied!" value="/// Number of bytes in the UTF-8 sequence whose lead byte is `lead`. 
+#[inline] 
+pub fn utf8_len(lead: u8) -&gt; usize { 
+  const UTF8_LEN_BY_LEAD: u64 = 0x4322_1111_1111_1111; 
+  ((UTF8_LEN_BY_LEAD &gt;&gt; (4 * (lead &gt;&gt; 4))) &amp; 0xF) as usize 
+}" tabindex="0" role="button"></clipboard-copy></div>
+
+<p class="wp-block-paragraph">Because we advance by the <em>folded</em> length, this even handles length-changing folds&mdash;<code>U+212A</code> KELVIN SIGN (3 bytes) &rarr; k (1 byte), or <code>U+023A</code> &#570; (2 bytes) &rarr; <code>U+2C65</code> &#11365; (3 bytes)&mdash;by writing fewer or more bytes than were read. That&rsquo;s the part we believe is genuinely new: every other folder we looked at&mdash;ICU, Go&rsquo;s unicode, Rust&rsquo;s regex, CPython, glibc&mdash;decodes UTF-8 to a code point, applies the fold there, and re-encodes (even SIMD folders decode first). Doing the arithmetic in byte space skips both the decode and the encode, which is exactly why this path can outrun a hash map that already has the answer tabulated&mdash;the hash map still has to decode its key and encode its result. The byte-space arithmetic assumes the input is <strong>well-formed, shortest-form UTF-8</strong>&mdash;every code point encoded with the minimal number of bytes. Reading the source bytes as a <code>u32</code>and adding a per-run delta only lands on the correct folded encoding when the source is in canonical form; an <em>overlong</em> encoding (a code point padded into more bytes than necessary, e.g. / as <code>0xC0 0xAF</code>) has a different byte pattern and would break the<code>length_mask</code> and the delta arithmetic. This is not a real restriction in Rust&mdash;<code>&amp;str</code>/<code>String</code> are guaranteed to hold valid UTF-8, which by definition rejects overlong sequences&mdash;but a caller feeding raw bytes from elsewhere must validate (or otherwise normalize) them first.</p>
+
+<h2 id="h-the-ascii-shortcut-in-the-tail-loop" class="wp-block-heading">The ASCII shortcut in the tail loop</h2>
+
+<p class="wp-block-paragraph">One more shortcut rounds out the tail loop. Remember the first pass already lowercased every ASCII byte, so when the scan meets an ASCII byte in the tail it advances a single byte and moves on&mdash;no page probe, no table touch at all. And it doesn&rsquo;t copy that byte either: unmodified bytes (ASCII and non-folding multibyte alike) aren&rsquo;t moved one at a time. The scan just keeps walking until it reaches a character that actually folds, then flushes the whole unchanged run between the last fold and this one with a single <code>copy_nonoverlapping</code>. Mixed text&mdash;CJK with ASCII spaces and punctuation, or code with the occasional accented identifier&mdash;therefore races through the ASCII filler and only consults the bitmap for genuine multibyte characters, copying in bulk rather than byte by byte.</p>
+
+<h2 id="h-putting-it-together-the-whole-table" class="wp-block-heading">Putting it together: the whole table</h2>
+
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th><strong>Component</strong>&nbsp;</th><th><strong>Bytes</strong>&nbsp;</th></tr></thead><tbody><tr><td>PAGE_BITMAP (1 bit per 64-cp page)&nbsp;</td><td>248&nbsp;</td></tr><tr><td>POPCNT_SAMPLES (cumulative&nbsp;popcount)&nbsp;</td><td>32&nbsp;</td></tr><tr><td>PAGE_OFFSET (per populated page)&nbsp;</td><td>60&nbsp;</td></tr><tr><td>RUN_END_LOW (scan key, end &amp; 0x3F, +8 pad)&nbsp;</td><td>246&nbsp;</td></tr><tr><td>RUN_START_STRIDE (start &amp; 0x3F | stride)&nbsp;</td><td>238&nbsp;</td></tr><tr><td>BYTE_DELTA (little-endian fold delta per run)&nbsp;</td><td>952&nbsp;</td></tr><tr><td><strong>Total</strong>&nbsp;</td><td><strong>1776</strong>&nbsp;</td></tr></tbody></table></figure>
+
+<p class="wp-block-paragraph">That&rsquo;s <strong>9.6 bits per fold entry</strong>, over half of it the <code>BYTE_DELTA</code> side table we trade for the decode-free path; the index + run records alone are ~4.4 bits/entry.</p>
+
+<p class="wp-block-paragraph">Next to the obvious alternatives, that 1776 bytes is an order of magnitude or more smaller&mdash;and unlike most of them, it never decodes a character:</p>
+
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th><strong>Representation</strong>&nbsp;</th><th><strong>Size</strong></th></tr></thead><tbody><tr><td>Na&iuml;ve&nbsp;[(u32, u32); 1484]&nbsp;</td><td>~11.6 KB&nbsp;</td></tr><tr><td>regex-syntax&rsquo;s&nbsp;case_folding_simple&nbsp;table&nbsp;</td><td>~70 KB&nbsp;</td></tr><tr><td>Go&rsquo;s&nbsp;unicode.SimpleFold&nbsp;(orbit + ASCII + ranges)&nbsp;</td><td>~7.3 KB&nbsp;</td></tr><tr><td>A runtime&nbsp;HashMap&lt;u32, u32&gt;&nbsp;</td><td>~17 KB&nbsp;</td></tr><tr><td><strong>This crate (paged bitmap + packed runs)</strong>&nbsp;</td><td><strong>1776 B</strong>&nbsp;</td></tr></tbody></table></figure>
+
+<h2 id="h-where-it-lands-against-the-alternatives" class="wp-block-heading">Where it lands against the alternatives</h2>
+
+<p class="wp-block-paragraph">On the common case, ASCII, folding runs at memory bandwidth (&gt;45 GiB/s), more than an order of magnitude ahead of other real folders and more than 50% faster than the (non-equivalent) <code>str::to_lowercase</code> function. To get a rough &ldquo;upper bound&rdquo; for the non-ASCII case, we measured the optimized Utf8 decoding + encoding round trip without performing any actual case folding using the simdutf crate. This experiment achieves consistently about 2GB/sec and is only about twice as fast than our solution for the worst case all-folding input. A naive hash map trails everything on all workloads.</p>
+
+<p class="wp-block-paragraph">The three columns are real case folders that produce identical output: simple_fold (this crate), simd_normalizer (the simd-normalizer crate), and HashMap (naive CaseFolding.txt lookup). The workload rows are chosen to simulate different scenarios from typical to worst case:</p>
+
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th><strong>Workload (input size)</strong>&nbsp;</th><th><strong>simple_fold</strong>&nbsp;</th><th><strong>simd_normalizer</strong>&nbsp;</th><th><strong>HashMap (byte path)</strong>&nbsp;</th></tr></thead><tbody><tr><td>Pure ASCII (5.7 KB)&nbsp;</td><td><strong>&gt;45&nbsp;GiB/s</strong>&nbsp;</td><td>1.21 GiB/s&nbsp;</td><td>213 MiB/s&nbsp;</td></tr><tr><td><strong>C</strong>hinese/<strong>J</strong>apanese/<strong>K</strong>orean, no folds (8.1 KB)&nbsp;</td><td><strong>2.95 GiB/s</strong>&nbsp;</td><td>1.97 GiB/s&nbsp;</td><td>558 MiB/s&nbsp;</td></tr><tr><td>Symbols / Myanmar, no folds (9.0 KB)&nbsp;</td><td><strong>2.96 GiB/s</strong>&nbsp;</td><td>1.56 GiB/s&nbsp;</td><td>410 MiB/s&nbsp;</td></tr><tr><td>Worst case: Latin/Greek/Cyrillic (Unicode U+0000&ndash;U+FFFF), all folding (8.8 KB)&nbsp;</td><td>869 MiB/s&nbsp;</td><td><strong>922 MiB/s</strong>&nbsp;</td><td>334 MiB/s&nbsp;</td></tr><tr><td>Length-changing folds (1.7 KB)&nbsp;</td><td><strong>1.26 GiB/s</strong>&nbsp;</td><td>716 MiB/s&nbsp;</td><td>233 MiB/s&nbsp;</td></tr></tbody></table></figure>
+
+<p class="wp-block-paragraph"><em>Treat the absolute figures as illustrative, not portable: the whole design leans on auto-vectorization, SWAR, and little-endian byte arithmetic, so the numbers&mdash;and even the ratios between rows&mdash;can shift substantially on a different microarchitecture (a wider or narrower vector unit, different memory bandwidth, a big-endian target, x86 vs ARM).</em></p>
+
+<p class="wp-block-paragraph">More details can be found in the <a href="https://github.com/github/rust-gems/blob/main/crates/casefold/README.md#performance">performance section of the README</a>.</p>
+
+<h2 id="h-take-this-with-you" class="wp-block-heading">Take this with you</h2>
+
+<p class="wp-block-paragraph">Case folding is about as basic as text operations get, which is exactly why it was worth the effort: we run it across every byte we index. The wins came from two ideas that both cut against instinct&mdash;sweep the whole buffer branch-free instead of stopping early, and do the fold as byte-space arithmetic instead of decoding to a code point. Together they let the common case run at memory bandwidth and the rare fold run without a decode, in a table small enough (1776 bytes) to stay resident. The decode-free byte-space fold is the piece we believe is genuinely new; it&rsquo;s why this path can beat a hash map that already has the answer.</p>
+
+<p class="wp-block-paragraph">There&rsquo;s surely more to find here, and we&rsquo;d like to see it. The crate is <a href="https://crates.io/crates/casefold">casefold</a>; the generated table and full design notes live alongside the source.</p>
+</body></html>
+	
+<section class="my-6 my-md-8 mt-md-0">
+	<hr class="post-tags-separator border-0 mt-0 mb-2" />
+	<div class="d-flex flex-shrink-0 flex-items-start">
+		<h2 class="text-mono f4-mktg py-1 mr-3 flex-shrink-0">Tags:</h2>
+		<ul class="d-flex flex-wrap px-0 my-0 list-style-none post-tags">
+  <li class="my-0">
+  <a href="https://github.blog/tag/case-folding/" class="d-block border py-2 px-3 f5 lh-condensed-ultra text-semibold Link--primary" rel="tag">
+  case folding  </a>
+  </li>
+  <li class="my-0">
+  <a href="https://github.blog/tag/code-search/" class="d-block border py-2 px-3 f5 lh-condensed-ultra text-semibold Link--primary" rel="tag">
+  code search  </a>
+  </li>
+  <li class="my-0">
+  <a href="https://github.blog/tag/open-source/" class="d-block border py-2 px-3 f5 lh-condensed-ultra text-semibold Link--primary" rel="tag">
+  open source  </a>
+  </li>
+  <li class="my-0">
+  <a href="https://github.blog/tag/rust/" class="d-block border py-2 px-3 f5 lh-condensed-ultra text-semibold Link--primary" rel="tag">
+  Rust  </a>
+  </li>
+  </ul>
+	</div>
+</section>
+	<div class="mt-8 mb-8 mb-md-0">
+	<h2 class="h5-mktg">
+		Written by	</h2>
+	<div class="gradient-separator mt-3 mb-4"></div>
+			<article class="author-bio mb-5 mb-md-4">
+	<div class="author-bio__content">
+  <div class="author-bio__avatar">
+  <picture>
+  <source srcset="https://avatars.githubusercontent.com/u/7701635?v=4&#038;s=200" width="120" height="120" media="(min-width: 768px)" />
+  <img class="d-block circle" src="https://avatars.githubusercontent.com/u/7701635?v=4&#038;s=200" alt="Alexander Neubeck" width="80" height="80" loading="lazy" decoding="async" >
+  </picture>
+			</div>
+  <header class="author-bio__header">
+			<h3 class="f3-mktg text-bold mb-1">
+  <a href="https://github.blog/author/aneubeck/" class="Link--primary color-fg-default">Alexander Neubeck</a>
+			</h3>
+  <p class="mb-0 f4 lh-condensed">
+  <a href="https://github.com/aneubeck" target="_blank">@aneubeck</a>
+  </p>
+  </header>
+  <div class="author-bio__bio f4 lh-default">
+  <p>Principal Software Engineer, GitHub</p>
+			</div>
+			</div>
+</article>
+			<article class="author-bio mb-5 mb-md-4">
+	<div class="author-bio__content">
+  <div class="author-bio__avatar">
+  <picture>
+  <source srcset="https://avatars.githubusercontent.com/u/1234453?v=4&#038;s=200" width="120" height="120" media="(min-width: 768px)" />
+  <img class="d-block circle" src="https://avatars.githubusercontent.com/u/1234453?v=4&#038;s=200" alt="Greg Orzell" width="80" height="80" loading="lazy" decoding="async" >
+  </picture>
+			</div>
+  <header class="author-bio__header">
+			<h3 class="f3-mktg text-bold mb-1">
+  <a href="https://github.blog/author/gorzell/" class="Link--primary color-fg-default">Greg Orzell</a>
+			</h3>
+  <p class="mb-0 f4 lh-condensed">
+  <a href="https://github.com/gorzell" target="_blank">@gorzell</a>
+  </p>
+  </header>
+  <div class="author-bio__bio f4 lh-default">
+  <p>Principal Software Engineer</p>
+			</div>
+			</div>
+</article>
+	</div>
+</section>
+
+<aside id="sidebar" class="col-12 col-md-4 col-lg-3 post__sidebar" aria-label="Sidebar">
+	
+<section aria-label="Tags">
+	<ul class="d-none d-md-flex flex-items-start flex-wrap list-style-none mt-4 mt-md-0 mb-6 mb-md-8 post-tags">
+  <li class="my-0">
+  <a href="https://github.blog/tag/case-folding/" class="d-block border py-2 px-3 f5 lh-condensed-ultra text-semibold Link--primary" rel="tag">
+  case folding  </a>
+			</li>
+  <li class="my-0">
+  <a href="https://github.blog/tag/code-search/" class="d-block border py-2 px-3 f5 lh-condensed-ultra text-semibold Link--primary" rel="tag">
+  code search  </a>
+			</li>
+  <li class="my-0">
+  <a href="https://github.blog/tag/open-source/" class="d-block border py-2 px-3 f5 lh-condensed-ultra text-semibold Link--primary" rel="tag">
+  open source  </a>
+			</li>
+  <li class="my-0">
+  <a href="https://github.blog/tag/rust/" class="d-block border py-2 px-3 f5 lh-condensed-ultra text-semibold Link--primary" rel="tag">
+  Rust  </a>
+			</li>
+			</ul>
+</section>
+	<div class="position-sticky top-md-scroll">
+		<div class="d-none d-md-block">
+			<nav aria-labelledby="table-of-contents-title" class="mb-8 table-of-contents">
+	<h2 id="table-of-contents-title" class="h5-mktg aside-heading pb-3 border-bottom color-border-muted mb-3">Table of Contents</h2>
+	<ul class="list-style-none table-of-contents">
+  <li class="position-relative mt-2">
+  <a class="d-block f5-mktg text-semibold Link--primary px-3 py-2 rounded-3" href="#h-folding-is-not-lowercasing">
+  <div class="mb-2px">Folding is not lowercasing</div>
+  </a>
+			</li>
+  <li class="position-relative mt-2">
+  <a class="d-block f5-mktg text-semibold Link--primary px-3 py-2 rounded-3" href="#h-the-counterintuitive-core-don-t-stop-early">
+  <div class="mb-2px">The counterintuitive core: Don't stop early</div>
+  </a>
+			</li>
+  <li class="position-relative mt-2">
+  <a class="d-block f5-mktg text-semibold Link--primary px-3 py-2 rounded-3" href="#h-avoiding-the-heap">
+  <div class="mb-2px">Avoiding the heap</div>
+  </a>
+			</li>
+  <li class="position-relative mt-2">
+  <a class="d-block f5-mktg text-semibold Link--primary px-3 py-2 rounded-3" href="#h-making-unicode-cheap-too">
+  <div class="mb-2px">Making Unicode cheap too</div>
+  </a>
+			</li>
+  <li class="position-relative mt-2">
+  <a class="d-block f5-mktg text-semibold Link--primary px-3 py-2 rounded-3" href="#h-foldable-code-points-cluster-into-64-code-point-pages">
+  <div class="mb-2px">Foldable code points cluster into 64-code-point "pages"</div>
+  </a>
+			</li>
+  <li class="position-relative mt-2">
+  <a class="d-block f5-mktg text-semibold Link--primary px-3 py-2 rounded-3" href="#h-within-a-page-folds-come-in-runs">
+  <div class="mb-2px">Within a page, folds come in runs</div>
+  </a>
+			</li>
+  <li class="position-relative mt-2">
+  <a class="d-block f5-mktg text-semibold Link--primary px-3 py-2 rounded-3" href="#h-a-run-record-is-two-clean-bytes">
+  <div class="mb-2px">A run record is two clean bytes</div>
+  </a>
+			</li>
+  <li class="position-relative mt-2">
+  <a class="d-block f5-mktg text-semibold Link--primary px-3 py-2 rounded-3" href="#h-folding-is-a-little-endian-byte-addition">
+  <div class="mb-2px">Folding is a little-endian byte addition</div>
+  </a>
+			</li>
+  <li class="position-relative mt-2">
+  <a class="d-block f5-mktg text-semibold Link--primary px-3 py-2 rounded-3" href="#h-the-ascii-shortcut-in-the-tail-loop">
+  <div class="mb-2px">The ASCII shortcut in the tail loop</div>
+  </a>
+			</li>
+  <li class="position-relative mt-2">
+  <a class="d-block f5-mktg text-semibold Link--primary px-3 py-2 rounded-3" href="#h-putting-it-together-the-whole-table">
+  <div class="mb-2px">Putting it together: the whole table</div>
+  </a>
+			</li>
+  <li class="position-relative mt-2">
+  <a class="d-block f5-mktg text-semibold Link--primary px-3 py-2 rounded-3" href="#h-where-it-lands-against-the-alternatives">
+  <div class="mb-2px">Where it lands against the alternatives</div>
+  </a>
+			</li>
+  <li class="position-relative mt-2">
+  <a class="d-block f5-mktg text-semibold Link--primary px-3 py-2 rounded-3" href="#h-take-this-with-you">
+  <div class="mb-2px">Take this with you</div>
+  </a>
+			</li>
+			</ul>
+</nav>
+		</div>
+			</div>
+</aside>
+		</div>
+	</div>
+	<section class="container-xl p-responsive-blog mx-auto mt-12 mb-8">
+	<h2 class="h5-mktg mb-4 mb-lg-7 pb-3 border-bottom color-border-subtle">
+		Related posts	</h2>
+	<div class="post-columns post-columns--3-3">
+	<article class="color-border-muted post-card">
+	<div class="d-flex flex-column">
+		<div class="d-block col-12 position-relative rounded-2 mb-3 overflow-hidden tease-thumbnail" target="_self">
+			
+			<img width="400" height="212" src="https://github.blog/wp-content/uploads/2026/01/generic-mona-github.png?resize=400%2C212" class="d-block cover-image tease-thumbnail__img wp-post-image" alt="Mona sits on a raised green block beside another block displaying a circular refresh-style icon." decoding="async" loading="lazy" srcset="https://github.blog/wp-content/uploads/2026/01/generic-mona-github.png?w=1600 1600w, https://github.blog/wp-content/uploads/2026/01/generic-mona-github.png?w=800 800w, https://github.blog/wp-content/uploads/2026/01/generic-mona-github.png?w=400 400w, https://github.blog/wp-content/uploads/2026/01/generic-mona-github.png?w=1032 1032w, https://github.blog/wp-content/uploads/2026/01/generic-mona-github.png?w=516 516w, https://github.blog/wp-content/uploads/2026/01/generic-mona-github.png?zoom=3&amp;resize=400%2C212 1200w" sizes="auto, (max-width: 400px) 100vw, 400px" />  </div>
+		<div class="mb-1"><a href="https://github.blog/engineering/" class="first-post-category f5-mktg text-gradient-purple-coral text-bold pb-1 position-relative z-2">Engineering</a></div>		<div class="">
+			<h3 class="h6-mktg mb-2">
+  <a class="Link--primary post-card__link" href="https://github.blog/engineering/turn-one-giant-ai-generated-pull-request-to-a-reviewable-stack/" target="_self">
+  Turn one giant AI-generated pull request to a reviewable stack  </a>
+			</h3>
+			<div class="f4-mktg color-fg-muted">
+  <p>Instead of one huge, un-reviewable pull request, teach coding agents to decompose work into a clean, ordered stack with GitHub stacked pull requests.</p>
+			</div>
+		</div>
+		<footer>
+			<div class="d-flex flex-items-center mb-6px">
+		<span>
+  <span class="text-bold">
+  <a href="https://github.blog/author/juliamuiruri4/" title="Posts by Julia Muiruri" class="author url fn Link--primary no-wrap position-relative z-2" rel="author">Julia Muiruri</a>			</span>
+  </span>
+</div>
+		</footer>
+	</div>
+</article>
+<article class="color-border-muted post-card">
+	<div class="d-flex flex-column">
+		<div class="d-block col-12 position-relative rounded-2 mb-3 overflow-hidden tease-thumbnail" target="_self">
+			
+			<img width="400" height="212" src="https://github.blog/wp-content/uploads/2026/01/generic-security-logo-github-blocks.png?resize=400%2C212" class="d-block cover-image tease-thumbnail__img wp-post-image" alt="Decorative image featuring geometric blocks with a shield icon displaying a check mark to represent security." decoding="async" loading="lazy" srcset="https://github.blog/wp-content/uploads/2026/01/generic-security-logo-github-blocks.png?w=1600 1600w, https://github.blog/wp-content/uploads/2026/01/generic-security-logo-github-blocks.png?w=800 800w, https://github.blog/wp-content/uploads/2026/01/generic-security-logo-github-blocks.png?w=400 400w, https://github.blog/wp-content/uploads/2026/01/generic-security-logo-github-blocks.png?w=1032 1032w, https://github.blog/wp-content/uploads/2026/01/generic-security-logo-github-blocks.png?w=516 516w, https://github.blog/wp-content/uploads/2026/01/generic-security-logo-github-blocks.png?zoom=3&amp;resize=400%2C212 1200w" sizes="auto, (max-width: 400px) 100vw, 400px" />  </div>
+		<div class="mb-1"><a href="https://github.blog/engineering/" class="first-post-category f5-mktg text-gradient-purple-coral text-bold pb-1 position-relative z-2">Engineering</a></div>		<div class="">
+			<h3 class="h6-mktg mb-2">
+  <a class="Link--primary post-card__link" href="https://github.blog/security/supply-chain-security/tame-dependabot-group-your-updates-slow-the-cadence-keep-security-fast/" target="_self">
+  Tame Dependabot: Group your updates, slow the cadence, keep security fast  </a>
+			</h3>
+			<div class="f4-mktg color-fg-muted">
+  <p>Dependabot keeps your dependencies current, but its defaults can flood your repository with pull requests. Here&#8217;s how grouping updates, slowing the cadence, and keeping security fixes fast cut the noise on a Microsoft open source project.</p>
+			</div>
+		</div>
+		<footer>
+			<div class="d-flex flex-items-center mb-6px">
+		<span>
+  <span class="text-bold">
+  <a href="https://github.blog/author/brunoborges/" title="Posts by Bruno Borges" class="author url fn Link--primary no-wrap position-relative z-2" rel="author">Bruno Borges</a>			</span>
+  </span>
+</div>
+		</footer>
+	</div>
+</article>
+<article class="color-border-muted post-card">
+	<div class="d-flex flex-column">
+		<div class="d-block col-12 position-relative rounded-2 mb-3 overflow-hidden tease-thumbnail" target="_self">
+			
+			<img width="400" height="212" src="https://github.blog/wp-content/uploads/2026/07/e3f6db2b136f577a2c96c5cda433d0a8ffbb615b397882ed3d352a28ec4e9cd1-2400x1260-1.png?resize=400%2C212" class="d-block cover-image tease-thumbnail__img wp-post-image" alt="GitHub announces $100 million for open source, with Mona among geometric cubes." decoding="async" loading="lazy" srcset="https://github.blog/wp-content/uploads/2026/07/e3f6db2b136f577a2c96c5cda433d0a8ffbb615b397882ed3d352a28ec4e9cd1-2400x1260-1.png?w=300 300w, https://github.blog/wp-content/uploads/2026/07/e3f6db2b136f577a2c96c5cda433d0a8ffbb615b397882ed3d352a28ec4e9cd1-2400x1260-1.png?w=1600 1600w, https://github.blog/wp-content/uploads/2026/07/e3f6db2b136f577a2c96c5cda433d0a8ffbb615b397882ed3d352a28ec4e9cd1-2400x1260-1.png?w=800 800w, https://github.blog/wp-content/uploads/2026/07/e3f6db2b136f577a2c96c5cda433d0a8ffbb615b397882ed3d352a28ec4e9cd1-2400x1260-1.png?w=400 400w, https://github.blog/wp-content/uploads/2026/07/e3f6db2b136f577a2c96c5cda433d0a8ffbb615b397882ed3d352a28ec4e9cd1-2400x1260-1.png?w=1032 1032w, https://github.blog/wp-content/uploads/2026/07/e3f6db2b136f577a2c96c5cda433d0a8ffbb615b397882ed3d352a28ec4e9cd1-2400x1260-1.png?w=516 516w, https://github.blog/wp-content/uploads/2026/07/e3f6db2b136f577a2c96c5cda433d0a8ffbb615b397882ed3d352a28ec4e9cd1-2400x1260-1.png?zoom=3&amp;resize=400%2C212 1200w" sizes="auto, (max-width: 400px) 100vw, 400px" />  </div>
+		<div class="mb-1"><a href="https://github.blog/open-source/maintainers/" class="first-post-category f5-mktg text-gradient-purple-coral text-bold pb-1 position-relative z-2">Maintainers</a></div>		<div class="">
+			<h3 class="h6-mktg mb-2">
+  <a class="Link--primary post-card__link" href="https://github.blog/open-source/maintainers/100-million-for-open-source-a-milestone-built-by-the-community/" target="_self">
+  $100 million for open source: A milestone built by the community  </a>
+			</h3>
+			<div class="f4-mktg color-fg-muted">
+  <p>Celebrating $100 million contributed by the community to the people who build and sustain open source every day.</p>
+			</div>
+		</div>
+		<footer>
+			<div class="d-flex flex-items-center mb-6px">
+		<span>
+  <span class="text-bold">
+  <a href="https://github.blog/author/slincoln75/" title="Posts by Stephanie Lincoln" class="author url fn Link--primary no-wrap position-relative z-2" rel="author">Stephanie Lincoln</a>			</span>
+  </span>
+</div>
+		</footer>
+	</div>
+</article>
+</div>
+</section>
+<aside class="container-xl p-responsive-blog mx-auto mb-12">
+	<h2 class="h5-mktg border-bottom pb-3">
+		Explore more from GitHub	</h2>
+	<div class="d-flex flex-wrap ml-md-n4">
+		<div class="col-12 col-md-6 col-lg-3 d-flex mt-4 mt-lg-6 pl-md-4">
+	<div class="rounded-3 color-bg-subtle d-flex flex-column flex-items-start width-full p-5 f4-mktg color-fg-muted">
+		<img src="https://github.blog/wp-content/uploads/2024/07/Icon-Circle.svg" width="44" height="44" class="width-auto d-block mb-3" alt="Docs"/>		<h3 class="f3-mktg text-bold color-fg-default mb-3">
+			Docs		</h3>
+		<div class="mb-auto">
+			<p>Everything you need to master GitHub, all in one place.</p>
+		</div>
+  <div class="mt-7">
+  <a data-analytics-click="Blog, click on module, text: Go to Docs; ref_location:bottom recirculation;" href="https://docs.github.com/" class="text-semibold arrow-target-mktg Link--primary" target="_blank" aria-label="Go to Docs">
+  Go to Docs  
+  </a>
+			</div>
+			</div>
+</div>
+<div class="col-12 col-md-6 col-lg-3 d-flex mt-4 mt-lg-6 pl-md-4">
+	<div class="rounded-3 color-bg-subtle d-flex flex-column flex-items-start width-full p-5 f4-mktg color-fg-muted">
+		<img src="https://github.blog/wp-content/uploads/2024/07/recirculation-github-icon.svg" width="44" height="44" class="width-auto d-block mb-3" alt="GitHub"/>		<h3 class="f3-mktg text-bold color-fg-default mb-3">
+			GitHub		</h3>
+		<div class="mb-auto">
+			<p>Build what&#8217;s next on GitHub, the place for anyone from anywhere to build anything.</p>
+		</div>
+  <div class="mt-7">
+  <a data-analytics-click="Blog, click on module, text: Start building; ref_location:bottom recirculation;" href="https://github.com/" class="text-semibold arrow-target-mktg Link--primary" target="_blank" aria-label="Start building">
+  Start building  
+  </a>
+			</div>
+			</div>
+</div>
+<div class="col-12 col-md-6 col-lg-3 d-flex mt-4 mt-lg-6 pl-md-4">
+	<div class="rounded-3 color-bg-subtle d-flex flex-column flex-items-start width-full p-5 f4-mktg color-fg-muted">
+		<img src="https://github.blog/wp-content/uploads/2024/07/Icon_da43dc.svg" width="44" height="44" class="width-auto d-block mb-3" alt="Customer stories"/>		<h3 class="f3-mktg text-bold color-fg-default mb-3">
+			Customer stories		</h3>
+		<div class="mb-auto">
+			<p>Meet the companies and engineering teams that build with GitHub.</p>
+		</div>
+  <div class="mt-7">
+  <a data-analytics-click="Blog, click on module, text: Learn more; ref_location:bottom recirculation;" href="https://github.com/customer-stories" class="text-semibold arrow-target-mktg Link--primary" target="_blank" aria-label="Learn more">
+  Learn more  
+  </a>
+			</div>
+			</div>
+</div>
+<div class="col-12 col-md-6 col-lg-3 d-flex mt-4 mt-lg-6 pl-md-4">
+	<div class="rounded-3 color-bg-subtle d-flex flex-column flex-items-start width-full p-5 f4-mktg color-fg-muted">
+		<img src="https://github.blog/wp-content/uploads/2025/06/Universe26-Icon.svg" width="44" height="44" class="width-auto d-block mb-3" alt="GitHub Universe 2026"/>		<h3 class="f3-mktg text-bold color-fg-default mb-3">
+			GitHub Universe 2026		</h3>
+		<div class="mb-auto">
+			<p>Join us October 28-29 in San Francisco or online for GitHub Universe, our flagship developer event uniting people, agents, and the world’s code.</p>
+		</div>
+  <div class="mt-7">
+  <a data-analytics-click="Blog, click on module, text: Register now; ref_location:bottom recirculation;" href="https://githubuniverse.com/?utm_source=Blog&#038;utm_medium=GitHub&#038;utm_campaign=module_uni_26" class="text-semibold arrow-target-mktg Link--primary" target="_blank" aria-label="Register now">
+  Register now  
+  </a>
+			</div>
+			</div>
+</div>
+	</div>
+</aside>
+<div class="py-6 py-lg-8 color-bg-subtle" data-color-mode="dark" data-light-theme="light" data-dark-theme="dark">
+	<div class="container-xl p-responsive-blog">
+		<section id="newsletter" class="newsletter rounded-2">
+	<div class="color-bg-subtle rounded-2">
+		<div class="d-flex flex-row flex-wrap gutter-spacious py-5 px-4 py-md-6 px-md-5">
+			<div class="newsletter-content col-12 col-lg-6 col-xl-7">
+  <h2 class="h4-mktg color-fg-default">We do newsletters, too</h2><p class="f3-mktg color-fg-muted mt-2 mb-3">Discover tips, technical guides, and best practices in our biweekly newsletter just for devs.</p>			</div>
+			<div class="col-12 col-lg-6 col-xl-5">
+  <label for="newsletter_emailAddress" class="">Your email address</label>
+  <form method="post" action="https://s88570519.t.eloqua.com/e/f2?elqFormName=copynewsletter-signup-form-637872624660309567&elqSiteID=88570519" class="js-form-validator newsletter-form">
+  <div class="newsletter-form d-md-flex flex-row mt-0 mb-3 rounded-2 required form-group">
+  <div class="m-0 width-full newsletter-input-container">
+  <span aria-hidden="true" class="required-indicator">*</span>
+  <label for="newsletter_emailAddress" class="screen-reader-text">Your email address</label>
+  <input type="email" required id="newsletter_emailAddress" name="emailAddress" placeholder="Your email address" class="required js-validity-check d-block width-full height-md-full f4-mktg newsletter-field rounded-2" />
+  </div>
+  <input type="hidden" name="classification" value="Practitioner">
+  <button type="submit" class="js-form-validator-submit newsletter-submit flex-shrink-0 arrow-target-mktg d-none d-md-flex flex-row f3-mktg flex-items-center text-semibold rounded-2">
+  <span>Subscribe</span>
+  
+  </button>
+  </div>
+  <div class="form-checkbox color-fg-muted f6-mktg m-0 mt-2 form-group">
+  <label class="text-normal">
+  <input id="optincheckbox" name="marketingEmailOptIn1" type="checkbox" value="True">
+  Yes please, I’d like GitHub and affiliates to use my information for personalized communications, targeted advertising and campaign effectiveness. See the <a href="https://github.com/site/privacy" target="blank">GitHub Privacy Statement</a> for more details.  </label>
+  </div>
+  <button type="submit" class="js-form-validator-submit newsletter-submit flex-shrink-0 arrow-target-mktg mt-3 d-flex d-md-none flex-row f3-mktg flex-items-center text-semibold rounded-2">
+  <span>Subscribe</span>
+  
+  </button>
+  </form>
+			</div>
+		</div>
+	</div>
+</section>
+	</div>
+</div>
+</main>
+<div data-color-mode="dark" data-light-theme="light" data-dark-theme="dark">
+	<footer class="footer pt-6">
+		<h2 class="sr-only">Site-wide Links</h2>
+		
+<div class="container-xl p-responsive-blog">
+	<div class="d-flex flex-wrap py-5 mb-5">
+
+		<div class="col-12 col-lg-4 mb-5">
+			<a href="https://github.com/" data-ga-click="Resources, go to home, resources footer" class="color-fg-default" aria-label="Go to GitHub homepage">
+  
+			</a>
+		</div>
+
+		<nav aria-labelledby="product-menu" class="col-6 col-sm-3 col-lg-2 mb-6 mb-md-2 pr-3 pr-lg-0 pl-lg-4"><h3 id="product-menu" class="h5 mb-3 text-mono color-text-tertiary text-normal">Product</h3><ul class="list-style-none text-gray f5"><li class="lh-condensed mb-3"><a href="https://github.com/features" data-ga-click="Site Foundation Components, go to Features, site foundation components footer" class="Link--secondary">Features</a></li><li class="lh-condensed mb-3"><a href="https://github.com/security" data-ga-click="Site Foundation Components, go to Security, site foundation components footer" class="Link--secondary">Security</a></li><li class="lh-condensed mb-3"><a href="https://github.com/enterprise" data-ga-click="Site Foundation Components, go to Enterprise, site foundation components footer" class="Link--secondary">Enterprise</a></li><li class="lh-condensed mb-3"><a href="https://github.com/customer-stories?type=enterprise" data-ga-click="Site Foundation Components, go to Customer Stories, site foundation components footer" class="Link--secondary">Customer Stories</a></li><li class="lh-condensed mb-3"><a href="https://github.com/pricing" data-ga-click="Site Foundation Components, go to Pricing, site foundation components footer" class="Link--secondary">Pricing</a></li><li class="lh-condensed mb-3"><a href="https://resources.github.com/" data-ga-click="Site Foundation Components, go to Resources, site foundation components footer" class="Link--secondary">Resources</a></li></ul></nav><nav aria-labelledby="platform-menu" class="col-6 col-sm-3 col-lg-2 mb-6 mb-md-2 pr-3 pr-lg-0 pl-lg-4"><h3 id="platform-menu" class="h5 mb-3 text-mono color-text-tertiary text-normal">Platform</h3><ul class="list-style-none text-gray f5"><li class="lh-condensed mb-3"><a href="https://developer.github.com/" data-ga-click="Site Foundation Components, go to Developer API, site foundation components footer" class="Link--secondary">Developer API</a></li><li class="lh-condensed mb-3"><a href="https://partner.github.com/" data-ga-click="Site Foundation Components, go to Partners, site foundation components footer" class="Link--secondary">Partners</a></li><li class="lh-condensed mb-3"><a href="https://atom.io/" data-ga-click="Site Foundation Components, go to Atom, site foundation components footer" class="Link--secondary">Atom</a></li><li class="lh-condensed mb-3"><a href="https://www.electronjs.org/" data-ga-click="Site Foundation Components, go to Electron, site foundation components footer" class="Link--secondary">Electron</a></li><li class="lh-condensed mb-3"><a href="https://desktop.github.com/" data-ga-click="Site Foundation Components, go to GitHub Desktop, site foundation components footer" class="Link--secondary">GitHub Desktop</a></li></ul></nav><nav aria-labelledby="support-menu" class="col-6 col-sm-3 col-lg-2 mb-6 mb-md-2 pr-3 pr-lg-0 pl-lg-4"><h3 id="support-menu" class="h5 mb-3 text-mono color-text-tertiary text-normal">Support</h3><ul class="list-style-none text-gray f5"><li class="lh-condensed mb-3"><a href="https://docs.github.com/" data-ga-click="Site Foundation Components, go to Docs, site foundation components footer" class="Link--secondary">Docs</a></li><li class="lh-condensed mb-3"><a href="https://github.community/" data-ga-click="Site Foundation Components, go to Community Forum, site foundation components footer" class="Link--secondary">Community Forum</a></li><li class="lh-condensed mb-3"><a href="https://services.github.com/" data-ga-click="Site Foundation Components, go to Training, site foundation components footer" class="Link--secondary">Training</a></li><li class="lh-condensed mb-3"><a href="https://www.githubstatus.com/" data-ga-click="Site Foundation Components, go to Status, site foundation components footer" class="Link--secondary">Status</a></li><li class="lh-condensed mb-3"><a href="https://support.github.com/" data-ga-click="Site Foundation Components, go to Contact, site foundation components footer" class="Link--secondary">Contact</a></li></ul></nav><nav aria-labelledby="company-menu" class="col-6 col-sm-3 col-lg-2 mb-6 mb-md-2 pr-3 pr-lg-0 pl-lg-4"><h3 id="company-menu" class="h5 mb-3 text-mono color-text-tertiary text-normal">Company</h3><ul class="list-style-none text-gray f5"><li class="lh-condensed mb-3"><a href="https://github.com/about" data-ga-click="Site Foundation Components, go to About, site foundation components footer" class="Link--secondary">About</a></li><li class="lh-condensed mb-3"><a href="https://github.blog/" data-ga-click="Site Foundation Components, go to Blog, site foundation components footer" class="Link--secondary">Blog</a></li><li class="lh-condensed mb-3"><a href="https://github.com/about/careers" data-ga-click="Site Foundation Components, go to Careers, site foundation components footer" class="Link--secondary">Careers</a></li><li class="lh-condensed mb-3"><a href="https://github.com/about/press" data-ga-click="Site Foundation Components, go to Press, site foundation components footer" class="Link--secondary">Press</a></li><li class="lh-condensed mb-3"><a href="https://shop.github.com/" data-ga-click="Site Foundation Components, go to Shop, site foundation components footer" class="Link--secondary">Shop</a></li></ul></nav>
+	</div>
+</div>
+		
+<div class="color-bg-subtle">
+	<div class="container-xl p-responsive-blog f6 py-4 d-sm-flex flex-justify-between flex-items-center">
+
+	<ul class="list-style-none d-flex flex-wrap text-gray mb-3">
+			<li class="mr-3">&copy; 2026 GitHub, Inc.</li>
+
+			<li class="mr-3">
+  <a href="https://docs.github.com/en/github/site-policy/github-terms-of-service" data-ga-click="Site Foundation Components, go to terms, site foundation components footer" class="Link--secondary">Terms</a>
+			</li>
+
+			<li class="mr-3">
+  <a href="https://docs.github.com/en/github/site-policy/github-privacy-statement" data-ga-click="Site Foundation Components, go to privacy, site foundation components footer" class="Link--secondary">Privacy</a>
+			</li>
+
+  <li class="mr-3">
+		<button type="button" class="btn-link Link--secondary" onClick="_ghcc.showPreferences()">Manage Cookies</button>
+	</li>
+	<li class="mr-3">
+		<button type="button" class="btn-link Link--secondary" onClick="_ghcc.showPreferences()">Do not share my personal information</button>
+	</li>
+	
+		</ul>
+
+		<ul class="list-style-none d-flex flex-items-center mb-sm-0 lh-condensed-ultra">
+			<li class="mr-3 flex-self-start focusable-svg">
+  <a href="https://www.linkedin.com/company/github" data-ga-click="Blog, go to Linkedin, resources footer" style="color: #959da5;">
+  
+
+  <span class="sr-only">GitHub on LinkedIn</span>
+  </a>
+			</li>
+			<li class="mr-3 focusable-svg">
+  <a href="https://www.instagram.com/github/" data-ga-click="Blog, go to Instagram, resources footer" style="color: #959da5;">
+  
+
+  <span class="sr-only">GitHub on Instagram</span>
+  </a>
+			</li>
+			<li class="mr-3 focusable-svg">
+  <a href="https://www.youtube.com/github" data-ga-click="Blog, go to YouTube, resources footer" style="color: #959da5;">
+  
+
+  <span class="sr-only">GitHub on YouTube</span>
+  </a>
+			</li>
+			<li class="mr-3 focusable-svg">
+  <a href="https://twitter.com/github" data-ga-click="Blog, go to X, resources footer" style="color: #959da5;">
+  
+
+  <span class="sr-only">GitHub on X</span>
+  </a>
+			</li>
+			<li class="mr-3 flex-self-start focusable-svg">
+  <a href="https://www.tiktok.com/@github" data-ga-click="Blog, go to TikTok, resources footer" style="color: #959da5;">
+  
+
+  <span class="sr-only">GitHub on TikTok</span>
+  </a>
+			</li>
+			<li class="mr-3 flex-self-start focusable-svg">
+  <a href="https://www.twitch.tv/github" data-ga-click="Blog, go to Twitch, resources footer" style="color: #959da5;">
+  
+  <span class="sr-only">GitHub on Twitch</span>
+  </a>
+			</li>
+			<li class="focusable-svg">
+  <a href="https://github.com/github" data-ga-click="Blog, go to github's org, resources footer" style="color: #959da5;">
+  
+  <span class="sr-only">GitHub’s organization on GitHub</span>
+  </a>
+			</li>
+		</ul>
+
+	</div>
+</div>
+	</footer>
+</div>
+
+<div id="ghcc" style="position: sticky; bottom: 0; z-index: 99999;"></div>
+
+</body>
+</html>
